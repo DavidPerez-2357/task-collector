@@ -1,0 +1,7 @@
+{
+  "name": "task-collector",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
