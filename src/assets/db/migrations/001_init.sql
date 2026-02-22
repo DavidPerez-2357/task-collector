@@ -1,8 +1,9 @@
--- -----------------------------------------------------
--- 1. TABLAS PRINCIPALES (Sin claves foráneas)
--- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS schema_version (
+  version INTEGER PRIMARY KEY,
+  applied_at TEXT NOT NULL
+);
 
-CREATE TABLE item (
+CREATE TABLE IF NOT EXISTS item (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   rarity TEXT NOT NULL,
@@ -10,29 +11,25 @@ CREATE TABLE item (
   sell_price INTEGER NOT NULL DEFAULT 0
 );
 
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   image_name TEXT NOT NULL
 );
 
-CREATE TABLE collection (
+CREATE TABLE IF NOT EXISTS collection (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   price INTEGER NOT NULL DEFAULT 0,
-  badge_image_name TEXT NOT NULL,
+  badge_image_name TEXT NOT NULL
 );
 
-CREATE TABLE player_state (
+CREATE TABLE IF NOT EXISTS player_state (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   coins INTEGER NOT NULL DEFAULT 0
 );
 
--- -----------------------------------------------------
--- 2. TABLAS DEPENDIENTES (Con claves foráneas)
--- -----------------------------------------------------
-
-CREATE TABLE collection_item (
+CREATE TABLE IF NOT EXISTS  collection_item (
   collection_id INTEGER NOT NULL,
   item_id INTEGER NOT NULL,
   PRIMARY KEY (collection_id, item_id),
@@ -40,7 +37,7 @@ CREATE TABLE collection_item (
   FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
 );
 
-CREATE TABLE task (
+CREATE TABLE IF NOT EXISTS task (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   frequency INTEGER NOT NULL,
@@ -51,7 +48,7 @@ CREATE TABLE task (
   FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL
 );
 
-CREATE TABLE task_history (
+CREATE TABLE IF NOT EXISTS task_history (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   task_id INTEGER NOT NULL,
   completed_at TEXT NOT NULL,
@@ -59,7 +56,7 @@ CREATE TABLE task_history (
   FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE
 );
 
-CREATE TABLE task_active (
+CREATE TABLE IF NOT EXISTS task_active (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   task_id INTEGER NOT NULL,
   start_date TEXT NOT NULL,
@@ -67,7 +64,7 @@ CREATE TABLE task_active (
   FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE
 );
 
-CREATE TABLE sales (
+CREATE TABLE IF NOT EXISTS sales (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   item_id INTEGER,
   coins_earned INTEGER NOT NULL,
@@ -75,14 +72,14 @@ CREATE TABLE sales (
   FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE SET NULL
 );
 
-CREATE TABLE player_collection (
+CREATE TABLE IF NOT EXISTS player_collection (
   collection_id INTEGER NOT NULL,
   purchased_at TEXT NOT NULL,
   PRIMARY KEY (collection_id),
   FOREIGN KEY (collection_id) REFERENCES collection(id) ON DELETE CASCADE
 );
 
-CREATE TABLE inventory (
+CREATE TABLE IF NOT EXISTS inventory (
    id INTEGER PRIMARY KEY AUTOINCREMENT,
    item_id INTEGER NOT NULL,
    quantity INTEGER NOT NULL DEFAULT 0,

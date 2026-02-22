@@ -12,7 +12,7 @@ export class DatabaseService {
   private sqlite = new SQLiteConnection(CapacitorSQLite);
   private conn?: SQLiteDBConnection;
 
-  private readonly dbName = 'trip-check';
+  private readonly dbName = 'taskCollectorDB';
   private readonly dbVersion = 1;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
