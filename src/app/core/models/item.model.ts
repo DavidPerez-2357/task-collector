@@ -1,0 +1,24 @@
+export enum Rarity {
+  Common = 0,
+  Rare = 1,
+  Epic = 2,
+  Legendary = 3,
+}
+
+export interface Item {
+  id: number;
+  name: string;
+  rarity: Rarity;
+  imageName: string;
+  sellPrice: number;
+}
+
+export interface ItemInventory extends Item {
+  quantity: number;
+  isShiny: boolean;
+}
+
+export interface ItemSold extends Item {
+  coinsEarned: number;
+  dateSold: Date;
+}
