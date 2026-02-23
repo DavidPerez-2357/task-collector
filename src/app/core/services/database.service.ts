@@ -71,6 +71,11 @@ export class DatabaseService {
       sqlAssetPath: 'assets/db/migrations/001_init.sql',
       description: 'Init schema',
     },
+    {
+      version: 2,
+      sqlAssetPath: 'assets/db/migrations/002_seed_data.sql',
+      description: 'Seed initial data',
+    },
   ];
 
   async init(): Promise<void> {
@@ -115,6 +120,7 @@ export class DatabaseService {
     await this.sqlite.checkConnectionsConsistency().catch(() => void 0);
 
     const { result } = await this.sqlite.isConnection(this.dbName, false);
+    console.log('[DB] Connection exists:', result);
     if (result) {
       this.conn = await this.sqlite.retrieveConnection(this.dbName, false);
     } else {
