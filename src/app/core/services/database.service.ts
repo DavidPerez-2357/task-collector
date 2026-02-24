@@ -12,7 +12,7 @@ export class DatabaseService {
   private sqlite = new SQLiteConnection(CapacitorSQLite);
   private conn?: SQLiteDBConnection;
 
-  private readonly dbName = 'taskCollectorDB';
+  private readonly dbName = 'task-collector';
   private readonly dbVersion = 1;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
@@ -86,6 +86,7 @@ export class DatabaseService {
       await this.ensureMeta();
       await this.applyMigrations();
       if (this.isWeb) this.wrapForAutoPersist();
+      console.log('Database initialized');
     })();
 
     try {
@@ -108,19 +109,29 @@ export class DatabaseService {
     }
   }
 
+  async initSqliteWebBridge() {
+    if (Capacitor.getPlatform() !== 'web') return; // Solo necesario en web
+
+    const { defineCustomElements } = await import('jeep-sqlite/loader');
+    defineCustomElements(window);
+    await customElements.whenDefined('jeep-sqlite');
+
+    if (!document.querySelector('jeep-sqlite')) {
+      const jeep = document.createElement('jeep-sqlite');
+      document.body.appendChild(jeep);
+    }
+
+    await CapacitorSQLite.initWebStore();
+  }
+
   private async openInternal(): Promise<void> {
     if (this.isWeb) {
-      await customElements.whenDefined('jeep-sqlite').catch(() => void 0);
-      const jeepEl = document.querySelector('jeep-sqlite') as any;
-      if (jeepEl?.componentOnReady) await jeepEl.componentOnReady().catch(() => void 0);
-
-      await CapacitorSQLite.initWebStore().catch(() => void 0);
+      await this.initSqliteWebBridge();
     }
 
     await this.sqlite.checkConnectionsConsistency().catch(() => void 0);
 
     const { result } = await this.sqlite.isConnection(this.dbName, false);
-    console.log('[DB] Connection exists:', result);
     if (result) {
       this.conn = await this.sqlite.retrieveConnection(this.dbName, false);
     } else {
@@ -132,6 +143,8 @@ export class DatabaseService {
         false,
       );
     }
+
+    const checkIfExists = await this.sqlite.isConnection(this.dbName, false);
 
     await this.conn.open();
     await this.conn.execute('PRAGMA foreign_keys = ON;');
@@ -280,9 +293,9 @@ export class DatabaseService {
     if (!this.isWeb) return;
 
     try {
-      await CapacitorSQLite.saveToStore({ database: this.dbName });
+      await this.sqlite.saveToStore(this.dbName);
     } catch (e) {
-      console.warn('[DB] saveToStore error:', e);
+      console.warn('[WS] saveToStore error:', e);
     }
   }
   //endregion
