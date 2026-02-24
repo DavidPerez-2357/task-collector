@@ -21,7 +21,7 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@capacitor-community/sqlite": "^8.0.0",
+    "@capacitor-community/sqlite": "^7.0.1",
     "@capacitor/app": "8.0.1",
     "@capacitor/core": "8.1.0",
     "@capacitor/haptics": "8.0.0",
@@ -30,9 +30,9 @@
     "@capacitor/status-bar": "8.0.1",
     "@ionic/angular": "^8.0.0",
     "ionicons": "^7.0.0",
-    "jeep-sqlite": "2.8.0",
-    "rxjs": "~7.8.0",
+    "jeep-sqlite": "^2.8.0",
     "sql.js": "1.11.0",
+    "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -58,10 +58,8 @@
     "eslint-plugin-prettier": "^5.5.5",
     "typescript": "~5.9.0"
   },
-  "overrides": {
-    "jeep-sqlite": {
-      "sql.js": "1.11.0"
-    }
-  },
-  "description": "An Ionic project"
+  "description": "Task Collector project",
+  "browser": {
+    "crypto": false
+  }
 }
