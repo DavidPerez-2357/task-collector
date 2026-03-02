@@ -19,10 +19,15 @@ export interface Task {
   id: number;
   name: string;
   frequency: TaskFrequency;
+  interval: number;
   effort: TaskEffort;
   category: category;
   resetOnCycle: boolean;
   deleted: boolean;
+}
+
+export interface WeeklyTask extends Task {
+  daysOfWeek: number[]; // 0 = Sunday, 1 = Monday
 }
 
 export interface TaskActive extends Task {
