@@ -1,0 +1,13 @@
+<button
+  [ngStyle]="{
+    'background-color': backgroundColor,
+    color: textColor,
+    border: borderStyle,
+    opacity: opacity,
+  }"
+  [disabled]="disabled"
+  [class]="btnClass"
+  (click)="handleClick.emit()"
+>
+  <ng-content />
+</button>
