@@ -7,7 +7,7 @@
   }"
   [disabled]="disabled"
   [class]="btnClass"
-  (click)="handleClick.emit()"
+  (click)="handleClick.emit($event)"
 >
   <ng-content />
 </button>
