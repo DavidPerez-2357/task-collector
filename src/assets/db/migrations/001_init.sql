@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS weekly_recurrence (
   task_id INTEGER NOT NULL,
   weekday INTEGER NOT NULL CHECK (weekday BETWEEN 0 AND 6),
   FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
-  UNIQUE (task_id, weekday)
+  CONSTRAINT unique_task_weekday UNIQUE (task_id, weekday)
 );
 
 CREATE TABLE IF NOT EXISTS task_history (
