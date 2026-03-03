@@ -1,7 +1,8 @@
 .board {
   color: var(--ion-color-light);
 
-  padding: var(--border-size-px) var(--border-size-px) var(--border-size-px) var(--border-size-px);
+  border-style: solid;
+  border-width: var(--border-size-px);
 
   /* Cortes de la imagen (slice) */
   border-image-slice: var(--border-size) var(--border-size) var(--border-size) var(--border-size)
