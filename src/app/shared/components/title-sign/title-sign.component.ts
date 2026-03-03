@@ -37,7 +37,7 @@ export class TitleSignComponent implements AfterViewInit, OnDestroy {
     // Inicializa con la altura real
     const initialHeight = element.getBoundingClientRect().height;
     if (initialHeight > 0) {
-      this.signHeight.set(initialHeight);
+      this.signHeight.set(initialHeight * 0.7);
       return;
     }
 
