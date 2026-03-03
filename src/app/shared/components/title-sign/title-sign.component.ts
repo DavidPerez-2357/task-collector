@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostBinding,
   Input,
+  OnDestroy,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -13,7 +14,7 @@ import {
   templateUrl: './title-sign.component.html',
   styleUrls: ['./title-sign.component.scss'],
 })
-export class TitleSignComponent implements AfterViewInit {
+export class TitleSignComponent implements AfterViewInit, OnDestroy {
   @HostBinding('style.display') display = 'block';
 
   @Input() title: string = '';
@@ -52,5 +53,11 @@ export class TitleSignComponent implements AfterViewInit {
     });
 
     this.resizeObserver.observe(element);
+  }
+
+  ngOnDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   }
 }
