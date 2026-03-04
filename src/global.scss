@@ -40,4 +40,18 @@ html {
 ion-content {
   --padding-top: calc(var(--ion-safe-area-top) + 2rem) !important;
   --padding-bottom: 5rem !important;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.fixed-title-container {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top) + 0.5rem);
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  pointer-events: none;
 }

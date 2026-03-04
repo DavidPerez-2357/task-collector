@@ -31,3 +31,31 @@ ion-tab-button img {
   height: auto;
   object-fit: contain;
 }
+
+/* Botones flotantes de config y tienda, anclados arriba-derecha de la barra */
+.corner-buttons {
+  position: absolute;
+  bottom: 95px; /* Altura de la tab bar */
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  z-index: 100;
+}
+
+.corner-btn {
+  display: block;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: inset 0 0 0 2px black;
+}
+
+.corner-btn--config {
+  background-image: url('/assets/ui/icons/config-icon.png');
+}
+
+.corner-btn--shop {
+  background-image: url('/assets/ui/icons/shop-icon.png');
+}
