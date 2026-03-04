@@ -98,3 +98,18 @@ INSERT INTO item (id, name, rarity, description, image_name, sell_price) VALUES
 (1994, 'Botas turquesas', 0, 'Con estas te vas a ver muy [compliment_1]', 'fb1994.png', 30),
 (1995, 'Botas naranjas', 0, '¿He dicho ya que son para los amantes del fuego?', 'fb1995.png', 30),
 (1996, 'Botas azules', 0, 'Estas hacen un ruido muy raro al caminar', 'fb1996.png', 30);
+
+-- === COLECCIONES ===
+INSERT INTO collection (id, name, price, badge_image_name) VALUES
+(1, 'Huerto de la Abuela', 500, 'badge_huerto.png'),
+(2, 'Armadura de Cobre', 800, 'badge_cobre.png'),
+(3, 'Tesoros del Mar', 1200, 'badge_mar.png');
+
+-- Agregando los objetos pertenecientes a cada colección
+INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
+-- Huerto de la Abuela (Toda la comida/verdura)
+(1, 447, 0), (1, 548, 0), (1, 551, 0), (1, 554, 0), (1, 558, 0), (1, 565, 0), (1, 568, 0),
+-- Armadura de Cobre (Yelmo, Peto, Botas)
+(2, 1909, 0), (2, 1925, 0), (2, 1941, 0),
+-- Tesoros del Mar (Estrellas de mar, pecies y gambas)
+(3, 355, 0), (3, 351, 0), (3, 375, 0), (3, 374, 0);
