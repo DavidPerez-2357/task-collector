@@ -1,1 +1,27 @@
+ion-tab-bar {
+  --background: transparent;
+  border: none;
+  /* Aumentamos la altura de la caja entera para que quepan los 28px de borde arriba y abajo, y que no se corte por el límite típico de Ionic (56px) */
+  height: 95px;
+}
 
+ion-tab-button {
+  --background: transparent;
+  /* Habilitamos el estilo de borde para que el border-image tenga "lienzo" donde pintarse */
+  border-style: solid;
+  border-color: transparent;
+  padding: 0px;
+}
+
+ion-tab-button[tab='tab1'] {
+  /* La tab izquierda sí debe tener borde por la izquierda (asumimos 31px al igual que la derecha) */
+  border-image: url('/assets/ui/tabs-bg-left.png') 28 31 28 31 fill / 28px 31px 28px 31px;
+}
+
+ion-tab-button[tab='tab2'] {
+  border-image: url('/assets/ui/tabs-bg-mid.png') 28 31 28 0 fill / 28px 31px 28px 0px;
+}
+
+ion-tab-button[tab='tab3'] {
+  border-image: url('/assets/ui/tabs-bg-right.png') 28 31 28 0 fill / 28px 31px 28px 0px;
+}
