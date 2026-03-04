@@ -25,3 +25,9 @@ ion-tab-button[tab='tab2'] {
 ion-tab-button[tab='tab3'] {
   border-image: url('/assets/ui/tabs-bg-right.png') 28 31 28 0 fill / 28px 31px 28px 0px;
 }
+
+ion-tab-button img {
+  max-width: 50px;
+  height: auto;
+  object-fit: contain;
+}
