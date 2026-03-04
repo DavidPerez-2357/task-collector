@@ -1,0 +1,84 @@
+.sign {
+  z-index: 9999;
+  isolation: isolate; /* crea su propio stacking context */
+
+  background-image: url('/assets/ui/title-sign.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  display: grid;
+  grid-template-rows: 0.9fr 1fr;
+  position: relative;
+  transform: translate(-50%, -170%);
+  top: -2rem;
+  left: 50%;
+
+  aspect-ratio: 1 / 0.49;
+  width: 80%;
+  max-width: 400px;
+
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--ion-color-light);
+
+  animation: drop 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation-delay: 200ms;
+  animation-fill-mode: forwards;
+
+  will-change: transform;
+
+  .content {
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  h1 {
+    margin: 0;
+    display: block;
+    text-align: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    width: 100%;
+    font-size: 2rem;
+    color: var(--ion-color-dark-brown-shade);
+  }
+}
+
+.spacer {
+  aspect-ratio: 1 / 0.49;
+  width: 80%;
+  max-width: 400px;
+}
+
+@keyframes drop {
+  0% {
+    transform: translate(-50%, -170%);
+  }
+
+  60% {
+    transform: translate(-50%, -10%);
+  }
+
+  75% {
+    transform: translate(-50%, -26%);
+  }
+
+  90% {
+    transform: translate(-50%, -17%);
+  }
+
+  100% {
+    transform: translate(-50%, -20%);
+  }
+}
