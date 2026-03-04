@@ -1,0 +1,7 @@
+ion-content {
+  --background: url('/assets/ui/backgrounds/collection-bg.png') no-repeat center center / cover;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
