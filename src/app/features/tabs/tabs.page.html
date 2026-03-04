@@ -2,7 +2,9 @@
   <!-- Iconos flotantes de acceso rápido: config y tienda -->
   <div class="corner-buttons">
     <a href="/config" class="corner-btn corner-btn--config"></a>
-    <a href="/shop" class="corner-btn corner-btn--shop"></a>
+    <div class="corner-btn-wrapper">
+      <ion-tab-button tab="shop" href="/tabs/shop" class="corner-btn--shop"></ion-tab-button>
+    </div>
   </div>
 
   <ion-tab-bar slot="bottom">

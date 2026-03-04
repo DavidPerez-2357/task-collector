@@ -39,23 +39,46 @@ ion-tab-button img {
   right: 0;
   display: flex;
   flex-direction: row;
+  align-items: flex-end;
   z-index: 100;
 }
 
 .corner-btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   width: 60px;
   height: 60px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  box-shadow: inset 0 0 0 2px black;
 }
 
 .corner-btn--config {
   background-image: url('/assets/ui/icons/config-icon.png');
+  margin-right: -2px;
+  margin-bottom: -1px;
+
+}
+
+/* Wrapper que coarta el tamaño del ion-tab-button independientemente de su Shadow DOM */
+.corner-btn-wrapper {
+  width: 61px;
+  height: 61px;
+  overflow: hidden;
+  flex-shrink: 0;
+  
 }
 
 .corner-btn--shop {
+  --background: transparent;
+  display: block;
+  width: 60px;
+  height: 60px;
   background-image: url('/assets/ui/icons/shop-icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
 }
