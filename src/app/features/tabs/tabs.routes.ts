@@ -28,7 +28,7 @@ export const routes: Routes = [
       {
         path: 'shop',
         loadComponent: () =>
-          import('@features/shop-tab/shop.tab.component').then((m) => m.ShopTabComponent),
+          import('@app/features/shop-tab/shop-tab.component').then((m) => m.ShopTabComponent),
       },
       {
         path: '',

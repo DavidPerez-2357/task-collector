@@ -3,9 +3,3 @@ ion-content {
   --padding-top: 0 !important;
   --padding-bottom: 0 !important;
 }
-
-/* Empuja el contenido para que quede debajo del cartel flotante */
-.title-spacer {
-  /* La altura del cartel es ~110px + safe-area-top + 0.5rem de offset */
-  height: calc(var(--ion-safe-area-top) + 110px + 0.5rem);
-}

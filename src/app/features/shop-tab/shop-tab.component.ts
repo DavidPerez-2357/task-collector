@@ -4,8 +4,8 @@ import { TitleSignComponent } from '@shared/components/title-sign/title-sign.com
 
 @Component({
   selector: 'app-shop-tab',
-  templateUrl: 'shop.tab.component.html',
-  styleUrls: ['shop.tab.component.scss'],
+  templateUrl: 'shop-tab.component.html',
+  styleUrls: ['shop-tab.component.scss'],
   imports: [IonContent, TitleSignComponent],
 })
 export class ShopTabComponent {}

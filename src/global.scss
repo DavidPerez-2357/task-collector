@@ -47,11 +47,3 @@ ion-content {
   display: none;
 }
 
-.fixed-title-container {
-  position: absolute;
-  top: calc(var(--ion-safe-area-top) + 0.5rem);
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  pointer-events: none;
-}
