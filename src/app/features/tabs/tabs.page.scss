@@ -38,21 +38,13 @@ ion-tab-button img {
   bottom: 95px; /* Altura de la tab bar */
   right: 0;
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
   z-index: 100;
 }
 
 .corner-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
   width: 60px;
   height: 60px;
   background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .corner-btn--config {
