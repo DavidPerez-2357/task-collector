@@ -38,12 +38,11 @@ html {
 }
 
 ion-content {
-  --padding-top: calc(var(--ion-safe-area-top) + 2rem) !important;
-  --padding-bottom: 5rem !important;
+  --padding-top: calc(var(--ion-safe-area-top) + 1rem) !important;
+  --padding-bottom: 0 !important;
   overflow: hidden;
 }
 
 ::-webkit-scrollbar {
   display: none;
 }
-
