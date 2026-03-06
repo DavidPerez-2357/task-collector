@@ -3,9 +3,9 @@ import { IonContent } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 
 @Component({
-  selector: 'app-inventory-tab',
-  templateUrl: 'inventory-tab.component.html',
-  styleUrls: ['inventory-tab.component.scss'],
+  selector: 'app-shop-tab',
+  templateUrl: 'shop-tab.component.html',
+  styleUrls: ['shop-tab.component.scss'],
   imports: [IonContent, TitleSignComponent],
 })
-export class InventoryTabComponent {}
+export class ShopTabComponent {}

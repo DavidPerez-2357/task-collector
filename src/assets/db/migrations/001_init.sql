@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS player_state (
 CREATE TABLE IF NOT EXISTS  collection_item (
   collection_id INTEGER NOT NULL,
   item_id INTEGER NOT NULL,
-  PRIMARY KEY (collection_id, item_id),
+  is_shiny INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (collection_id, item_id, is_shiny),
   FOREIGN KEY (collection_id) REFERENCES collection(id) ON DELETE CASCADE,
   FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
 );
@@ -94,4 +95,13 @@ CREATE TABLE IF NOT EXISTS inventory (
    CONSTRAINT inventory_unique_item UNIQUE (item_id, is_shiny),
 
    FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS player_collection_item (
+  collection_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
+  slot_is_shiny INTEGER NOT NULL,
+  deposited_is_shiny INTEGER NOT NULL,
+  PRIMARY KEY (collection_id, item_id, slot_is_shiny),
+  FOREIGN KEY (collection_id, item_id, slot_is_shiny) REFERENCES collection_item(collection_id, item_id, is_shiny) ON DELETE CASCADE
 );

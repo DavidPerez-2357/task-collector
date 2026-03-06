@@ -26,6 +26,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'shop',
+        loadComponent: () =>
+          import('@app/features/shop-tab/shop-tab.component').then((m) => m.ShopTabComponent),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',

@@ -1,1 +1,9 @@
-<ion-content [fullscreen]="true" class="ion-padding"> </ion-content>
+<ion-content [fullscreen]="true">
+  <div class="world-container">
+    <!-- El fondo estático principal como primera pieza gráfica del flujo -->
+    <img class="home-img" src="/assets/ui/backgrounds/home-bg.png" alt="Home Layout" />
+
+    <!-- El fondo de la calle que se repite mágicamente debajo de forma infinita -->
+    <div class="street-area ion-padding"></div>
+  </div>
+</ion-content>

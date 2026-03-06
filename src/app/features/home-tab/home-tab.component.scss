@@ -1,0 +1,25 @@
+ion-content {
+  --background: transparent;
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+}
+
+.world-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.home-img {
+  width: 100%;
+  height: auto;
+  display: block; /* Evita espacios vacíos debajo de la imagen */
+}
+
+.street-area {
+  flex: 1;
+  width: 100%;
+  min-height: 600px; /* Espacio mínimo si aún no hay tareas suficientes */
+  background: url('/assets/ui/backgrounds/street-bg.png') repeat-y top center;
+  background-size: 100% auto;
+}
