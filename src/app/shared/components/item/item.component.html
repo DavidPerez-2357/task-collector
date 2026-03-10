@@ -1,0 +1,18 @@
+<div class="item" [style.--pixel-size]="pixelSize + 'px'" (click)="itemClicked.emit(item)">
+  <div class="item-name">
+    {{ item.name }}
+  </div>
+  <div
+    class="item-image-wrapper"
+    [class.shiny]="'isShiny' in item && item.isShiny"
+    [style.--mask]="'url(/assets/item-images/' + item.imageName + ')'"
+  >
+    <img [ngSrc]="itemImagePath" alt="{{ item.name }}" class="item-image" fill />
+  </div>
+
+  @if ('quantity' in item) {
+    <div class="item-quantity-wrapper">
+      <span class="item-quantity" [style.background]="rarityColor">x{{ item.quantity }}</span>
+    </div>
+  }
+</div>
