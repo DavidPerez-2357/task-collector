@@ -10,10 +10,6 @@ ion-modal::part(content) {
   max-width: 400px;
 }
 
-ion-content::part(scroll) {
-  padding: 0 !important;
-}
-
 .item-details {
   display: grid;
   grid-template-columns: 1fr;
