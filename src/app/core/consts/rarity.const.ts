@@ -1,7 +1,7 @@
 export const rarityNames = {
   0: 'Común',
   1: 'Raro',
-  2: 'Epico',
+  2: 'Épico',
   3: 'Legendario',
 };
 
