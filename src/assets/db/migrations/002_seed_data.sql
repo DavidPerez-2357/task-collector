@@ -103,7 +103,40 @@ INSERT INTO item (id, name, rarity, description, image_name, sell_price) VALUES
 INSERT INTO collection (id, name, price, badge_image_name) VALUES
 (1, 'Huerto de la Abuela', 500, 'badge_huerto.png'),
 (2, 'Armadura de Cobre', 800, 'badge_cobre.png'),
-(3, 'Tesoros del Mar', 1200, 'badge_mar.png');
+(3, 'Tesoros del Mar', 1200, 'badge_mar.png'),
+-- Colecciones de ropa
+(4, 'Perchero completo', 600, 'fb1976.png'),
+(5, 'El sombrerero loco', 500, 'fb1960.png'),
+(6, 'Panes básicos', 450, 'fb1992.png'),
+(7, 'Conjunto Violeta', 350, 'fb1977.png'),
+(8, 'Conjunto Azul', 350, 'fb1980.png'),
+(9, 'Conjunto Turquesa', 350, 'fb1978.png'),
+-- Stardew Valley
+(10, 'Stardew Valley', 700, 'fb554.png'),
+-- Colecciones de videojuegos y temáticas
+(11, 'Credo de Asesinos', 600, 'assasincreed-badge.png'),
+(12, 'El último de nosotros', 700, 'thelastofus-badge.png'),
+(13, 'Parque Jurásico', 550, 'jurassicpark-badge.png'),
+(14, 'Cofre del hombre muerto', 650, 'deathmanchest-badge.png'),
+(15, 'Sinsajo', 400, 'sinsajo-badge.png'),
+(16, 'De cero a héroe', 500, '0tohero.png'),
+(17, 'Garnet', 600, 'garnet-badge.png'),
+(18, 'El Ying y el Yang', 300, 'yinyang-badge.png'),
+(19, 'Rompedora de Cadenas', 400, 'breakerofchains-badge.png'),
+-- Colecciones genéricas de distintas rarezas y temáticas
+(20, 'La Armería', 400, 'fb1445.png'),
+(21, 'El Arsenal del Guerrero', 600, 'fb1506.png'),
+(22, 'Magia y Misterio', 900, 'fb1598.png'),
+(23, 'El Gran Escudero', 500, 'fb1812.png'),
+(24, 'El Caballero Dorado', 1500, 'fb1911.png'),
+(25, 'La Guardia Reforzada', 700, 'fb1907.png'),
+(26, 'Gambas para todos los gustos', 300, 'fb357.png'),
+(27, 'Abismo Marino', 800, 'fb374.png'),
+(28, 'El Cofre del Tesoro', 1000, 'fb592.png'),
+(29, 'Tesoros Olvidados', 250, 'fb1846.png'),
+(30, 'El Legado del Herrero', 450, 'fb1477.png'),
+(31, 'Colección Completa de Acero', 500, 'fb1906.png'),
+(32, 'Jinete de la Gloria', 600, 'fb118.png');
 
 -- Agregando los objetos pertenecientes a cada colección
 INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
@@ -111,5 +144,64 @@ INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
 (1, 447, 0), (1, 548, 0), (1, 551, 0), (1, 554, 0), (1, 558, 0), (1, 565, 0), (1, 568, 0),
 -- Armadura de Cobre (Yelmo, Peto, Botas)
 (2, 1909, 0), (2, 1925, 0), (2, 1941, 0),
--- Tesoros del Mar (Estrellas de mar, pecies y gambas)
-(3, 355, 0), (3, 351, 0), (3, 375, 0), (3, 374, 0);
+-- Tesoros del Mar (Estrellas de mar, peces y gambas)
+(3, 355, 0), (3, 351, 0), (3, 375, 0), (3, 374, 0),
+-- Perchero completo (Túnicas)
+(4, 1976, 0), (4, 1977, 0), (4, 1978, 0), (4, 1979, 0), (4, 1980, 0),
+-- El sombrerero loco (Sombreros)
+(5, 1960, 0), (5, 1961, 0), (5, 1962, 0), (5, 1963, 0), (5, 1964, 0),
+-- Panes básicos (Botas de tela)
+(6, 1992, 0), (6, 1993, 0), (6, 1994, 0), (6, 1995, 0), (6, 1996, 0),
+-- Conjunto Violeta
+(7, 1961, 0), (7, 1977, 0), (7, 1993, 0),
+-- Conjunto Azul
+(8, 1964, 0), (8, 1980, 0), (8, 1996, 0),
+-- Conjunto Turquesa
+(9, 1962, 0), (9, 1978, 0), (9, 1994, 0),
+-- Stardew Valley (Verduras)
+(10, 447, 0), (10, 548, 0), (10, 551, 0), (10, 554, 0), (10, 558, 0), (10, 565, 0),
+-- Credo de Asesinos (Capuchas + Daga)
+(11, 1837, 0), (11, 1838, 0), (11, 1839, 0), (11, 1840, 0), (11, 1441, 0),
+-- El último de nosotros (Huesos y cráneos)
+(12, 206, 0), (12, 207, 0), (12, 222, 0), (12, 223, 0), (12, 225, 0), (12, 228, 0),
+-- Parque Jurásico (Cráneos especiales)
+(13, 226, 0), (13, 227, 0), (13, 229, 0), (13, 230, 0),
+-- Cofre del hombre muerto
+(14, 15, 0), (14, 65, 0), (14, 67, 0), (14, 118, 0), (14, 124, 0), (14, 106, 0),
+-- Sinsajo (Arcos, todos shiny)
+(15, 1805, 1), (15, 1806, 1), (15, 1805, 1), (15, 1484, 1),
+-- De cero a héroe
+(16, 106, 0), (16, 65, 0), (16, 15, 0), (16, 101, 0),
+-- Garnet (Botas de distintos materiales)
+(17, 1941, 0), (17, 1927, 0), (17, 1943, 0),
+-- El Ying y el Yang (Diamante y Roca)
+(18, 26, 0), (18, 27, 0),
+-- Rompedora de Cadenas (Balanza y Esposas, ambas shiny)
+(19, 124, 1), (19, 128, 1),
+-- === COLECCIONES GENÉRICAS ===
+-- La Armería (Espadas y hoces)
+(20, 1441, 0), (20, 1445, 0), (20, 1684, 0),
+-- El Arsenal del Guerrero (Armas pesadas)
+(21, 1462, 0), (21, 1466, 0), (21, 1506, 0), (21, 1482, 0),
+-- Magia y Misterio (Armas mágicas)
+(22, 1493, 0), (22, 1597, 0), (22, 1598, 0), (22, 1457, 0),
+-- El Gran Escudero (Escudos)
+(23, 1811, 0), (23, 1812, 0), (23, 1813, 0),
+-- El Caballero Dorado (Armadura completa dorada)
+(24, 1911, 0), (24, 1927, 0), (24, 1943, 0),
+-- La Guardia Reforzada (Armadura reforzada)
+(25, 1907, 0), (25, 1923, 0), (25, 1939, 0),
+-- Gambas para todos los gustos
+(26, 355, 0), (26, 356, 0), (26, 357, 0),
+-- Abismo Marino (Peces y criaturas del mar)
+(27, 349, 0), (27, 350, 0), (27, 351, 0), (27, 374, 0), (27, 375, 0), (27, 376, 0),
+-- El Cofre del Tesoro (Objetos valiosos)
+(28, 26, 0), (28, 118, 0), (28, 124, 0), (28, 592, 0),
+-- Tesoros Olvidados (Objetos raros misceláneos)
+(29, 1, 0), (29, 55, 0), (29, 1846, 0), (29, 231, 0),
+-- El Legado del Herrero (Herramientas y armas básicas)
+(30, 1477, 0), (30, 1484, 0), (30, 1441, 0), (30, 1457, 0),
+-- Colección Completa de Acero (Armadura de acero)
+(31, 1906, 0), (31, 1922, 0), (31, 1938, 0),
+-- Jinete de la Gloria (Herraduras)
+(32, 116, 0), (32, 117, 0), (32, 118, 0);
