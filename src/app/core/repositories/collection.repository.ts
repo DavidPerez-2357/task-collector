@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { DatabaseService } from '@core/services/database.service';
 import { Collection, CollectionItem } from '@core/models/collection.model';
-import { Item, Rarity } from '@core/models/item.model';
+import { Rarity } from '@core/models/item.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,16 +18,16 @@ export class CollectionRepository {
       // 2. Obtenemos todos los ítems de las colecciones unidos (JOIN) con la tabla item
       //    y hacemos un LEFT JOIN con player_collection_item para saber cuáles ya ha puesto el jugador
       const itemsRes = await conn.query(`
-        SELECT 
-          ci.collection_id, 
-          ci.is_shiny AS slot_is_shiny, 
-          i.id, i.name, i.rarity, i.image_name, i.sell_price,
+        SELECT
+          ci.collection_id,
+          ci.is_shiny AS slot_is_shiny,
+          i.id, i.name, i.description, i.rarity, i.image_name, i.sell_price,
           pci.deposited_is_shiny
         FROM collection_item ci
         JOIN item i ON ci.item_id = i.id
-        LEFT JOIN player_collection_item pci 
-          ON pci.collection_id = ci.collection_id 
-          AND pci.item_id = ci.item_id 
+        LEFT JOIN player_collection_item pci
+          ON pci.collection_id = ci.collection_id
+          AND pci.item_id = ci.item_id
           AND pci.slot_is_shiny = ci.is_shiny
       `);
       const allItemsRaw = itemsRes.values || [];
@@ -149,6 +149,7 @@ export class CollectionRepository {
     return {
       id: row.id,
       name: row.name,
+      description: row.description,
       rarity: row.rarity as Rarity,
       imageName: row.image_name,
       sellPrice: row.sell_price,
