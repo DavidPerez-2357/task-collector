@@ -26,58 +26,31 @@ npm run lint         # Run ESLint + Prettier checks
 npm run format       # Auto-format all files with Prettier
 ```
 
-### Known Build Issue: Google Fonts Inlining
-
-The production build (`npm run build`) will fail in environments without internet access because Angular CLI attempts to inline the Google Font `Jersey 20` referenced in `src/index.html`. **Workaround**: Either ensure internet connectivity during builds, or temporarily disable font optimization by adding `"optimization": { "fonts": false }` in the production configuration in `angular.json`.
-
-### Pre-existing Lint Errors
-
-The repository currently has 3 lint errors:
-- `src/app/features/tabs/tabs.page.html` — Prettier parsing error
-- `src/index.html` — Prettier parsing error
-- `src/polyfills.ts` — Prettier formatting error (line 50)
-
-These are pre-existing and unrelated to new changes you make. You can ignore them unless you modify those specific files.
-
 ## Project Structure
 
 ```
 src/
 ├── app/
 │   ├── core/                    # Business logic layer
-│   │   ├── models/              # Data interfaces & enums
-│   │   │   ├── task.model.ts       # Task, TaskFrequency, TaskEffort
-│   │   │   ├── item.model.ts      # Item, Rarity, ItemInventory
-│   │   │   ├── collection.model.ts
-│   │   │   └── category.model.ts
-│   │   ├── services/            # Application services
-│   │   │   ├── database.service.ts      # SQLite init, migrations, connection mgmt
-│   │   │   └── player-state.service.ts  # Player coins facade
+│   │   ├── models/              # Data interfaces, enums, constants, and utilities
+│   │   │   ├── consts/          # Constant values and configuration objects
+│   │   │   └── utils/           # Helper/utility functions for models
+│   │   ├── services/            # Application services (business-logic facades)
 │   │   ├── repositories/        # Data-access layer (SQL queries)
-│   │   │   ├── collection.repository.ts
-│   │   │   └── player-state.repository.ts
-│   │   └── types/               # Shared TypeScript types
-│   │       ├── db.types.ts      # DbMigration type
-│   │       └── colors.types.ts  # AppColors type
+│   │   └── types/               # Shared TypeScript type definitions
 │   ├── features/                # Feature pages (lazy-loaded)
-│   │   ├── tabs/                # Tab navigation shell
-│   │   ├── home-tab/
-│   │   ├── collection-tab/
-│   │   ├── inventory-tab/
-│   │   └── shop-tab/
+│   │   ├── tabs/                # Tab navigation shell and routing
+│   │   ├── home-tab/            # Home page
+│   │   ├── collection-tab/      # Collections page
+│   │   ├── inventory-tab/       # Inventory page
+│   │   └── shop-tab/            # Shop page
 │   ├── shared/                  # Reusable UI components
-│   │   └── components/
-│   │       ├── board/           # Decorative board container
-│   │       ├── button/          # Styled button with color variants
-│   │       └── title-sign/      # Animated title sign
+│   │   └── components/          # Shared standalone components
 │   ├── app.component.ts         # Root component (initializes DB)
 │   └── app.routes.ts            # Root routing (lazy-loads tabs)
 ├── assets/
-│   └── db/migrations/           # SQL migration scripts
-│       ├── 001_init.sql         # Schema creation
-│       └── 002_seed_data.sql    # Seed data
-├── theme/
-│   └── variables.scss           # Ionic color variables + custom colors
+│   └── db/migrations/           # Numbered SQL migration scripts (001_*.sql, 002_*.sql, etc.)
+├── theme/                       # Ionic theme variables and custom SCSS colors
 ├── global.scss
 ├── index.html
 ├── main.ts
@@ -90,7 +63,7 @@ src/
 
 Follow this strict layering when adding code:
 
-1. **Models** (`core/models/`) — Pure TypeScript interfaces and enums. No dependencies.
+1. **Models** (`core/models/`) — Pure TypeScript interfaces, enums, constants (`consts/`), and utility functions (`utils/`). No dependencies on services or repositories.
 2. **Repositories** (`core/repositories/`) — Data-access classes that run SQL against `DatabaseService`. Inject `DatabaseService`.
 3. **Services** (`core/services/`) — Business-logic facades. Inject repositories, never run SQL directly.
 4. **Features** (`features/`) — Page-level components. Inject services.
@@ -162,6 +135,50 @@ Follow this strict layering when adding code:
 
 - Environment files (`src/environments/`) are git-ignored. They are not checked in.
 - If the app requires environment-specific config, create `src/environments/environment.ts` and `environment.prod.ts` locally.
+
+## Commit Messages
+
+This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each commit starts with a relevant emoji followed by a short, concise description.
+
+### Common gitmoji used in this project
+
+| Emoji | Code | Use for |
+|-------|------|---------|
+| ✨ | `:sparkles:` | New feature |
+| 🐛 | `:bug:` | Bug fix |
+| 💄 | `:lipstick:` | UI / style changes |
+| ♻️ | `:recycle:` | Refactor code |
+| 🗃️ | `:card_file_box:` | Database changes (migrations, schema) |
+| 🔧 | `:wrench:` | Configuration changes |
+| 🚚 | `:truck:` | Move or rename files/resources |
+| 🔥 | `:fire:` | Remove code or files |
+| 📦️ | `:package:` | Build/dependency changes |
+| 🎉 | `:tada:` | Initial commit / begin project |
+| 🌐 | `:globe_with_meridians:` | Internationalization / localization |
+| 🔀 | `:twisted_rightwards_arrows:` | Merge branches |
+| ⬇️ | `:arrow_down:` | Downgrade dependencies |
+| 🚧 | `:construction:` | Work in progress |
+| 📝 | `:memo:` | Documentation |
+
+### Format
+
+```
+<gitmoji> <Short imperative description>
+```
+
+### Examples from this project
+
+```
+✨ Implement player state repository and service for coin management
+🐛 Fix unique constraint in weekly recurrence
+💄 Implement custom tab bar styling with new background images and icons
+🗃️ Add initial SQL schema
+♻️ Cleaned tabs scss
+🔧 Configure Angular schematics to skip test generation
+🚚 Upload UI assets
+```
+
+Keep messages **short and concise** — describe *what* was done, not *how*.
 
 ## Generating New Code
 
