@@ -10,6 +10,7 @@ import { ShelfComponent } from '@features/inventory-tab/components/shelf/shelf.c
 import { ItemInventory } from '@core/models/item.model';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { InventoryItemModalComponent } from '@features/inventory-tab/components/inventory-item-modal/inventory-item-modal.component';
+import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
 @Component({
   selector: 'app-inventory-tab',
@@ -99,16 +100,16 @@ export class InventoryTabComponent implements ViewWillEnter {
     }
   }
 
-  protected async onIonInfinite($event: any) {
+  protected async onIonInfinite($event: InfiniteScrollCustomEvent) {
     if (this.allItems.length < this.PAGE_SIZE * this.actualPage) {
       $event.target.disabled = true;
-      $event.target.complete();
+      await $event.target.complete();
       return;
     }
 
     this.actualPage++;
     await this.loadMoreItems(this.actualPage);
-    $event.target.complete();
+    await $event.target.complete();
   }
 
   itemClicked(item: ItemInventory) {
