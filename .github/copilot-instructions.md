@@ -184,6 +184,38 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 
 Keep messages **short and concise** — describe *what* was done, not *how*.
 
+## Branch Naming
+
+Use a prefix that reflects the type of work, followed by a **short, concise** kebab-case name.
+
+| Prefix | Use for |
+|--------|---------|
+| `feature/` | New functionalities |
+| `bugfix/` | Bug fixes |
+| `hotfix/` | Urgent production fixes |
+| `refactor/` | Code refactoring |
+| `docs/` | Documentation updates |
+| `test/` | Tests and test improvements |
+| `chore/` | Maintenance and general tasks |
+
+### Format
+
+```
+<prefix>/<short-name>
+```
+
+### Examples
+
+```
+feature/shop-items
+bugfix/coin-reset
+hotfix/db-crash
+refactor/task-service
+docs/readme
+test/inventory
+chore/deps-update
+```
+
 ## Generating New Code
 
 When scaffolding new components or pages, use the Angular/Ionic CLI:
