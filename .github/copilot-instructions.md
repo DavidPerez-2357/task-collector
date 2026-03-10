@@ -43,7 +43,10 @@ src/
 │   │   ├── home-tab/            # Home page
 │   │   ├── collection-tab/      # Collections page
 │   │   ├── inventory-tab/       # Inventory page
-│   │   └── shop-tab/            # Shop page
+│   │   ├── shop-tab/            # Shop page
+│   │   └── <feature>/           # Each feature may also contain:
+│   │       ├── components/      # Components used only within this feature
+│   │       └── services/        # Feature-specific services (call core repositories)
 │   ├── shared/                  # Reusable UI components
 │   │   └── components/          # Shared standalone components
 │   ├── app.component.ts         # Root component (initializes DB)
@@ -66,7 +69,7 @@ Follow this strict layering when adding code:
 1. **Models** (`core/models/`) — Pure TypeScript interfaces, enums, constants (`consts/`), and utility functions (`utils/`). No dependencies on services or repositories.
 2. **Repositories** (`core/repositories/`) — Data-access classes that run SQL against `DatabaseService`. Inject `DatabaseService`.
 3. **Services** (`core/services/`) — Business-logic facades. Inject repositories, never run SQL directly.
-4. **Features** (`features/`) — Page-level components. Inject services.
+4. **Features** (`features/`) — Page-level components. Inject services. Each feature may contain its own `components/` subfolder for components used only within that feature, and a `services/` subfolder for feature-specific services that call core repositories (e.g., an item service in inventory).
 5. **Shared** (`shared/components/`) — Reusable UI components with `@Input`/`@Output` bindings, no service injection.
 
 ### Database
@@ -85,7 +88,8 @@ Follow this strict layering when adding code:
 
 ### Component Naming
 
-- **Page components** use the suffix `Page` or `Component` (enforced by ESLint rule `@angular-eslint/component-class-suffix`).
+- **Tab components** (e.g., `home-tab`, `inventory-tab`) use the `.component.ts` suffix and the `Component` class suffix.
+- **Non-tab pages** (e.g., `tabs`) use the `.page.ts` suffix and the `Page` class suffix.
 - **Component selectors** must use the `app-` prefix in kebab-case (e.g., `app-board`, `app-button`).
 - **Directive selectors** must use the `app` prefix in camelCase.
 
@@ -188,10 +192,19 @@ When scaffolding new components or pages, use the Angular/Ionic CLI:
 # New standalone component (tests are skipped by default via angular.json)
 npx ng generate component shared/components/my-component --standalone
 
-# New feature page (--type=page sets the file suffix to .page.ts)
-npx ng generate component features/my-feature-tab --standalone --type=page
+# New feature tab (uses .component suffix by default)
+npx ng generate component features/my-feature-tab --standalone
 
-# New service
+# New non-tab feature page (--type=page sets the file suffix to .page.ts)
+npx ng generate component features/my-feature --standalone --type=page
+
+# New feature-specific component (only used within that feature)
+npx ng generate component features/my-feature-tab/components/my-widget --standalone
+
+# New feature-specific service (calls core repositories)
+npx ng generate service features/my-feature-tab/services/my-service
+
+# New core service
 npx ng generate service core/services/my-service
 
 # New interface/model
