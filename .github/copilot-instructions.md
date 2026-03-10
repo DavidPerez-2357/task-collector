@@ -186,7 +186,7 @@ Keep messages **short and concise** — describe *what* was done, not *how*.
 
 ## Branch Naming
 
-Use a prefix that reflects the type of work, followed by a **short, concise** kebab-case name.
+Use a prefix that reflects the type of work, followed by a **concise** kebab-case name.
 
 | Prefix | Use for |
 |--------|---------|
@@ -201,19 +201,19 @@ Use a prefix that reflects the type of work, followed by a **short, concise** ke
 ### Format
 
 ```
-<prefix>/<short-name>
+<prefix>/<concise-name>
 ```
 
 ### Examples
 
 ```
-feature/shop-items
+feature/add-shop-items
 bugfix/coin-reset
-hotfix/db-crash
-refactor/task-service
-docs/readme
-test/inventory
-chore/deps-update
+hotfix/db-crash-on-startup
+refactor/task-service-optimization
+docs/readme-update
+test/add-repository-tests
+chore/update-dependencies
 ```
 
 ## Generating New Code
