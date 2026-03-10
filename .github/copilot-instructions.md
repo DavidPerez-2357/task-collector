@@ -148,8 +148,6 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 
 | Emoji | Code | Use for |
 |-------|------|---------|
-| Emoji | Code | Meaning |
-|------|------|------|
 | ✨ | `:sparkles:` | New feature |
 | 🐛 | `:bug:` | Bug fix |
 | 🚑️ | `:ambulance:` | Critical hotfix |
