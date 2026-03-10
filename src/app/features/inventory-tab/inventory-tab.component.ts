@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import {
   IonContent,
   IonInfiniteScroll,
@@ -32,6 +32,8 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   private readonly itemService = inject(ItemService);
 
+  @ViewChild(IonContent) content!: IonContent;
+
   actualPage: number = 1;
   allItems: ItemInventory[] = [];
   itemsShelves: ItemInventory[][] = [];
@@ -59,9 +61,8 @@ export class InventoryTabComponent implements ViewWillEnter {
   }
 
   async scrollToTop() {
-    const content = document.querySelector('ion-content');
-    if (content) {
-      await content.scrollToTop(0);
+    if (this.content) {
+      await this.content.scrollToTop(0);
     }
   }
 
