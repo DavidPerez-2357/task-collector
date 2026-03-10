@@ -1,3 +1,21 @@
-<ion-content [fullscreen]="true" class="ion-padding">
-  <app-title-sign title="Tus objetos"></app-title-sign>
+<ion-content [fullscreen]="true">
+  <app-title-sign title="Tus objetos" />
+
+  <div class="inventory-list">
+    @for (itemShelf of itemsShelves.entries(); track itemShelf[0]) {
+      <app-shelf [items]="itemShelf[1]" (itemClicked)="itemClicked($event)" />
+    }
+  </div>
+
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content />
+  </ion-infinite-scroll>
+
+  @if (selectedItem) {
+    <app-inventory-item-modal
+      [isOpen]="isModalOpen"
+      [item]="selectedItem"
+      (dismissed)="onModalDismissed()"
+    />
+  }
 </ion-content>
