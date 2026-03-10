@@ -29,7 +29,7 @@
             "polyfills": ["src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss", "src/theme/variables.scss", "src/theme/_shiny.scss"],
             "scripts": [],
             "browser": "src/main.ts",
             "assets": [
