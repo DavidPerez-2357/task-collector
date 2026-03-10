@@ -148,21 +148,42 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 
 | Emoji | Code | Use for |
 |-------|------|---------|
+| Emoji | Code | Meaning |
+|------|------|------|
 | ✨ | `:sparkles:` | New feature |
 | 🐛 | `:bug:` | Bug fix |
-| 💄 | `:lipstick:` | UI / style changes |
+| 🚑️ | `:ambulance:` | Critical hotfix |
 | ♻️ | `:recycle:` | Refactor code |
-| 🗃️ | `:card_file_box:` | Database changes (migrations, schema) |
-| 🔧 | `:wrench:` | Configuration changes |
-| 🚚 | `:truck:` | Move or rename files/resources |
-| 🔥 | `:fire:` | Remove code or files |
-| 📦️ | `:package:` | Build/dependency changes |
-| 🎉 | `:tada:` | Initial commit / begin project |
-| 🌐 | `:globe_with_meridians:` | Internationalization / localization |
-| 🔀 | `:twisted_rightwards_arrows:` | Merge branches |
-| ⬇️ | `:arrow_down:` | Downgrade dependencies |
+| 🎨 | `:art:` | Improve code structure or formatting |
 | 🚧 | `:construction:` | Work in progress |
+| ⚡️ | `:zap:` | Improve performance |
+| 🔥 | `:fire:` | Remove code or files |
+| 💄 | `:lipstick:` | UI or style changes |
+| ✏️ | `:pencil2:` | Fix typos |
+| 🚸 | `:children_crossing:` | Improve UX or usability |
+| 📱 | `:iphone:` | Mobile responsive or device fixes |
 | 📝 | `:memo:` | Documentation |
+| 🔒️ | `:lock:` | Security fix |
+| 🔧 | `:wrench:` | Configuration changes |
+| 📦️ | `:package:` | Build artifacts or packages |
+| 🗃️ | `:card_file_box:` | Database or storage changes |
+| ⬆️ | `:arrow_up:` | Upgrade dependencies |
+| ⬇️ | `:arrow_down:` | Downgrade dependencies |
+| ➕ | `:heavy_plus_sign:` | Add dependency |
+| ➖ | `:heavy_minus_sign:` | Remove dependency |
+| 🚚 | `:truck:` | Move or rename files |
+| 🔊 | `:loud_sound:` | Add or update logs |
+| 🔇 | `:mute:` | Remove logs |
+| 🌐 | `:globe_with_meridians:` | Internationalization |
+| 🥚 | `:egg:` | Easter egg or hidden feature |
+| 💥 | `:boom:` | Breaking changes |
+| 🥅 | `:goal_net:` | Catch errors |
+| 💫 | `:dizzy:` | Animations and transitions |
+| 🧱 | `:bricks:` | Infrastructure |
+| 🧑‍💻 | `:technologist:` | Developer experience |
+| 🦺 | `:safety_vest:` | Validation |
+| ✈️ | `:airplane:` | Offline support |
+| 🦖 | `:t-rex:` | Backwards compatibility |
 
 ### Format
 
