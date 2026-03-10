@@ -101,6 +101,7 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   protected async onIonInfinite($event: any) {
     if (this.allItems.length < this.PAGE_SIZE * this.actualPage) {
+      $event.target.disabled = true;
       $event.target.complete();
       return;
     }
