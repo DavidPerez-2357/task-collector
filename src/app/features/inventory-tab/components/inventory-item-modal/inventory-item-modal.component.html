@@ -60,7 +60,11 @@
                   [disabled]="depositing"
                   (click)="depositInto(col)"
                 >
-                  <img [src]="col.badgeImageName" [alt]="col.name" class="badge-img" />
+                  <img
+                    [src]="col.badgeImageName ? (col.badgeImageName.startsWith('/') ? col.badgeImageName : '/' + col.badgeImageName) : undefined"
+                    [alt]="col.name"
+                    class="badge-img"
+                  />
                   <span class="col-name">{{ col.name }}</span>
                   @if (col.slotIsShiny) {
                     <span class="shiny-tag">✦ Shiny</span>
