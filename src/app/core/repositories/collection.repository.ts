@@ -17,12 +17,25 @@ export class CollectionRepository {
 
       // 2. Obtenemos todos los ítems de las colecciones unidos (JOIN) con la tabla item
       //    y hacemos un LEFT JOIN con player_collection_item para saber cuáles ya ha puesto el jugador
+      //    Añadimos EXISTS para saber si posee objetos normales o shinys válidos.
       const itemsRes = await conn.query(`
         SELECT
           ci.collection_id,
           ci.is_shiny AS slot_is_shiny,
           i.id, i.name, i.description, i.rarity, i.image_name, i.sell_price,
-          pci.deposited_is_shiny
+          pci.deposited_is_shiny,
+          EXISTS(
+            SELECT 1 FROM inventory inv 
+            WHERE inv.item_id = ci.item_id 
+              AND inv.quantity > 0 
+              AND inv.is_shiny = 0
+          ) AS owned_normal,
+          EXISTS(
+            SELECT 1 FROM inventory inv 
+            WHERE inv.item_id = ci.item_id 
+              AND inv.quantity > 0 
+              AND inv.is_shiny = 1
+          ) AS owned_shiny
         FROM collection_item ci
         JOIN item i ON ci.item_id = i.id
         LEFT JOIN player_collection_item pci
@@ -45,6 +58,18 @@ export class CollectionRepository {
           itemObj.deposited = {
             isShiny: row.deposited_is_shiny === 1,
           };
+        }
+        
+        itemObj.ownedNormal = row.owned_normal === 1;
+        itemObj.ownedShiny = row.owned_shiny === 1;
+
+        // Comprobamos si el jugador tiene un objeto elegible para ESTE slot
+        if (!itemObj.deposited) {
+          if (itemObj.isShiny) {
+            itemObj.ownedEligible = itemObj.ownedShiny;
+          } else {
+            itemObj.ownedEligible = itemObj.ownedNormal || itemObj.ownedShiny;
+          }
         }
 
         itemsByCollection.get(row.collection_id)!.push(itemObj);
