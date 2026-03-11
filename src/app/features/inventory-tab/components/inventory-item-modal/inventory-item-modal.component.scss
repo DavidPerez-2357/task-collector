@@ -74,23 +74,4 @@ main {
   justify-content: center;
   gap: 0.6rem;
   flex-flow: column;
-
-  width: 100%;
-
-  ion-button {
-    --padding-start: 0.8rem;
-    --padding-end: 0.8rem;
-    --border-radius: 0.2rem;
-    width: 100%;
-  }
-
-  .use-button {
-    --background: var(--ion-color-secondary);
-    --color: var(--ion-color-secondary-contrast);
-  }
-
-  .sell-button {
-    --background: var(--ion-color-gem);
-    --color: var(--ion-color-gem-shade);
-  }
 }

@@ -21,7 +21,6 @@ export class PlayerStateRepository {
   }
 
   async addCoins(coinsToAdd: number): Promise<void> {
-    console.log(`Adding ${coinsToAdd} coins to player state`);
     await this.databaseService.withConn(async (conn) => {
       await conn.run('UPDATE player_state SET coins = coins + ? WHERE id = 1', [coinsToAdd]);
     });
