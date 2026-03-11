@@ -13,7 +13,10 @@ export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
 
   constructor() {
-    addIcons({ checkmarkCircle, arrowUndoOutline });
+    addIcons({
+      'checkmark-circle': checkmarkCircle,
+      'arrow-undo-outline': arrowUndoOutline,
+    });
   }
 
   async ngOnInit() {
