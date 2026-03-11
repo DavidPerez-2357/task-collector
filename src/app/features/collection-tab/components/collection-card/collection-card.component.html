@@ -26,7 +26,7 @@
             [style.--mask]="'url(' + itemImagePath(slot) + ')'"
             (click)="onSlotClicked(slot)"
           >
-            <img [src]="'/' + itemImagePath(slot)" [alt]="slot.name" />
+            <img [src]="itemImagePath(slot)" [alt]="slot.name" />
           </div>
         } @else {
           <!-- Empty slot (no item defined for this position) -->
