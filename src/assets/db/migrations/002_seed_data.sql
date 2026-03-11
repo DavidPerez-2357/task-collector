@@ -140,8 +140,6 @@ INSERT OR IGNORE INTO collection (id, name, price, badge_image_name) VALUES
 
 -- Agregando los objetos pertenecientes a cada colección
 INSERT OR IGNORE INTO collection_item (collection_id, item_id, is_shiny) VALUES
--- Huerto de la Abuela (Toda la comida/verdura)
-(1, 447, 0), (1, 548, 0), (1, 551, 0), (1, 554, 0), (1, 558, 0), (1, 565, 0), (1, 568, 0),
 -- Armadura de Cobre (Yelmo, Peto, Botas)
 (2, 1909, 0), (2, 1925, 0), (2, 1941, 0),
 -- Tesoros del Mar (Estrellas de mar, peces y gambas)
@@ -205,7 +203,3 @@ INSERT OR IGNORE INTO collection_item (collection_id, item_id, is_shiny) VALUES
 (31, 1906, 0), (31, 1922, 0), (31, 1938, 0),
 -- Jinete de la Gloria (Herraduras)
 (32, 116, 0), (32, 117, 0), (32, 118, 0);
-
-
--- AL FINAL del 002_seed_data.sql (temporal para testing)
-
