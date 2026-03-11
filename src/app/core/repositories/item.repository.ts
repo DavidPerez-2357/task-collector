@@ -91,4 +91,50 @@ export class ItemRepository {
       await conn.run(`DELETE FROM inventory`);
     });
   }
+
+  async removeCeroQuantityItemsFromInventory(): Promise<void> {
+    await this.databaseService.withConn(async (conn) => {
+      await conn.run(`DELETE FROM inventory WHERE quantity <= 0`);
+    });
+  }
+
+  async getInventoryItemByIdAndShiny(itemId: number, isShiny: boolean) {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `
+        SELECT
+          ii.item_id, ii.is_shiny, ii.quantity,
+          i.name, i.description, i.rarity, i.image_name, i.sell_price
+        FROM inventory ii
+        JOIN item i ON ii.item_id = i.id
+        WHERE ii.item_id = ? AND ii.is_shiny = ?
+      `,
+        [itemId, isShiny ? 1 : 0],
+      );
+      const itemsRaw = res.values || [];
+      return itemsRaw.length === 0 ? null : this.formatDBRowToInventoryItem(itemsRaw[0]);
+    });
+  }
+
+  async sellItem(itemId: number, isShiny: boolean, sellPrice: number): Promise<void> {
+    const set = [
+      {
+        statement:
+          'update inventory set quantity = quantity - 1 where item_id = ? and is_shiny = ?',
+        values: [itemId, isShiny ? 1 : 0],
+      },
+      {
+        statement: 'insert into sales (item_id, coins_earned, created_at) values (?, ?, ?)',
+        values: [itemId, sellPrice, Date.now()],
+      },
+      {
+        statement: 'update player_state set coins = coins + ?',
+        values: [sellPrice],
+      },
+    ];
+
+    return await this.databaseService.withConn(async (conn) => {
+      await conn.executeSet(set, true);
+    });
+  }
 }
