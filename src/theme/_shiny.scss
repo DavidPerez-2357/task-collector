@@ -1,0 +1,58 @@
+// Reusable shiny effect
+// Usage:
+// - Add the class `shiny` to the element you want to have the effect.
+// - Optionally tune these CSS variables on the element or its parents:
+//   --shiny-duration, --shiny-opacity, --shiny-size, --mask, --mask-size, --mask-position
+
+.shiny {
+  position: relative; // ensure pseudo-element is positioned correctly
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+
+    /* default holographic rainbow */
+    background: repeating-linear-gradient(
+      115deg,
+      hsl(0 100% 60%) 0px,
+      hsl(60 100% 60%) 40px,
+      hsl(120 100% 60%) 80px,
+      hsl(180 100% 60%) 120px,
+      hsl(240 100% 60%) 160px,
+      hsl(300 100% 60%) 200px
+    );
+
+    background-size: var(--shiny-size, 200px) var(--shiny-size, 200px);
+    animation: holographicRotate var(--shiny-duration, 2s) linear infinite;
+
+    mix-blend-mode: color;
+    opacity: var(--shiny-opacity, 0.8);
+
+    pointer-events: none;
+    z-index: 2;
+
+    /* mask controls which area of the element shows the effect.
+       Default is to use the CSS variable --mask (set to an svg mask or image)
+       If you don't want any mask, set --mask: none; */
+    mask-image: var(--mask, none);
+    -webkit-mask-image: var(--mask, none);
+
+    mask-size: var(--mask-size, contain);
+    mask-repeat: var(--mask-repeat, no-repeat);
+    mask-position: var(--mask-position, center);
+
+    -webkit-mask-size: var(--mask-size, contain);
+    -webkit-mask-repeat: var(--mask-repeat, no-repeat);
+    -webkit-mask-position: var(--mask-position, center);
+  }
+}
+
+@keyframes holographicRotate {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}

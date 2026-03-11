@@ -1,0 +1,5 @@
+<div class="shelf-container">
+  @for (item of items; track $index) {
+    <app-item [item]="item" (itemClicked)="onItemClicked($event)" />
+  }
+</div>

@@ -1,5 +1,10 @@
 ion-content {
-  --background: url('/assets/ui/backgrounds/inventory-bg.png') no-repeat top center / cover;
-  --padding-top: 0 !important;
-  --padding-bottom: 0 !important;
+  --background: url('/assets/backgrounds/bookshelf-bg.png') repeat-y top center / contain;
+}
+
+.inventory-list {
+  padding-bottom: 5rem;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
 }

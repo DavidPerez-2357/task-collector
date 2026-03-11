@@ -8,6 +8,7 @@ export enum Rarity {
 export interface Item {
   id: number;
   name: string;
+  description: string;
   rarity: Rarity;
   imageName: string;
   sellPrice: number;

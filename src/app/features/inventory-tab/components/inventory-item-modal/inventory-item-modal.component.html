@@ -1,0 +1,42 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template class="ion-no-padding">
+    <app-board width="">
+      <div class="item-details">
+        <main>
+          <div
+            class="item-image-container"
+            [class.shiny]="item.isShiny"
+            [style.--mask]="'url(' + itemImage + ')'"
+          >
+            <img [src]="itemImage" [alt]="item.name + ' image'" />
+          </div>
+          <h2 class="item-name">
+            {{ item.name }}
+          </h2>
+          <div class="item-stats">
+            <div
+              class="item-rarity"
+              [style.background]="rarityBackgroundColor"
+              [style.color]="rarityTextColor"
+            >
+              {{ rarityName }}
+            </div>
+            @if (item.isShiny) {
+              <div class="shiny">Shiny</div>
+            }
+          </div>
+        </main>
+
+        <p class="item-description">{{ item.description }}</p>
+        <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
+
+        <div class="item-actions">
+          <ion-button class="use-button" (click)="useItem()">Usar en colección</ion-button>
+          <ion-button (click)="sellItem()" class="sell-button"
+            >Vender uno (+{{ sellPrice }} gemas)</ion-button
+          >
+        </div>
+      </div>
+    </app-board>
+  </ng-template>
+</ion-modal>

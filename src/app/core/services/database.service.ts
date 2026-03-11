@@ -160,6 +160,12 @@ export class DatabaseService {
     return fn(this.getConn());
   }
 
+  async getLastInsertId(conn?: SQLiteDBConnection): Promise<number> {
+    const res = await (conn ?? this.getConn()).query(`SELECT last_insert_rowid() AS id;`);
+    const id = res.values?.[0]?.id;
+    return typeof id === 'number' ? id : Number(id);
+  }
+
   //region Database Migrations
   private async ensureMeta(): Promise<void> {
     const conn = this.getConn();
