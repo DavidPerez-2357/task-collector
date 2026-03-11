@@ -122,7 +122,7 @@ Follow this strict layering when adding code:
 - Use **SCSS** for component styles.
 - Use **Ionic CSS custom properties** (`--ion-color-*`) for theming.
 - Custom color tokens defined in `src/theme/variables.scss`: `gem`, `gold`, `darkBrown` (in addition to Ionic defaults).
-- Font family: `Jersey 20` (Google Fonts, loaded in `index.html`).
+- Font family: `Jersey 20` (Local Font, loaded in `variables.scss` and located in `assets/fonts`).
 
 ## Testing
 
