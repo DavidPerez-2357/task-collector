@@ -31,10 +31,22 @@
         <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
 
         <div class="item-actions">
-          <ion-button class="use-button" (click)="useItem()">Usar en colección</ion-button>
-          <ion-button (click)="sellItem()" class="sell-button"
-            >Vender uno (+{{ sellPrice }} gemas)</ion-button
+          <app-button
+            type="secondary"
+            class="use-button"
+            (handleClick)="useItem()"
+            [disabled]="item.quantity === 0 || useBtnIsDisabled"
           >
+            Usar en colección
+          </app-button>
+          <app-button
+            type="gem"
+            (handleClick)="sellItem()"
+            class="sell-button"
+            [disabled]="item.quantity === 0 || sellBtnIsDisabled"
+          >
+            Vender uno (+{{ sellPrice }} gemas)
+          </app-button>
         </div>
       </div>
     </app-board>
