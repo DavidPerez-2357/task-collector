@@ -1,42 +1,79 @@
 <ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
   <ng-template class="ion-no-padding">
     <app-board width="">
-      <div class="item-details">
-        <main>
-          <div
-            class="item-image-container"
-            [class.shiny]="item.isShiny"
-            [style.--mask]="'url(' + itemImage + ')'"
-          >
-            <img [src]="itemImage" [alt]="item.name + ' image'" />
-          </div>
-          <h2 class="item-name">
-            {{ item.name }}
-          </h2>
-          <div class="item-stats">
+
+      <!-- PASO 1: Detalle del objeto -->
+      @if (step === 'detail') {
+        <div class="item-details">
+          <main>
             <div
-              class="item-rarity"
-              [style.background]="rarityBackgroundColor"
-              [style.color]="rarityTextColor"
+              class="item-image-container"
+              [class.shiny]="item.isShiny"
+              [style.--mask]="'url(' + itemImage + ')'"
             >
-              {{ rarityName }}
+              <img [src]="itemImage" [alt]="item.name + ' image'" />
             </div>
-            @if (item.isShiny) {
-              <div class="shiny">Shiny</div>
-            }
+            <h2 class="item-name">{{ item.name }}</h2>
+            <div class="item-stats">
+              <div
+                class="item-rarity"
+                [style.background]="rarityBackgroundColor"
+                [style.color]="rarityTextColor"
+              >
+                {{ rarityName }}
+              </div>
+              @if (item.isShiny) {
+                <div class="shiny">Shiny</div>
+              }
+            </div>
+          </main>
+
+          <p class="item-description">{{ item.description }}</p>
+          <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
+
+          <div class="item-actions">
+            <ion-button class="use-button" (click)="openCollectionStep()">Usar en colección</ion-button>
+            <ion-button (click)="sellItem()" class="sell-button"
+              >Vender uno (+{{ sellPrice }} gemas)</ion-button
+            >
           </div>
-        </main>
-
-        <p class="item-description">{{ item.description }}</p>
-        <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
-
-        <div class="item-actions">
-          <ion-button class="use-button" (click)="useItem()">Usar en colección</ion-button>
-          <ion-button (click)="sellItem()" class="sell-button"
-            >Vender uno (+{{ sellPrice }} gemas)</ion-button
-          >
         </div>
-      </div>
+      }
+
+      <!-- PASO 2: Selección de colección -->
+      @if (step === 'collections') {
+        <div class="collection-step">
+          <h2 class="step-title">Añadir a colección</h2>
+          <p class="step-subtitle">¿Dónde quieres colocar <strong>{{ item.name }}</strong>?</p>
+
+          @if (loadingCollections) {
+            <div class="loading-row">
+              <ion-spinner name="crescent" />
+            </div>
+          } @else if (eligibleCollections.length === 0) {
+            <p class="empty-text">No tienes colecciones disponibles para este objeto.</p>
+          } @else {
+            <div class="collections-list">
+              @for (col of eligibleCollections; track col.id) {
+                <button
+                  class="collection-row"
+                  [disabled]="depositing"
+                  (click)="depositInto(col)"
+                >
+                  <img [src]="col.badgeImageName" [alt]="col.name" class="badge-img" />
+                  <span class="col-name">{{ col.name }}</span>
+                  @if (col.slotIsShiny) {
+                    <span class="shiny-tag">✦ Shiny</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+
+          <ion-button fill="clear" class="back-btn" (click)="step = 'detail'">← Volver</ion-button>
+        </div>
+      }
+
     </app-board>
   </ng-template>
 </ion-modal>

@@ -1,0 +1,36 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template>
+    <app-board width="">
+      <div class="modal-content">
+        <h2>Añadir a colección</h2>
+        <p class="subtitle">Selecciona en qué colección quieres colocar <strong>{{ item.name }}</strong></p>
+
+        @if (loading) {
+          <div class="loading">
+            <ion-spinner name="crescent" />
+          </div>
+        } @else if (eligibleCollections.length === 0) {
+          <p class="empty-text">No tienes ninguna colección disponible para este objeto.</p>
+        } @else {
+          <div class="collections-list">
+            @for (col of eligibleCollections; track col.id) {
+              <button
+                class="collection-row"
+                [disabled]="depositing"
+                (click)="depositInto(col)"
+              >
+                <img [src]="badgePath(col)" [alt]="col.name + ' badge'" class="badge-img" />
+                <span class="col-name">{{ col.name }}</span>
+                @if (col.slotIsShiny) {
+                  <span class="shiny-tag">✦ Shiny</span>
+                }
+              </button>
+            }
+          </div>
+        }
+
+        <ion-button fill="clear" class="cancel-btn" (click)="onDismiss()">Cancelar</ion-button>
+      </div>
+    </app-board>
+  </ng-template>
+</ion-modal>

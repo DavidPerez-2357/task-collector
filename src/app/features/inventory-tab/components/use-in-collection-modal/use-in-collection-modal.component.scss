@@ -1,115 +1,29 @@
 ion-modal {
   --width: fit-content;
-  --min-width: 250px;
+  --min-width: 260px;
   --height: fit-content;
 }
 
 ion-modal::part(content) {
   height: fit-content;
-  width: 85dvw;
-  max-width: 400px;
+  width: 88dvw;
+  max-width: 420px;
 }
 
-.item-details {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.1rem;
-  padding: 1rem;
-
-  h2,
-  p {
-    margin: 0;
-    text-align: center;
-  }
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.item-image-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  img {
-    max-width: 100%;
-    height: 64px;
-  }
-}
-
-.item-description {
-  font-size: 1rem;
-  color: var(--ion-color-light-shade);
-}
-
-.item-stats {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-flow: wrap;
-
-  div {
-    font-size: 0.9rem;
-    border-radius: 0.2rem;
-    width: fit-content;
-    padding: 0.1rem 0.4rem;
-    color: var(--ion-color-dark);
-  }
-
-  .shiny {
-    background-color: var(--ion-color-gem);
-  }
-}
-
-.item-quantity {
-  color: var(--ion-color-primary);
-}
-
-.item-actions {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-flow: column;
-
-  width: 100%;
-
-  ion-button {
-    --padding-start: 0.8rem;
-    --padding-end: 0.8rem;
-    --border-radius: 0.2rem;
-    width: 100%;
-  }
-
-  .use-button {
-    --background: var(--ion-color-secondary);
-    --color: var(--ion-color-secondary-contrast);
-  }
-
-  .sell-button {
-    --background: var(--ion-color-gem);
-    --color: var(--ion-color-gem-shade);
-  }
-}
-
-/* STEP 2: Collections */
-.collection-step {
+.modal-content {
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
 
-  .step-title {
+  h2 {
     margin: 0;
     font-size: 1.1rem;
     color: var(--ion-color-light);
     text-align: center;
   }
 
-  .step-subtitle {
+  .subtitle {
     margin: 0;
     font-size: 0.9rem;
     color: var(--ion-color-light-shade);
@@ -117,7 +31,7 @@ main {
   }
 }
 
-.loading-row {
+.loading {
   display: flex;
   justify-content: center;
   padding: 1rem 0;
@@ -183,12 +97,12 @@ main {
 
   .shiny-tag {
     font-size: 0.75rem;
-    color: var(--ion-color-gem);
+    color: var(--ion-color-gem, gold);
     flex-shrink: 0;
   }
 }
 
-.back-btn {
+.cancel-btn {
   --color: var(--ion-color-light-shade);
   align-self: center;
 }

@@ -1,7 +1,7 @@
 
-INSERT INTO player_state (id, coins) VALUES (1, 50);
+INSERT OR IGNORE INTO player_state (id, coins) VALUES (1, 50);
 
-INSERT INTO item (id, name, rarity, description, image_name, sell_price) VALUES
+INSERT OR IGNORE INTO item (id, name, rarity, description, image_name, sell_price) VALUES
 (1, 'Ánfora de barro', 0, 'Puede servir para el Mafuba', 'fb1.png', 10),
 (15, 'Trofeo', 2, 'Solo es una copa vacía', 'fb15.png', 200),
 (26, 'Ohh diamantes', 3, 'Si hay que ser minero, Romper el pico en el hierro, No importa el creeper que venga...', 'fb26.png', 1000),
@@ -100,7 +100,7 @@ INSERT INTO item (id, name, rarity, description, image_name, sell_price) VALUES
 (1996, 'Botas azules', 0, 'Estas hacen un ruido muy raro al caminar', 'fb1996.png', 30);
 
 -- === COLECCIONES ===
-INSERT INTO collection (id, name, price, badge_image_name) VALUES
+INSERT OR IGNORE INTO collection (id, name, price, badge_image_name) VALUES
 (1, 'Huerto de la Abuela', 500, 'assets/item-images/fb554.png'),
 (2, 'Armadura de Cobre', 800, 'assets/item-images/fb1925.png'),
 (3, 'Tesoros del Mar', 1200, 'assets/item-images/fb374.png'),
@@ -139,7 +139,7 @@ INSERT INTO collection (id, name, price, badge_image_name) VALUES
 (32, 'Jinete de la Gloria', 600, 'assets/item-images/fb118.png');
 
 -- Agregando los objetos pertenecientes a cada colección
-INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
+INSERT OR IGNORE INTO collection_item (collection_id, item_id, is_shiny) VALUES
 -- Huerto de la Abuela (Toda la comida/verdura)
 (1, 447, 0), (1, 548, 0), (1, 551, 0), (1, 554, 0), (1, 558, 0), (1, 565, 0), (1, 568, 0),
 -- Armadura de Cobre (Yelmo, Peto, Botas)
@@ -169,7 +169,7 @@ INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
 -- Cofre del hombre muerto
 (14, 15, 0), (14, 65, 0), (14, 67, 0), (14, 118, 0), (14, 124, 0), (14, 106, 0),
 -- Sinsajo (Arcos, todos shiny)
-(15, 1805, 1), (15, 1806, 1), (15, 1805, 1), (15, 1484, 1),
+(15, 1805, 1), (15, 1806, 1), (15, 1484, 1),
 -- De cero a héroe
 (16, 106, 0), (16, 65, 0), (16, 15, 0), (16, 101, 0),
 -- Garnet (Botas de distintos materiales)
@@ -205,3 +205,7 @@ INSERT INTO collection_item (collection_id, item_id, is_shiny) VALUES
 (31, 1906, 0), (31, 1922, 0), (31, 1938, 0),
 -- Jinete de la Gloria (Herraduras)
 (32, 116, 0), (32, 117, 0), (32, 118, 0);
+
+
+-- AL FINAL del 002_seed_data.sql (temporal para testing)
+

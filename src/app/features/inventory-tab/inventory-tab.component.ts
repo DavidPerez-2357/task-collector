@@ -117,8 +117,21 @@ export class InventoryTabComponent implements ViewWillEnter {
     this.isModalOpen = true;
   }
 
-  onModalDismissed() {
+  async onModalDismissed() {
     this.isModalOpen = false;
     this.selectedItem = null;
+
+    // Recargamos el inventario por si se ha depositado un objeto en una colección
+    this.allItems = [];
+    this.itemsShelves = [];
+    this.actualPage = 1;
+    await this.loadMoreItems(this.actualPage);
+
+    if (this.itemsShelves.length < this.MIN_SHELVES) {
+      const emptyShelvesNeeded = this.MIN_SHELVES - this.itemsShelves.length;
+      for (let i = 0; i < emptyShelvesNeeded; i++) {
+        this.itemsShelves.push([]);
+      }
+    }
   }
 }

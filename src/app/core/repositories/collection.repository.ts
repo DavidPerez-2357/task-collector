@@ -75,6 +75,38 @@ export class CollectionRepository {
     });
   }
 
+  // Devuelve las colecciones (propias) donde el item puede ser depositado:
+  // - Si el slot requiere shiny (ci.is_shiny = 1), el item DEBE ser shiny (isShiny = 1).
+  // - Si el slot NO requiere shiny (ci.is_shiny = 0), el item PUEDE ser normal o shiny.
+  async getEligibleCollectionsForItem(
+    itemId: number,
+    isShiny: boolean,
+  ): Promise<{ id: number; name: string; badgeImageName: string; slotIsShiny: boolean }[]> {
+    return await this.databaseService.withConn(async (conn) => {
+      const isShinyInt = isShiny ? 1 : 0;
+      const res = await conn.query(
+        `SELECT c.id, c.name, c.badge_image_name, ci.is_shiny AS slot_is_shiny
+         FROM collection c
+         JOIN player_collection pc ON pc.collection_id = c.id
+         JOIN collection_item ci ON ci.collection_id = c.id
+           AND ci.item_id = ? 
+           AND (ci.is_shiny = ? OR ? = 1)
+         LEFT JOIN player_collection_item pci
+           ON pci.collection_id = c.id
+           AND pci.item_id = ?
+           AND pci.slot_is_shiny = ci.is_shiny
+         WHERE pci.collection_id IS NULL`,
+        [itemId, isShinyInt, isShinyInt, itemId],
+      );
+      return (res.values || []).map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        badgeImageName: row.badge_image_name,
+        slotIsShiny: row.slot_is_shiny === 1,
+      }));
+    });
+  }
+
   // Permite añadir un objeto a la colección (quitándolo del inventario)
   async addPlayerCollectionItem(
     collectionId: number,
@@ -83,23 +115,17 @@ export class CollectionRepository {
     depositedIsShiny: boolean,
   ): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      try {
-        await conn.execute('BEGIN TRANSACTION;');
-        // Registrar que el objeto ha sido añadido a la colección
-        await conn.run(
-          'INSERT INTO player_collection_item (collection_id, item_id, slot_is_shiny, deposited_is_shiny) VALUES (?, ?, ?, ?)',
-          [collectionId, itemId, slotIsShiny ? 1 : 0, depositedIsShiny ? 1 : 0],
-        );
-        // Reducir la cantidad en el inventario
-        await conn.run(
-          'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
-          [itemId, depositedIsShiny ? 1 : 0],
-        );
-        await conn.execute('COMMIT;');
-      } catch (err) {
-        await conn.execute('ROLLBACK;');
-        throw err;
-      }
+      await conn.executeSet([
+        {
+          statement:
+            'INSERT INTO player_collection_item (collection_id, item_id, slot_is_shiny, deposited_is_shiny) VALUES (?, ?, ?, ?)',
+          values: [collectionId, itemId, slotIsShiny ? 1 : 0, depositedIsShiny ? 1 : 0],
+        },
+        {
+          statement: 'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
+          values: [itemId, depositedIsShiny ? 1 : 0],
+        },
+      ]);
     });
   }
 
@@ -111,37 +137,31 @@ export class CollectionRepository {
     depositedIsShiny: boolean,
   ): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      try {
-        await conn.execute('BEGIN TRANSACTION;');
-        // Eliminar el registro de que pertenece a la colección
-        await conn.run(
-          'DELETE FROM player_collection_item WHERE collection_id = ? AND item_id = ? AND slot_is_shiny = ?',
-          [collectionId, itemId, slotIsShiny ? 1 : 0],
-        );
-        // Devolverlo al inventario
-        // Usamos INSERT ON CONFLICT por si la cantidad de este objeto bajó a 0 y la row desapareció (o para sumar quantity)
-        // Como SQLite en versiones antiguas puede no tener UPSERT, comprobamos primero si existe la row
-        const existing = await conn.query(
-          'SELECT quantity FROM inventory WHERE item_id = ? AND is_shiny = ?',
-          [itemId, depositedIsShiny ? 1 : 0],
-        );
+      // Como SQLite en versiones antiguas puede no tener UPSERT, comprobamos primero si existe la row
+      const existing = await conn.query(
+        'SELECT quantity FROM inventory WHERE item_id = ? AND is_shiny = ?',
+        [itemId, depositedIsShiny ? 1 : 0],
+      );
 
-        if (existing.values && existing.values.length > 0) {
-          await conn.run(
-            'UPDATE inventory SET quantity = quantity + 1 WHERE item_id = ? AND is_shiny = ?',
-            [itemId, depositedIsShiny ? 1 : 0],
-          );
-        } else {
-          await conn.run('INSERT INTO inventory (item_id, quantity, is_shiny) VALUES (?, 1, ?)', [
-            itemId,
-            depositedIsShiny ? 1 : 0,
-          ]);
-        }
-        await conn.execute('COMMIT;');
-      } catch (err) {
-        await conn.execute('ROLLBACK;');
-        throw err;
-      }
+      const inventoryStmt =
+        existing.values && existing.values.length > 0
+          ? {
+              statement: 'UPDATE inventory SET quantity = quantity + 1 WHERE item_id = ? AND is_shiny = ?',
+              values: [itemId, depositedIsShiny ? 1 : 0],
+            }
+          : {
+              statement: 'INSERT INTO inventory (item_id, quantity, is_shiny) VALUES (?, 1, ?)',
+              values: [itemId, depositedIsShiny ? 1 : 0],
+            };
+
+      await conn.executeSet([
+        {
+          statement:
+            'DELETE FROM player_collection_item WHERE collection_id = ? AND item_id = ? AND slot_is_shiny = ?',
+          values: [collectionId, itemId, slotIsShiny ? 1 : 0],
+        },
+        inventoryStmt,
+      ]);
     });
   }
 

@@ -1,0 +1,40 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template class="ion-no-padding">
+    <app-board width="">
+      <div class="item-details">
+        <main>
+          <div
+            class="item-image-container"
+            [class.shiny]="isShinyDeposited"
+            [style.--mask]="'url(' + itemImage + ')'"
+          >
+            <img [src]="itemImage" [alt]="item.name + ' image'" />
+          </div>
+          <h2 class="item-name">
+            {{ item.name }}
+          </h2>
+          <div class="item-stats">
+            <div
+              class="item-rarity"
+              [style.background]="rarityBackgroundColor"
+              [style.color]="rarityTextColor"
+            >
+              {{ rarityName }}
+            </div>
+            @if (isShinyDeposited) {
+              <div class="shiny-badge">Shiny</div>
+            }
+          </div>
+        </main>
+
+        <p class="item-description">{{ item.description }}</p>
+
+        <div class="item-actions">
+          <ion-button class="return-button" (click)="sendToInventory()">
+            Enviar al inventario
+          </ion-button>
+        </div>
+      </div>
+    </app-board>
+  </ng-template>
+</ion-modal>
