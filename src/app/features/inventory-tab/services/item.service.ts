@@ -27,7 +27,7 @@ export class ItemService {
     await this.itemRepository.sellItem(itemId, isShiny, sellPrice);
 
     // Borrar ítems con cantidad 0 para mantener el inventario limpio
-    await this.itemRepository.removeCeroQuantityItemsFromInventory();
+    await this.itemRepository.removeZeroQuantityItemsFromInventory();
 
     // Devolver la cantidad actualizada del ítem
     const updatedItem = await this.itemRepository.getInventoryItemByIdAndShiny(itemId, isShiny);

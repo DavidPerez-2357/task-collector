@@ -92,7 +92,7 @@ export class ItemRepository {
     });
   }
 
-  async removeCeroQuantityItemsFromInventory(): Promise<void> {
+  async removeZeroQuantityItemsFromInventory(): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
       await conn.run(`DELETE FROM inventory WHERE quantity <= 0`);
     });
