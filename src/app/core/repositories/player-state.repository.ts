@@ -16,23 +16,13 @@ export class PlayerStateRepository {
 
   async updateCoins(newCoins: number): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      const res = await conn.run('UPDATE player_state SET coins = ? WHERE id = 1', [newCoins]);
-
-      if (!res.changes || res.changes.changes === 0) {
-        throw new Error('No se pudo actualizar las monedas');
-      }
+      await conn.run('UPDATE player_state SET coins = ? WHERE id = 1', [newCoins]);
     });
   }
 
   async addCoins(coinsToAdd: number): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      const res = await conn.run('UPDATE player_state SET coins = coins + ? WHERE id = 1', [
-        coinsToAdd,
-      ]);
-
-      if (!res.changes || res.changes.changes === 0) {
-        throw new Error('No se pudo agregar monedas');
-      }
+      await conn.run('UPDATE player_state SET coins = coins + ? WHERE id = 1', [coinsToAdd]);
     });
   }
 }
