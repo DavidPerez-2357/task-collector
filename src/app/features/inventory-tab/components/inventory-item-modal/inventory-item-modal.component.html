@@ -32,10 +32,30 @@
           <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
 
           <div class="item-actions">
-            <ion-button class="use-button" (click)="openCollectionStep()">Usar en colección</ion-button>
-            <ion-button (click)="sellItem()" class="sell-button"
-              >Vender uno (+{{ sellPrice }} gemas)</ion-button
+            @if(item.name === 'Desconocido' || false) {
+              <app-button
+                type="primary"
+                [disabled]="useBtnIsDisabled"
+                (handleClick)="useItem()"
+              >
+                Usar objeto
+              </app-button>
+            }
+            <app-button
+              btnClass="use-button"
+              type="primary"
+              (handleClick)="openCollectionStep()"
             >
+              Añadir a colección
+            </app-button>
+            <app-button
+              btnClass="sell-button"
+              type="gem"
+              [disabled]="sellBtnIsDisabled"
+              (handleClick)="sellItem()"
+            >
+              Vender uno (+{{ sellPrice }} gemas)
+            </app-button>
           </div>
         </div>
       }
@@ -74,7 +94,14 @@
             </div>
           }
 
-          <ion-button fill="clear" class="back-btn" (click)="step = 'detail'">← Volver</ion-button>
+          <app-button
+            btnClass="back-btn" 
+            type="primary"
+            [fill]="false"
+            (handleClick)="step = 'detail'"
+          >
+            ← Volver
+          </app-button>
         </div>
       }
 

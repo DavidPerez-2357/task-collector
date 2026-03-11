@@ -1,10 +1,11 @@
 import { Component, EventEmitter, inject, Input, OnChanges, SimpleChanges, Output, ViewChild } from '@angular/core';
-import { IonButton, IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
+import { IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
 import { getShinyPrice } from '@core/utils/shiny.util';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
+import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 
 interface EligibleCollection {
@@ -20,7 +21,7 @@ type ModalStep = 'detail' | 'collections';
   selector: 'app-inventory-item-modal',
   templateUrl: './inventory-item-modal.component.html',
   styleUrls: ['./inventory-item-modal.component.scss'],
-  imports: [IonModal, BoardComponent, IonButton, IonSpinner],
+  imports: [IonModal, BoardComponent, ButtonComponent, IonSpinner],
 })
 export class InventoryItemModalComponent implements OnChanges {
   @ViewChild(IonModal) modal!: IonModal;
@@ -37,6 +38,7 @@ export class InventoryItemModalComponent implements OnChanges {
   eligibleCollections: EligibleCollection[] = [];
   loadingCollections = false;
   depositing = false;
+  useBtnIsDisabled = false;
   sellBtnIsDisabled = false;
 
   ngOnChanges(changes: SimpleChanges) {
@@ -99,6 +101,8 @@ export class InventoryItemModalComponent implements OnChanges {
         this.item.isShiny,
       );
       
+      this.item.quantity -= 1;
+
       const toast = await this.toastController.create({
         message: `${this.item.name} añadido a la colección ${col.name}!`,
         duration: 2500,
@@ -109,7 +113,9 @@ export class InventoryItemModalComponent implements OnChanges {
       await toast.present();
 
       this.step = 'detail';
-      this.modal.dismiss(); // Cierra el modal; (didDismiss) se encargará de emitir `dismissed`
+      if (this.item.quantity <= 0) {
+        this.modal.dismiss();
+      }
     } catch (e) {
       console.error('Error depositing item:', e);
       const toast = await this.toastController.create({
@@ -122,6 +128,10 @@ export class InventoryItemModalComponent implements OnChanges {
     } finally {
       this.depositing = false;
     }
+  }
+
+  useItem() {
+    // TODO: Implementar lógica para usar el ítem, como aplicar efectos a un Pokémon o al jugador
   }
 
   sellItem() {
