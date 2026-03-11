@@ -11,9 +11,11 @@
     <ion-infinite-scroll-content />
   </ion-infinite-scroll>
 
-  <app-inventory-item-modal
-    [isOpen]="isModalOpen"
-    [item]="selectedItem!"
-    (dismissed)="onModalDismissed()"
-  />
+  @if (selectedItem) {
+    <app-inventory-item-modal
+      [isOpen]="isModalOpen"
+      [item]="selectedItem"
+      (dismissed)="onModalDismissed()"
+    />
+  }
 </ion-content>
