@@ -40,11 +40,12 @@ export class CollectionCardComponent {
   }
 
   get badgeImagePath(): string {
-    return this.collection.badgeImageName;
+    return this.collection.badgeImageName.startsWith('/') ?
+      this.collection.badgeImageName : `/${this.collection.badgeImageName}`;
   }
 
   itemImagePath(item: CollectionItem): string {
-    return `assets/item-images/${item.imageName}`;
+    return `/assets/item-images/${item.imageName}`;
   }
 
   onSlotClicked(item: CollectionItem) {

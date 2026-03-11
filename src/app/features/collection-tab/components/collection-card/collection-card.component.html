@@ -4,7 +4,7 @@
     class="collection-badge"
     [class.is-complete]="isCompleted"
     [class.shiny]="allDepositedAreShiny"
-    [style.--mask]="'url(/' + badgeImagePath + ')'"
+    [style.--mask]="'url(' + badgeImagePath + ')'"
   >
     <img [src]="badgeImagePath" [alt]="collection.name + ' badge'" />
   </div>
@@ -23,7 +23,7 @@
             [class.empty-slot]="slot.deposited === undefined && !slot.ownedEligible"
             [class.owned-eligible]="slot.ownedEligible"
             [class.shiny]="slot.deposited?.isShiny"
-            [style.--mask]="'url(/' + itemImagePath(slot) + ')'"
+            [style.--mask]="'url(' + itemImagePath(slot) + ')'"
             (click)="onSlotClicked(slot)"
           >
             <img [src]="itemImagePath(slot)" [alt]="slot.name" />
