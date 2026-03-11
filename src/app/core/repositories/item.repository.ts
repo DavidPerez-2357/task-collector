@@ -125,7 +125,7 @@ export class ItemRepository {
       },
       {
         statement: 'insert into sales (item_id, coins_earned, created_at) values (?, ?, ?)',
-        values: [itemId, sellPrice, Date.now()],
+        values: [itemId, sellPrice, new Date().toISOString()],
       },
       {
         statement: 'update player_state set coins = coins + ?',
