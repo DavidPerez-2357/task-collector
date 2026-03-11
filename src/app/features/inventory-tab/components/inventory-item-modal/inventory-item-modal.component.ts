@@ -52,27 +52,29 @@ export class InventoryItemModalComponent {
     // TODO: Implementar lógica para usar el ítem, como aplicar efectos a un Pokémon o al jugador
   }
 
-  async sellItem() {
+  sellItem() {
     if (this.item.isShiny) {
       // TODO: Mostrar mensaje de confirmación para vender
     }
 
     this.sellBtnIsDisabled = true;
 
-    try {
-      // llamar al servicio para vender el ítem
-      this.itemService.sellItem(this.item.id, this.item.isShiny).then((updatedQuantity) => {
+    // llamar al servicio para vender el ítem
+    this.itemService
+      .sellItem(this.item.id, this.item.isShiny)
+      .then((updatedQuantity) => {
         this.item.quantity = updatedQuantity;
 
         if (updatedQuantity <= 0) {
           // Si ya no queda el ítem, cerramos el modal
           this.isOpen = false;
         }
+      })
+      .catch((error) => {
+        // TODO: Manejar errores, como mostrar un mensaje de error al usuario
+      })
+      .finally(() => {
+        this.sellBtnIsDisabled = false;
       });
-    } catch (error) {
-      // TODO: Manejar errores, como mostrar un mensaje de error al usuario
-    } finally {
-      this.sellBtnIsDisabled = false;
-    }
   }
 }
