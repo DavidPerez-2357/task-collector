@@ -140,21 +140,18 @@ export class CollectionRepository {
     depositedIsShiny: boolean,
   ): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      await conn.executeSet([
-        {
-          statement:
-            'INSERT INTO player_collection_item (collection_id, item_id, slot_is_shiny, deposited_is_shiny) VALUES (?, ?, ?, ?)',
-          values: [collectionId, itemId, slotIsShiny ? 1 : 0, depositedIsShiny ? 1 : 0],
-        },
-        {
-          statement: 'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
-          values: [itemId, depositedIsShiny ? 1 : 0],
-        },
-        {
-          statement: 'DELETE FROM inventory WHERE item_id = ? AND is_shiny = ? AND quantity <= 0',
-          values: [itemId, depositedIsShiny ? 1 : 0],
-        },
-      ]);
+      await conn.run(
+        'INSERT INTO player_collection_item (collection_id, item_id, slot_is_shiny, deposited_is_shiny) VALUES (?, ?, ?, ?)',
+        [collectionId, itemId, slotIsShiny ? 1 : 0, depositedIsShiny ? 1 : 0],
+      );
+      await conn.run(
+        'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
+        [itemId, depositedIsShiny ? 1 : 0],
+      );
+      await conn.run(
+        'DELETE FROM inventory WHERE item_id = ? AND is_shiny = ? AND quantity <= 0',
+        [itemId, depositedIsShiny ? 1 : 0],
+      );
     });
   }
 
