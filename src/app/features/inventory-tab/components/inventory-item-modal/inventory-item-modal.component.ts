@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, SimpleChanges, Output, ViewChild } from '@angular/core';
 import { IonButton, IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
@@ -23,6 +23,8 @@ type ModalStep = 'detail' | 'collections';
   imports: [IonModal, BoardComponent, IonButton, IonSpinner],
 })
 export class InventoryItemModalComponent implements OnChanges {
+  @ViewChild(IonModal) modal!: IonModal;
+
   @Input() item!: ItemInventory;
   @Input() isOpen: boolean = false;
   @Output() dismissed = new EventEmitter<void>();
@@ -107,7 +109,7 @@ export class InventoryItemModalComponent implements OnChanges {
       await toast.present();
 
       this.step = 'detail';
-      this.isOpen = false; // Cierra el modal; (didDismiss) se encargará de emitir `dismissed`
+      this.modal.dismiss(); // Cierra el modal; (didDismiss) se encargará de emitir `dismissed`
     } catch (e) {
       console.error('Error depositing item:', e);
       const toast = await this.toastController.create({
@@ -137,7 +139,7 @@ export class InventoryItemModalComponent implements OnChanges {
 
         if (updatedQuantity <= 0) {
           // Si ya no queda el ítem, cerramos el modal
-          this.isOpen = false;
+          this.modal.dismiss();
         }
       })
       .catch((error: any) => {
