@@ -16,10 +16,12 @@
     }
   </div>
 
-  <app-collection-item-modal
-    [isOpen]="isModalOpen"
-    [item]="selectedItem!"
-    [collectionId]="selectedCollectionId!"
-    (dismissed)="onModalDismissed()"
-  />
+  @if (selectedItem && selectedCollectionId !== null) {
+    <app-collection-item-modal
+      [isOpen]="isModalOpen"
+      [item]="selectedItem!"
+      [collectionId]="selectedCollectionId!"
+      (dismissed)="onModalDismissed()"
+    />
+  }
 </ion-content>
