@@ -33,7 +33,6 @@
         <div class="item-actions">
           <app-button
             type="secondary"
-            class="use-button"
             (handleClick)="useItem()"
             [disabled]="item.quantity === 0 || useBtnIsDisabled"
           >
@@ -42,7 +41,6 @@
           <app-button
             type="gem"
             (handleClick)="sellItem()"
-            class="sell-button"
             [disabled]="item.quantity === 0 || sellBtnIsDisabled"
           >
             Vender uno (+{{ sellPrice }} gemas)
