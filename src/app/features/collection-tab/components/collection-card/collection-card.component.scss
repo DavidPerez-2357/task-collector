@@ -1,14 +1,14 @@
-$slot-size: 48px;
+$slot-size: 52px;
 
 .collection-card {
   display: flex;
   flex-direction: row;
-  gap: 0.8rem;
-  align-items: flex-start;
-  padding: 0.8rem;
+  gap: 1.2rem;
+  align-items: center; // Center vertically overall
+  padding: 1.2rem 1rem;
 
   background: rgba(0, 0, 0, 0.45);
-  border-radius: 12px;
+  border-radius: 16px;
   backdrop-filter: blur(6px);
 }
 
@@ -16,11 +16,25 @@ $slot-size: 48px;
 .collection-badge {
   position: relative;
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
+  width: 96px; // Más grande
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   img {
     object-fit: contain;
+    width: 100%;
+    height: 100%;
+    
+    // Oscurecido por defecto (hasta que se completa la colección)
+    filter: brightness(0.3) grayscale(0.8);
+    transition: filter 0.3s ease;
+  }
+
+  &.is-complete img {
+    // Al completarse, recupera su brillo y color original
+    filter: brightness(1) grayscale(0);
   }
 }
 
@@ -28,25 +42,33 @@ $slot-size: 48px;
 .collection-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: flex-end; // Alinear a la derecha
+  gap: 0.8rem;
   flex: 1;
   min-width: 0;
 }
 
 .collection-name {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.25rem; // Título un poco más grande
+  font-weight: 500;
   color: var(--ion-color-light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right; // Alinear texto a la derecha
 }
 
 /* 6-slot grid */
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(6, $slot-size);
-  gap: 4px;
+  grid-template-columns: repeat(3, $slot-size); // 3 columnas fijas de 52px
+  grid-template-rows: repeat(2, $slot-size); // 2 filas fijas
+  justify-content: space-between; // Reparte el espacio extra uniformemente entre columnas
+  align-content: center;
+  gap: 6px; // Gap vertical y mínimo horizontal
+  width: 100%;
+  max-width: 190px; // Límite más ajustado para que los objetos estén más juntos
 }
 
 /* Individual slot */
@@ -54,7 +76,7 @@ $slot-size: 48px;
   position: relative;
   width: $slot-size;
   height: $slot-size;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
 

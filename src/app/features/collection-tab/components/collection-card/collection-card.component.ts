@@ -27,11 +27,16 @@ export class CollectionCardComponent {
     return slots;
   }
 
-  /** True when every item that has been deposited is shiny. */
+  /** True if all items in the collection have been deposited */
+  get isCompleted(): boolean {
+    // collection.items already contains ONLY the items that belong to the collection
+    return this.collection.items.every((it) => it.deposited !== undefined);
+  }
+
+  /** True when the collection is completed AND every deposited item is shiny. */
   get allDepositedAreShiny(): boolean {
-    const deposited = this.collection.items.filter((it) => it.deposited !== undefined);
-    if (deposited.length === 0) return false;
-    return deposited.every((it) => it.deposited!.isShiny);
+    if (!this.isCompleted) return false;
+    return this.collection.items.every((it) => it.deposited!.isShiny);
   }
 
   get badgeImagePath(): string {

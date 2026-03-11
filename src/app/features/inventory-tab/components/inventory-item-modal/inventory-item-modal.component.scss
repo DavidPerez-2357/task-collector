@@ -15,6 +15,8 @@ ion-modal::part(content) {
   grid-template-columns: 1fr;
   gap: 1.1rem;
   padding: 1rem;
+  box-sizing: border-box;
+  width: 100%;
 
   h2,
   p {
@@ -98,9 +100,11 @@ main {
 /* STEP 2: Collections */
 .collection-step {
   padding: 1rem;
+  box-sizing: border-box; // Evitar que el padding expanda el ancho total
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  width: 100%; // Asegurar que no se sale del board
 
   .step-title {
     margin: 0;

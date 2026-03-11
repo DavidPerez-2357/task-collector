@@ -2,6 +2,7 @@
   <!-- Badge (left) -->
   <div
     class="collection-badge"
+    [class.is-complete]="isCompleted"
     [class.shiny]="allDepositedAreShiny"
     [style.--mask]="'url(/' + badgeImagePath + ')'"
   >
