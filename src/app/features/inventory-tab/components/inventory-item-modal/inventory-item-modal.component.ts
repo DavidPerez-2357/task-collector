@@ -104,7 +104,7 @@ export class InventoryItemModalComponent implements OnChanges {
       await toast.present();
 
       this.step = 'detail';
-      this.dismissed.emit(); // Cierra el modal y recarga el inventario
+      this.isOpen = false; // Cierra el modal; (didDismiss) se encargará de emitir `dismissed`
     } catch (e) {
       console.error('Error depositing item:', e);
       const toast = await this.toastController.create({
