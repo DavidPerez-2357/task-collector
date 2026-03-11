@@ -1,10 +1,11 @@
-import { Component, EventEmitter, inject, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 import { IonButton, IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
 import { getShinyPrice } from '@core/utils/shiny.util';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
+import { ItemService } from '@features/inventory-tab/services/item.service';
 
 interface EligibleCollection {
   id: number;
@@ -28,14 +29,16 @@ export class InventoryItemModalComponent implements OnChanges {
 
   private collectionService = inject(CollectionService);
   private toastController = inject(ToastController);
+  private itemService = inject(ItemService);
 
   step: ModalStep = 'detail';
   eligibleCollections: EligibleCollection[] = [];
   loadingCollections = false;
   depositing = false;
+  sellBtnIsDisabled = false;
 
-  async ngOnChanges() {
-    if (!this.isOpen) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOpen'] && !this.isOpen) {
       // Reset al cerrar
       this.step = 'detail';
       this.eligibleCollections = [];
@@ -129,7 +132,7 @@ export class InventoryItemModalComponent implements OnChanges {
     // llamar al servicio para vender el ítem
     this.itemService
       .sellItem(this.item.id, this.item.isShiny)
-      .then((updatedQuantity) => {
+      .then((updatedQuantity: number) => {
         this.item.quantity = updatedQuantity;
 
         if (updatedQuantity <= 0) {
@@ -137,7 +140,7 @@ export class InventoryItemModalComponent implements OnChanges {
           this.isOpen = false;
         }
       })
-      .catch((error) => {
+      .catch((error: any) => {
         // TODO: Manejar errores, como mostrar un mensaje de error al usuario
       })
       .finally(() => {
