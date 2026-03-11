@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { DatabaseService } from '@core/services/database.service';
+import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 @Injectable({
   providedIn: 'root',
@@ -16,14 +17,23 @@ export class PlayerStateRepository {
 
   async updateCoins(newCoins: number): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      await conn.run('UPDATE player_state SET coins = ? WHERE id = 1', [newCoins]);
+      const res = await conn.run('UPDATE player_state SET coins = ? WHERE id = 1', [newCoins]);
+
+      if (!res.changes || res.changes.changes === 0) {
+        throw new Error('No se pudo actualizar las monedas');
+      }
     });
   }
 
   async addCoins(coinsToAdd: number): Promise<void> {
-    console.log(`Adding ${coinsToAdd} coins to player state`);
     await this.databaseService.withConn(async (conn) => {
-      await conn.run('UPDATE player_state SET coins = coins + ? WHERE id = 1', [coinsToAdd]);
+      const res = await conn.run('UPDATE player_state SET coins = coins + ? WHERE id = 1', [
+        coinsToAdd,
+      ]);
+
+      if (!res.changes || res.changes.changes === 0) {
+        throw new Error('No se pudo agregar monedas');
+      }
     });
   }
 }
