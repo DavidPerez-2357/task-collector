@@ -180,14 +180,12 @@ export class CollectionRepository {
               values: [itemId, depositedIsShiny ? 1 : 0],
             };
 
-      await conn.executeSet([
-        {
-          statement:
-            'DELETE FROM player_collection_item WHERE collection_id = ? AND item_id = ? AND slot_is_shiny = ?',
-          values: [collectionId, itemId, slotIsShiny ? 1 : 0],
-        },
-        inventoryStmt,
-      ]);
+      await this.databaseService.run(
+        'DELETE FROM player_collection_item WHERE collection_id = ? AND item_id = ? AND slot_is_shiny = ?',
+        [collectionId, itemId, slotIsShiny ? 1 : 0],
+      );
+
+      await this.databaseService.run(inventoryStmt.statement, inventoryStmt.values);
     });
   }
 
