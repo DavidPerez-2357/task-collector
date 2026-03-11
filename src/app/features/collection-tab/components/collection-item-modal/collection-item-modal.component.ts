@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { IonButton, IonModal, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { CollectionItem } from '@core/models/collection.model';
@@ -12,6 +12,8 @@ import { CollectionService } from '@features/collection-tab/services/collection.
   imports: [IonModal, BoardComponent, IonButton],
 })
 export class CollectionItemModalComponent {
+  @ViewChild(IonModal) modal!: IonModal;
+
   @Input() item!: CollectionItem;
   @Input() collectionId!: number;
   @Input() isOpen: boolean = false;
@@ -62,7 +64,7 @@ export class CollectionItemModalComponent {
       });
       await toast.present();
 
-      this.dismissed.emit();
+      this.modal.dismiss();
     } catch (e) {
       console.error('Error returning item:', e);
       const toast = await this.toastController.create({
