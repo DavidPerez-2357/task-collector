@@ -3,6 +3,8 @@ button {
   border-radius: 0.2rem;
   width: 100%;
   font-size: 1rem;
+
+  transition: filter 0.2s ease;
 }
 
 button:enabled:active {
@@ -42,6 +44,11 @@ button:enabled:active {
 
 .text-xl {
   font-size: 1.5rem;
+}
+
+/* text transform classes */
+.uppercase {
+  text-transform: uppercase;
 }
 
 /* Border radius classes */

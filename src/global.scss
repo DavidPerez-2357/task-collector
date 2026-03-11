@@ -27,12 +27,12 @@
 
 html {
   box-sizing: border-box;
-  font-family: 'Jersey 20', sans-serif !important;
+  font-family: 'Jersey 20', system-ui, sans-serif !important;
   font-size: 18px;
 }
 
 * {
-  box-sizing: inherit;
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }

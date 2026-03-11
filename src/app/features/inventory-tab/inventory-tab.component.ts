@@ -100,6 +100,18 @@ export class InventoryTabComponent implements ViewWillEnter {
     }
   }
 
+  removeItemFromShelves(item: ItemInventory) {
+    for (let shelf of this.itemsShelves) {
+      const index = shelf.findIndex(
+        (shelfItem) => shelfItem.id === item.id && shelfItem.isShiny === item.isShiny,
+      );
+      if (index !== -1) {
+        shelf.splice(index, 1);
+        break;
+      }
+    }
+  }
+
   protected async onIonInfinite($event: InfiniteScrollCustomEvent) {
     if (this.allItems.length < this.PAGE_SIZE * this.actualPage) {
       $event.target.disabled = true;
@@ -119,6 +131,11 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   async onModalDismissed() {
     this.isModalOpen = false;
+
+    if (this.selectedItem && this.selectedItem.quantity <= 0) {
+      this.removeItemFromShelves(this.selectedItem);
+    }
+
     this.selectedItem = null;
 
     // Recargamos el inventario por si se ha depositado un objeto en una colección
