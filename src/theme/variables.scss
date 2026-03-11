@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Jersey 20';
+  src: url('/assets/fonts/Jersey_20/Jersey20-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ion-color-primary: #ba8657;
   --ion-color-primary-rgb: 186, 134, 87;
@@ -94,7 +102,7 @@
   --ion-item-background: var(--ion-color-dark-brown);
   --ion-item-color: var(--ion-color-light);
 
-  --ion-font-family: 'Jersey 20', sans-serif;
+  --ion-font-family: 'Jersey 20', system-ui, sans-serif;
 
   /* Rarity colors */
   --rarity-common-bg: #9ff7ff;
