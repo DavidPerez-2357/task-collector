@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { DatabaseService } from '@core/services/database.service';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 @Injectable({
   providedIn: 'root',
