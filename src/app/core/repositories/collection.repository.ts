@@ -125,6 +125,10 @@ export class CollectionRepository {
           statement: 'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
           values: [itemId, depositedIsShiny ? 1 : 0],
         },
+        {
+          statement: 'DELETE FROM inventory WHERE item_id = ? AND is_shiny = ? AND quantity <= 0',
+          values: [itemId, depositedIsShiny ? 1 : 0],
+        },
       ]);
     });
   }

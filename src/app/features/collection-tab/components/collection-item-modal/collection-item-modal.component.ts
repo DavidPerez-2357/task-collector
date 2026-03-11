@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { IonButton, IonModal } from '@ionic/angular/standalone';
+import { IonButton, IonModal, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { CollectionItem } from '@core/models/collection.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
@@ -18,6 +18,7 @@ export class CollectionItemModalComponent {
   @Output() dismissed = new EventEmitter<void>();
 
   private collectionService = inject(CollectionService);
+  private toastController = inject(ToastController);
 
   onDismiss() {
     this.dismissed.emit();
@@ -44,12 +45,34 @@ export class CollectionItemModalComponent {
   }
 
   async sendToInventory() {
-    await this.collectionService.returnItemToInventory(
-      this.collectionId,
-      this.item.id,
-      this.item.isShiny,
-      this.isShinyDeposited,
-    );
-    this.dismissed.emit();
+    try {
+      await this.collectionService.returnItemToInventory(
+        this.collectionId,
+        this.item.id,
+        this.item.isShiny,
+        this.isShinyDeposited,
+      );
+
+      const toast = await this.toastController.create({
+        message: `${this.item.name} devuelto al inventario`,
+        duration: 2500,
+        color: 'secondary',
+        position: 'top',
+        icon: 'arrow-undo-outline',
+      });
+      await toast.present();
+
+      this.dismissed.emit();
+    } catch (e) {
+      console.error('Error returning item:', e);
+      const toast = await this.toastController.create({
+        message: 'Error al devolver el objeto al inventario',
+        duration: 2500,
+        color: 'danger',
+        position: 'top',
+      });
+      await toast.present();
+    }
   }
 }
+

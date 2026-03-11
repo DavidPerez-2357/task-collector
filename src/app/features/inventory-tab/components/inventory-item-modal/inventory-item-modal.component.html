@@ -3,7 +3,7 @@
     <app-board width="">
 
       <!-- PASO 1: Detalle del objeto -->
-      @if (step === 'detail') {
+      @if (step === 'detail' && item) {
         <div class="item-details">
           <main>
             <div
@@ -41,7 +41,7 @@
       }
 
       <!-- PASO 2: Selección de colección -->
-      @if (step === 'collections') {
+      @if (step === 'collections' && item) {
         <div class="collection-step">
           <h2 class="step-title">Añadir a colección</h2>
           <p class="step-subtitle">¿Dónde quieres colocar <strong>{{ item.name }}</strong>?</p>

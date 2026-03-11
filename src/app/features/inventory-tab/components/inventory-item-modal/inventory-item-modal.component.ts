@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnChanges, Output } from '@angular/core';
-import { IonButton, IonModal, IonSpinner } from '@ionic/angular/standalone';
+import { IonButton, IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
@@ -27,6 +27,7 @@ export class InventoryItemModalComponent implements OnChanges {
   @Output() dismissed = new EventEmitter<void>();
 
   private collectionService = inject(CollectionService);
+  private toastController = inject(ToastController);
 
   step: ModalStep = 'detail';
   eligibleCollections: EligibleCollection[] = [];
@@ -92,10 +93,27 @@ export class InventoryItemModalComponent implements OnChanges {
         col.slotIsShiny,
         this.item.isShiny,
       );
+      
+      const toast = await this.toastController.create({
+        message: `${this.item.name} añadido a la colección ${col.name}!`,
+        duration: 2500,
+        color: 'success',
+        position: 'top',
+        icon: 'checkmark-circle'
+      });
+      await toast.present();
+
       this.step = 'detail';
       this.dismissed.emit(); // Cierra el modal y recarga el inventario
     } catch (e) {
       console.error('Error depositing item:', e);
+      const toast = await this.toastController.create({
+        message: 'Error al añadir el objeto a la colección',
+        duration: 2500,
+        color: 'danger',
+        position: 'top'
+      });
+      await toast.present();
     } finally {
       this.depositing = false;
     }
