@@ -5,11 +5,14 @@ $slot-size: 52px;
   flex-direction: row;
   gap: 1.2rem;
   align-items: center; // Center vertically overall
-  padding: 1.2rem 1rem;
-
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
+  
+  border-image: url('/assets/ui/collectionAndShopFrame.png') 30 30 30 30 fill / 30px 30px 30px 30px;
+  padding: 30px;
+  
+  // Remove previous background/border
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
 }
 
 /* Badge */
@@ -52,7 +55,7 @@ $slot-size: 52px;
   margin: 0;
   font-size: 1.25rem; // Título un poco más grande
   font-weight: 500;
-  color: var(--ion-color-light);
+  color: var(--ion-color-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
