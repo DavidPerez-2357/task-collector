@@ -1,0 +1,41 @@
+ion-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+}
+
+ion-modal::part(content) {
+  height: fit-content;
+  width: 85dvw;
+  max-width: 400px;
+}
+
+.modal-content {
+  padding: 16px;
+  text-align: center;
+  color: var(--ion-color-dark);
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    color: var(--ion-color-tertiary-contrast);
+    font-size: 1.1rem;
+    margin: 8px 0;
+  }
+
+  .price-text {
+    color: var(--ion-color-gem);
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+}

@@ -287,4 +287,22 @@ export class CollectionRepository {
       items: items,
     };
   }
+
+  async buyCollectionUsingGems(collectionId: number, price: number){
+    const set = [
+      {
+        statement: 'INSERT INTO player_collection (collection_id, purchased_at) VALUES (?, ?)',
+        values: [collectionId, new Date().toISOString()],
+      },
+      {
+        statement: 'UPDATE player_state SET coins = coins - ? WHERE id = 1',
+        values: [price],
+      },
+    ];
+    
+    await this.databaseService.withConn(async (conn) => {
+      await conn.executeSet(set, true);
+    });
+  }
+
 }

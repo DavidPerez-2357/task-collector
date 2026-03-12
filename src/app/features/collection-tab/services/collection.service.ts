@@ -53,4 +53,18 @@ export class CollectionService {
       depositedIsShiny,
     );
   }
+
+  async getUnownedCollections(): Promise<Collection[]> {
+    const [ownedIds, allCollections] = await Promise.all([
+      this.collectionRepository.getPlayerCollections(),
+      this.collectionRepository.getAllCollections(),
+    ]);
+
+    const ownedSet = new Set(ownedIds);
+    return allCollections.filter((c) => !ownedSet.has(c.id));
+  }
+
+  async buyCollection(collectionId: number, price: number){
+    await this.collectionRepository.buyCollectionUsingGems(collectionId, price);
+  }  
 }
