@@ -34,6 +34,7 @@ export class InventoryTabComponent implements ViewWillEnter {
   private readonly itemService = inject(ItemService);
 
   @ViewChild(IonContent) content!: IonContent;
+  @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
 
   actualPage: number = 1;
   allItems: ItemInventory[] = [];
@@ -52,13 +53,7 @@ export class InventoryTabComponent implements ViewWillEnter {
     await this.scrollToTop();
 
     await this.loadMoreItems(this.actualPage);
-
-    if (this.itemsShelves.length < this.MIN_SHELVES) {
-      const emptyShelvesNeeded = this.MIN_SHELVES - this.itemsShelves.length;
-      for (let i = 0; i < emptyShelvesNeeded; i++) {
-        this.itemsShelves.push([]);
-      }
-    }
+    this.ensureMinShelves();
   }
 
   async scrollToTop() {
@@ -112,6 +107,13 @@ export class InventoryTabComponent implements ViewWillEnter {
     }
   }
 
+  private ensureMinShelves() {
+    const emptyShelvesNeeded = this.MIN_SHELVES - this.itemsShelves.length;
+    for (let i = 0; i < emptyShelvesNeeded; i++) {
+      this.itemsShelves.push([]);
+    }
+  }
+
   protected async onIonInfinite($event: InfiniteScrollCustomEvent) {
     if (this.allItems.length < this.PAGE_SIZE * this.actualPage) {
       $event.target.disabled = true;
@@ -129,7 +131,7 @@ export class InventoryTabComponent implements ViewWillEnter {
     this.isModalOpen = true;
   }
 
-  onModalDismissed() {
+  async onModalDismissed() {
     this.isModalOpen = false;
 
     if (this.selectedItem && this.selectedItem.quantity <= 0) {

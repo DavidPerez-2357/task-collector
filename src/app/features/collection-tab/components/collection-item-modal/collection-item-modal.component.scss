@@ -1,0 +1,81 @@
+ion-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+}
+
+ion-modal::part(content) {
+  height: fit-content;
+  width: 85dvw;
+  max-width: 400px;
+}
+
+.item-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.1rem;
+  padding: 1rem;
+
+  h2,
+  p {
+    margin: 0;
+    text-align: center;
+  }
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.item-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 100%;
+    height: 64px;
+  }
+}
+
+.item-description {
+  font-size: 1rem;
+  color: var(--ion-color-light-shade);
+}
+
+.item-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-flow: wrap;
+
+  div {
+    font-size: 0.9rem;
+    border-radius: 0.2rem;
+    width: fit-content;
+    padding: 0.1rem 0.4rem;
+    color: var(--ion-color-dark);
+  }
+
+  .shiny-badge {
+    background-color: var(--ion-color-gem);
+  }
+}
+
+.item-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  ion-button {
+    --padding-start: 0.8rem;
+    --padding-end: 0.8rem;
+    --border-radius: 0.2rem;
+    --background: var(--ion-color-secondary);
+    --color: var(--ion-color-secondary-contrast);
+    width: 100%;
+  }
+}

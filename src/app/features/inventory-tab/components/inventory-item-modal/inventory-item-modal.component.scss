@@ -75,3 +75,103 @@ main {
   gap: 0.6rem;
   flex-flow: column;
 }
+
+/* STEP 2: Collections */
+.collection-step {
+  padding: 1rem;
+  box-sizing: border-box; // Evitar que el padding expanda el ancho total
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%; // Asegurar que no se sale del board
+
+  .step-title {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--ion-color-light);
+    text-align: center;
+  }
+
+  .step-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ion-color-light-shade);
+    text-align: center;
+  }
+}
+
+.loading-row {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.empty-text {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ion-color-light-shade);
+  padding: 0.5rem 0;
+}
+
+.collections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 55dvh;
+  overflow-y: auto;
+}
+
+.collection-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  width: 100%;
+  text-align: left;
+  color: var(--ion-color-light);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .badge-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .col-name {
+    flex: 1;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shiny-tag {
+    font-size: 0.75rem;
+    color: var(--ion-color-gem);
+    flex-shrink: 0;
+  }
+}
+
+.back-btn {
+  --color: var(--ion-color-light-shade);
+  align-self: center;
+}

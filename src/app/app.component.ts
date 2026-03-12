@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { DatabaseService } from '@core/services/database.service';
+import { addIcons } from 'ionicons';
+import { checkmarkCircle, arrowUndoOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,13 @@ import { DatabaseService } from '@core/services/database.service';
 })
 export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
+
+  constructor() {
+    addIcons({
+      'checkmark-circle': checkmarkCircle,
+      'arrow-undo-outline': arrowUndoOutline,
+    });
+  }
 
   async ngOnInit() {
     // TODO: Implement loading screen while database is being initialized
