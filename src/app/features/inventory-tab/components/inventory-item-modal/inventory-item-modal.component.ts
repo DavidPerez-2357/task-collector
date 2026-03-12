@@ -113,7 +113,7 @@ export class InventoryItemModalComponent implements OnChanges {
       await toast.present();
       
       if (this.item.quantity <= 0) {
-        this.modal.dismiss();
+        this.isOpen = false;
       } else {
         await this.openCollectionStep();
       }
@@ -131,10 +131,6 @@ export class InventoryItemModalComponent implements OnChanges {
     }
   }
 
-  useItem() {
-    // TODO: Implementar lógica para usar el ítem, como aplicar efectos a un Pokémon o al jugador
-  }
-
   sellItem() {
     if (this.item.isShiny) {
       // TODO: Mostrar mensaje de confirmación para vender
@@ -150,7 +146,7 @@ export class InventoryItemModalComponent implements OnChanges {
 
         if (updatedQuantity <= 0) {
           // Si ya no queda el ítem, cerramos el modal
-          this.modal.dismiss();
+          this.isOpen = false;
         }
       })
       .catch((error: any) => {

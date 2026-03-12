@@ -1,11 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Collection, CollectionItem } from '@core/models/collection.model';
 
-export interface CollectionItemClickEvent {
-  item: CollectionItem;
-  collectionId: number;
-  action: 'return' | 'deposit';
-}
+import { CollectionItemClickEvent } from '../../interfaces/collection.interface';
 
 @Component({
   selector: 'app-collection-card',

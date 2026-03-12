@@ -1,7 +1,8 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { IonContent, ViewWillEnter, ToastController } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
-import { CollectionCardComponent, CollectionItemClickEvent } from '@features/collection-tab/components/collection-card/collection-card.component';
+import { CollectionCardComponent } from '@features/collection-tab/components/collection-card/collection-card.component';
+import { CollectionItemClickEvent } from '@features/collection-tab/interfaces/collection.interface';
 import { CollectionItemModalComponent } from '@features/collection-tab/components/collection-item-modal/collection-item-modal.component';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { Collection, CollectionItem } from '@core/models/collection.model';
@@ -10,12 +11,7 @@ import { Collection, CollectionItem } from '@core/models/collection.model';
   selector: 'app-collection-tab',
   templateUrl: 'collection-tab.component.html',
   styleUrls: ['collection-tab.component.scss'],
-  imports: [
-    IonContent,
-    TitleSignComponent,
-    CollectionCardComponent,
-    CollectionItemModalComponent,
-  ],
+  imports: [IonContent, TitleSignComponent, CollectionCardComponent, CollectionItemModalComponent],
 })
 export class CollectionTabComponent implements ViewWillEnter {
   @ViewChild(IonContent) content!: IonContent;
@@ -45,58 +41,85 @@ export class CollectionTabComponent implements ViewWillEnter {
     }
   }
 
-  async onItemClicked(event: CollectionItemClickEvent) {
-    if (event.action === 'return') {
-      this.selectedItem = event.item;
-      this.selectedCollectionId = event.collectionId;
-      this.isModalOpen = true;
-    } else if (event.action === 'deposit') {
-      try {
-        let depositShiny = false;
-        if (event.item.isShiny) {
-          // El hueco requiere shiny
-          depositShiny = true;
-        } else {
-          // El hueco es normal. Depositamos normal si lo tenemos, sino depositamos el shiny.
-          if (event.item.ownedNormal) depositShiny = false;
-          else if (event.item.ownedShiny) depositShiny = true;
+  private async reloadCollection(collectionId: number) {
+    try {
+      const updated = await this.collectionService.getCollectionById(collectionId);
+      if (updated) {
+        const index = this.collections.findIndex((c) => c.id === collectionId);
+        if (index !== -1) {
+          this.collections[index] = updated;
         }
-
-        await this.collectionService.depositItemToCollection(
-          event.collectionId,
-          event.item.id,
-          event.item.isShiny,  // Si el hueco de la colección es shiny
-          depositShiny         // Lo que depositamos realmente
-        );
-
-        const toast = await this.toastController.create({
-          message: `${event.item.name} añadido a la colección!`,
-          duration: 2500,
-          color: 'success',
-          position: 'top',
-          icon: 'checkmark-circle'
-        });
-        await toast.present();
-
-        await this.loadCollections();
-      } catch (e) {
-        console.error('Error depositing item directly:', e);
-        const toast = await this.toastController.create({
-          message: 'Error al añadir el objeto a la colección',
-          duration: 2500,
-          color: 'danger',
-          position: 'top'
-        });
-        await toast.present();
       }
+    } catch (error) {
+      console.error('Error reloading collection:', error);
     }
   }
 
+  async onItemClicked(event: CollectionItemClickEvent) {
+    switch (event.action) {
+      case 'return':
+        this.handleReturnAction(event);
+        break;
+      case 'deposit':
+        await this.handleDepositAction(event);
+        break;
+      default:
+        console.warn('Acción no soportada:', event.action);
+    }
+  }
+
+  // --- FUNCIONES PRIVADAS EXTRAÍDAS ---
+
+  private handleReturnAction(event: CollectionItemClickEvent) {
+    this.selectedItem = event.item;
+    this.selectedCollectionId = event.collectionId;
+    this.isModalOpen = true;
+  }
+
+  private async handleDepositAction(event: CollectionItemClickEvent) {
+    const { item, collectionId } = event;
+    const depositShiny = this.shouldDepositShiny(item);
+
+    try {
+      await this.collectionService.depositItemToCollection(
+        collectionId,
+        item.id,
+        item.isShiny, // Si el hueco de la colección es shiny
+        depositShiny, // Lo que depositamos realmente
+      );
+
+      await this.showToast(`${item.name} añadido a la colección!`, 'success', 'checkmark-circle');
+      await this.reloadCollection(collectionId);
+    } catch (error) {
+      console.error('Error depositing item directly:', error);
+      await this.showToast('Error al añadir el objeto a la colección', 'danger');
+    }
+  }
+
+  private shouldDepositShiny(item: any): boolean {
+    if (item.isShiny) return true; // El hueco requiere shiny
+    if (item.ownedNormal) return false; // El hueco es normal y tenemos normal
+
+    return !!item.ownedShiny; // El hueco es normal, no tenemos normal, pero sí shiny
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2500,
+      color,
+      position: 'top',
+      icon,
+    });
+    await toast.present();
+  }
+
   async onModalDismissed() {
+    if (this.selectedCollectionId) {
+      await this.reloadCollection(this.selectedCollectionId);
+    }
     this.isModalOpen = false;
     this.selectedItem = null;
     this.selectedCollectionId = null;
-    // Reload to reflect the returned item
-    await this.loadCollections();
   }
 }

@@ -18,6 +18,10 @@ export class CollectionService {
     return allCollections.filter((c) => ownedSet.has(c.id));
   }
 
+  async getCollectionById(id: number): Promise<Collection | null> {
+    return this.collectionRepository.getCollectionById(id);
+  }
+
   async returnItemToInventory(
     collectionId: number,
     itemId: number,

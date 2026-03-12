@@ -32,15 +32,6 @@
           <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
 
           <div class="item-actions">
-            @if(item.name === 'Desconocido' || false) {
-              <app-button
-                type="primary"
-                [disabled]="useBtnIsDisabled"
-                (handleClick)="useItem()"
-              >
-                Usar objeto
-              </app-button>
-            }
             <app-button
               btnClass="use-button"
               type="primary"

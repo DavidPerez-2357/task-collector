@@ -59,7 +59,7 @@ export class CollectionRepository {
             isShiny: row.deposited_is_shiny === 1,
           };
         }
-        
+
         itemObj.ownedNormal = row.owned_normal === 1;
         itemObj.ownedShiny = row.owned_shiny === 1;
 
@@ -79,6 +79,72 @@ export class CollectionRepository {
       return collectionsRaw.map((c: any) =>
         this.formatDBRowToCollection(c, itemsByCollection.get(c.id) || []),
       );
+    });
+  }
+
+  async getCollectionById(collectionId: number): Promise<Collection | null> {
+    return await this.databaseService.withConn(async (conn) => {
+      // 1. Obtenemos la colección
+      const collRes = await conn.query('SELECT * FROM collection WHERE id = ?', [collectionId]);
+      if (!collRes.values || collRes.values.length === 0) return null;
+      const c = collRes.values[0];
+
+      // 2. Obtenemos los ítems de esta colección
+      const itemsRes = await conn.query(
+        `
+        SELECT
+          ci.collection_id,
+          ci.is_shiny AS slot_is_shiny,
+          i.id, i.name, i.description, i.rarity, i.image_name, i.sell_price,
+          pci.deposited_is_shiny,
+          EXISTS(
+            SELECT 1 FROM inventory inv 
+            WHERE inv.item_id = ci.item_id 
+              AND inv.quantity > 0 
+              AND inv.is_shiny = 0
+          ) AS owned_normal,
+          EXISTS(
+            SELECT 1 FROM inventory inv 
+            WHERE inv.item_id = ci.item_id 
+              AND inv.quantity > 0 
+              AND inv.is_shiny = 1
+          ) AS owned_shiny
+        FROM collection_item ci
+        JOIN item i ON ci.item_id = i.id
+        LEFT JOIN player_collection_item pci
+          ON pci.collection_id = ci.collection_id
+          AND pci.item_id = ci.item_id
+          AND pci.slot_is_shiny = ci.is_shiny
+        WHERE ci.collection_id = ?
+      `,
+        [collectionId],
+      );
+      const itemsRaw = itemsRes.values || [];
+
+      const items: CollectionItem[] = itemsRaw.map((row) => {
+        const itemObj = this.formatDBRowToCollectionItem(row);
+
+        if (row.deposited_is_shiny !== null && row.deposited_is_shiny !== undefined) {
+          itemObj.deposited = {
+            isShiny: row.deposited_is_shiny === 1,
+          };
+        }
+
+        itemObj.ownedNormal = row.owned_normal === 1;
+        itemObj.ownedShiny = row.owned_shiny === 1;
+
+        if (!itemObj.deposited) {
+          if (itemObj.isShiny) {
+            itemObj.ownedEligible = itemObj.ownedShiny;
+          } else {
+            itemObj.ownedEligible = itemObj.ownedNormal || itemObj.ownedShiny;
+          }
+        }
+
+        return itemObj;
+      });
+
+      return this.formatDBRowToCollection(c, items);
     });
   }
 
@@ -146,7 +212,8 @@ export class CollectionRepository {
         values: [collectionId, itemId, slotIsShiny ? 1 : 0, depositedIsShiny ? 1 : 0],
       },
       {
-        statement: 'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
+        statement:
+          'UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ? AND is_shiny = ?',
         values: [itemId, depositedIsShiny ? 1 : 0],
       },
       {
@@ -177,7 +244,8 @@ export class CollectionRepository {
       const inventoryStmt =
         existing.values && existing.values.length > 0
           ? {
-              statement: 'UPDATE inventory SET quantity = quantity + 1 WHERE item_id = ? AND is_shiny = ?',
+              statement:
+                'UPDATE inventory SET quantity = quantity + 1 WHERE item_id = ? AND is_shiny = ?',
               values: [itemId, depositedIsShiny ? 1 : 0],
             }
           : {

@@ -64,7 +64,7 @@ export class CollectionItemModalComponent {
       });
       await toast.present();
 
-      this.modal.dismiss();
+      this.isOpen = false;
     } catch (e) {
       console.error('Error returning item:', e);
       const toast = await this.toastController.create({
