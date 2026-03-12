@@ -98,11 +98,14 @@ $slot-size: 52px;
 
   /* Player owns the item but it's not deposited yet → Highlighted! */
   &.owned-eligible {
-    opacity: 0.6;
     filter: drop-shadow(0 0 4px var(--ion-color-success));
     border: 1px solid var(--ion-color-success);
     cursor: pointer;
     animation: pulse-glow 2s infinite;
+
+    img {
+      opacity: 0.6;
+    }
 
     &:active {
       transform: scale(0.95);
