@@ -111,10 +111,11 @@ export class InventoryItemModalComponent implements OnChanges {
         icon: 'checkmark-circle'
       });
       await toast.present();
-
-      this.step = 'detail';
+      
       if (this.item.quantity <= 0) {
         this.modal.dismiss();
+      } else {
+        await this.openCollectionStep();
       }
     } catch (e) {
       console.error('Error depositing item:', e);
