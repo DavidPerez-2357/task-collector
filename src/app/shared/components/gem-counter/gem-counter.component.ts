@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BoardComponent } from '../board/board.component';
+import { BoardComponent } from '@shared/components/board/board.component';
 
 @Component({
   selector: 'app-gem-counter',
