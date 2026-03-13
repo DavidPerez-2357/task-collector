@@ -1,4 +1,13 @@
-import { Component, EventEmitter, inject, Input, OnChanges, SimpleChanges, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
@@ -100,7 +109,7 @@ export class InventoryItemModalComponent implements OnChanges {
         col.slotIsShiny,
         this.item.isShiny,
       );
-      
+
       this.item.quantity -= 1;
 
       const toast = await this.toastController.create({
@@ -108,10 +117,10 @@ export class InventoryItemModalComponent implements OnChanges {
         duration: 2500,
         color: 'success',
         position: 'top',
-        icon: 'checkmark-circle'
+        icon: 'checkmark-circle',
       });
       await toast.present();
-      
+
       if (this.item.quantity <= 0) {
         this.isOpen = false;
       } else {
@@ -123,7 +132,7 @@ export class InventoryItemModalComponent implements OnChanges {
         message: 'Error al añadir el objeto a la colección',
         duration: 2500,
         color: 'danger',
-        position: 'top'
+        position: 'top',
       });
       await toast.present();
     } finally {
