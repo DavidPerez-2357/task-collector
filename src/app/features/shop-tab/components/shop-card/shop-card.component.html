@@ -3,7 +3,11 @@
 
   <div class="collection-grid">
     @for (item of collection.items; track item.id) {
-      <div class="grid-slot" [style.--mask]="'url(' + itemImagePath(item.imageName) + ')'">
+      <div 
+        class="grid-slot" 
+        [class.shiny]="item.isShiny" 
+        [style.--mask]="'url(' + itemImagePath(item.imageName) + ')'"
+      >
         <img [src]="itemImagePath(item.imageName)" [alt]="item.name" />
       </div>
     }
