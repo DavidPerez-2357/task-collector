@@ -13,9 +13,10 @@ import { Collection } from '@core/models/collection.model';
 export class ShopBuyModalComponent {
   @ViewChild(IonModal) modal!: IonModal;
 
-  @Input() collection!: Collection | null;
+  @Input() collection: Collection | null = null;
   @Input() isOpen: boolean = false;
   @Input() isBuying: boolean = false; // Recibimos el estado de carga desde el padre
+  @Input() playerCoins: number = 0;
 
   @Output() dismissed = new EventEmitter<void>();
   @Output() confirmPurchase = new EventEmitter<Collection>();

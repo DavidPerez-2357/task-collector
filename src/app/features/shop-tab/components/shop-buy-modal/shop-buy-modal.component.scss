@@ -31,11 +31,33 @@ ion-modal::part(content) {
     color: var(--ion-color-gem);
     font-size: 1.2rem;
     margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    .gem-icon-modal {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
   }
 
   .modal-actions {
     display: flex;
     justify-content: center;
     gap: 16px;
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gem-icon-button {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
   }
 }

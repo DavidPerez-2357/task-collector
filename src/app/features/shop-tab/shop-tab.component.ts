@@ -1,17 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { IonContent, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
+import { BoardComponent } from '@shared/components/board/board.component';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ShopBuyModalComponent } from './components/shop-buy-modal/shop-buy-modal.component';
+import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
   styleUrls: ['shop-tab.component.scss'],
-  imports: [IonContent, TitleSignComponent, ButtonComponent, IonSpinner, ShopBuyModalComponent],
+  imports: [IonContent, TitleSignComponent, ButtonComponent, IonSpinner, ShopBuyModalComponent, GemCounterComponent],
 })
 export class ShopTabComponent implements OnInit {
   private collectionService = inject(CollectionService);

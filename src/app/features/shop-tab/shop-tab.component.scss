@@ -1,23 +1,11 @@
 ion-content {
-  --background: url('/assets/backgrounds/collection-bg.png') no-repeat top center / cover;
+--background: var(--ion-color-dark-brown);
 }
 
-.coins-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  border: 2px solid var(--ion-color-gem);
-  border-radius: 24px;
-  padding: 8px 16px;
-  width: fit-content;
-  margin: 0 auto 24px;
-  
-  .coin-amount {
-    color: var(--ion-color-light);
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
+.shop-wall {
+  min-height: 100%;
+  background: url('/assets/backgrounds/collection-bg.png') repeat-y top center;
+  background-size: 100% auto;
 }
 
 .loading-container, .empty-text {
@@ -29,6 +17,7 @@ ion-content {
 }
 
 .shop-list {
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -57,8 +46,8 @@ ion-content {
     justify-content: center;
 
     .grid-slot {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       background-color: rgba(255, 255, 255, 0.05);
       border-radius: 8px;
       display: flex;
@@ -79,5 +68,18 @@ ion-content {
     display: flex;
     justify-content: center;
     margin-top: 8px;
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .gem-icon-button {
+      width: 25px;
+      height: 25px;
+      object-fit: contain;
+    }
   }
 }
