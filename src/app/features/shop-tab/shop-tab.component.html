@@ -23,12 +23,16 @@
       </div>
     }
   </div>
-  <app-shop-buy-modal
-    [isOpen]="isModalOpen"
-    [collection]="selectedCollection"
-    [isBuying]="isBuying"
-    [playerCoins]="playerCoins"
-    (dismissed)="onModalDismissed()"
-    (confirmPurchase)="handlePurchase($event)"
-  ></app-shop-buy-modal>
+
+  @if (selectedCollection) {
+    <app-shop-buy-modal
+      [isOpen]="isModalOpen"
+      [collection]="selectedCollection"
+      [isBuying]="isBuying"
+      [playerCoins]="playerCoins"
+      (dismissed)="onModalDismissed()"
+      (confirmPurchase)="handlePurchase($event)"
+      (insufficientFunds)="handleInsufficientFunds()"
+    ></app-shop-buy-modal>
+  }
 </ion-content>

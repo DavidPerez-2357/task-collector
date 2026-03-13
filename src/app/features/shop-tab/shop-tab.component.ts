@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { IonContent, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
-import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
 import { ShopBuyModalComponent } from './components/shop-buy-modal/shop-buy-modal.component';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { ShopCardComponent } from './components/shop-card/shop-card.component';
+import { ShopService } from './services/shop.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -21,7 +21,7 @@ import { ShopCardComponent } from './components/shop-card/shop-card.component';
   ],
 })
 export class ShopTabComponent implements OnInit {
-  private collectionService = inject(CollectionService);
+  private shopService = inject(ShopService);
   private playerStateService = inject(PlayerStateService);
   private toastController = inject(ToastController);
 
@@ -46,7 +46,7 @@ export class ShopTabComponent implements OnInit {
     this.isLoading = true;
     try {
       const [collections, coins] = await Promise.all([
-        this.collectionService.getUnownedCollections(),
+        this.shopService.getUnownedCollections(),
         this.playerStateService.getCoins(),
       ]);
       this.unownedCollections = collections;
@@ -66,12 +66,14 @@ export class ShopTabComponent implements OnInit {
   onModalDismissed() {
     this.isModalOpen = false;
   }
-
+  async handleInsufficientFunds() {
+    await this.showToast('No tienes gemas suficientes.', 'danger');
+  }
   async handlePurchase(collection: Collection) {
     if (this.isBuying) return;
     this.isBuying = true;
     try {
-      await this.collectionService.buyCollection(collection.id, collection.price);
+      await this.shopService.buyCollection(collection.id, collection.price);
       this.updateUISuccess(collection);
       await this.showToast(
         `¡Colección ${collection.name} adquirida!`,
