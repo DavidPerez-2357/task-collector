@@ -66,7 +66,6 @@ export class DevToolsService {
         interval: 2,
         effort: TaskEffort.Medium,
         category: { id: 1, name: 'Categoría 1', imageName: 'categoria1.png' },
-        resetOnCycle: false,
       },
       {
         name: 'Tarea de prueba 2',
@@ -74,7 +73,6 @@ export class DevToolsService {
         interval: 1,
         effort: TaskEffort.High,
         category: { id: 2, name: 'Categoría 2', imageName: 'categoria2.png' },
-        resetOnCycle: true,
       },
       {
         name: 'Tarea de prueba 3',
@@ -82,7 +80,6 @@ export class DevToolsService {
         interval: 1,
         effort: TaskEffort.Low,
         category: { id: 3, name: 'Categoría 3', imageName: 'categoria3.png' },
-        resetOnCycle: true,
       },
       {
         name: 'Tarea de prueba 4',
@@ -90,7 +87,6 @@ export class DevToolsService {
         interval: 1,
         effort: TaskEffort.Very_high,
         category: { id: 4, name: 'Categoría 4', imageName: 'categoria4.png' },
-        resetOnCycle: true,
       },
     ];
 

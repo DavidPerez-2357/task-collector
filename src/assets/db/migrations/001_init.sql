@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS task (
   frequency INTEGER NOT NULL,
   interval INTEGER NOT NULL,
   effort INTEGER NOT NULL,
-  reset_on_cycle INTEGER NOT NULL DEFAULT 0,
   category_id INTEGER,
   deleted INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL

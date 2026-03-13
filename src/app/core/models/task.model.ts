@@ -22,7 +22,6 @@ export interface Task {
   interval: number;
   effort: TaskEffort;
   category: Category;
-  resetOnCycle: boolean;
 }
 
 export interface WeeklyTask extends Task {

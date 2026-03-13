@@ -50,17 +50,10 @@ export class TaskRepository {
     return await this.databaseService.withConn(async (conn) => {
       await conn.run(
         `
-        INSERT INTO task (name, frequency, interval, effort, category_id, reset_on_cycle)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO task (name, frequency, interval, effort, category_id)
+        VALUES (?, ?, ?, ?, ?)
       `,
-        [
-          task.name,
-          task.frequency,
-          task.interval,
-          task.effort,
-          task.category.id,
-          task.resetOnCycle ? 1 : 0,
-        ],
+        [task.name, task.frequency, task.interval, task.effort, task.category.id],
       );
     });
   }
@@ -73,7 +66,7 @@ export class TaskRepository {
     return await this.databaseService.withConn(async (conn) => {
       const res = await conn.query(
         `
-        SELECT ta.id, t.id as task_id, t.name, t.frequency, t.interval, t.effort, t.reset_on_cycle, t.deleted,
+        SELECT ta.id, t.id as task_id, t.name, t.frequency, t.interval, t.effort, t.deleted,
                ta.start_date, ta.end_date,
                c.id as category_id, c.name as category_name, c.image_name as category_image_name
         FROM task_active ta
