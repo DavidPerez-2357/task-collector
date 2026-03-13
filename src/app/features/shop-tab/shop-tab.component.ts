@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { IonContent, IonSpinner, ToastController } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, ToastController, ViewWillEnter} from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
@@ -20,7 +20,7 @@ import { ShopService } from './services/shop.service';
     ShopCardComponent,
   ],
 })
-export class ShopTabComponent implements OnInit {
+export class ShopTabComponent implements ViewWillEnter {
   @ViewChild(IonContent) content!: IonContent;
   private shopService = inject(ShopService);
   private playerStateService = inject(PlayerStateService);
@@ -33,10 +33,6 @@ export class ShopTabComponent implements OnInit {
 
   selectedCollection: Collection | null = null;
   isModalOpen: boolean = false;
-
-  async ngOnInit() {
-    await this.loadData();
-  }
 
   // Refresca al entrar a la tab por si ha ganado gemas en otra pestaña
   async ionViewWillEnter() {
