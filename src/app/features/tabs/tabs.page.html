@@ -1,9 +1,14 @@
 <ion-tabs>
   <!-- Iconos flotantes de acceso rápido: config y tienda -->
-  <div class="corner-buttons">
-    <a [routerLink]="['/config']" class="corner-btn corner-btn--config"></a>
-    <a [routerLink]="['/tabs/shop']" class="corner-btn corner-btn--shop"></a>
-  </div>
+  @if (ui.showCornerButtons()) {
+    <div class="corner-buttons">
+      <a [routerLink]="['/task/create']" class="corner-btn--create"></a>
+      <div class="corner-btn-group">
+        <a [routerLink]="['/config']" class="corner-btn corner-btn--config"></a>
+        <a [routerLink]="['/tabs/shop']" class="corner-btn corner-btn--shop"></a>
+      </div>
+    </div>
+  }
 
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home" [routerLink]="['/tabs/home']">
