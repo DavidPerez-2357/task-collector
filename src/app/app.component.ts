@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { DatabaseService } from '@core/services/database.service';
 import { addIcons } from 'ionicons';
-import { checkmarkCircle, arrowUndoOutline } from 'ionicons/icons';
+import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
     addIcons({
       'checkmark-circle': checkmarkCircle,
       'arrow-undo-outline': arrowUndoOutline,
+      'close-outline': closeOutline,
     });
   }
 

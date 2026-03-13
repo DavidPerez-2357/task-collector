@@ -34,11 +34,19 @@ ion-tab-button img {
 
 /* Botones flotantes de config y tienda, anclados arriba-derecha de la barra */
 .corner-buttons {
-  position: absolute;
-  bottom: 95px; /* Altura de la tab bar */
+  position: fixed;
+  bottom: calc(95px); /* Altura de la tab bar */
   right: 0;
   display: flex;
+  padding: 0.2rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.corner-btn-group {
+  display: flex;
   z-index: 100;
+  gap: 0.2rem;
 }
 
 .corner-btn {
@@ -47,10 +55,21 @@ ion-tab-button img {
   background-size: contain;
 }
 
+.corner-btn--create {
+  background-image: url('/assets/ui/create-task-btn.png');
+  width: 169px;
+  height: 61px;
+}
+
 .corner-btn--config {
   background-image: url('/assets/icons/config-icon.png');
 }
 
 .corner-btn--shop {
   background-image: url('/assets/icons/shop-icon.png');
+}
+
+.corner-btn:active,
+.corner-btn--create:active {
+  filter: brightness(0.8);
 }

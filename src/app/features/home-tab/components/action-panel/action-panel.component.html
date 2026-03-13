@@ -1,0 +1,64 @@
+<div class="action-panel-container" [class.closed]="!isOpen">
+  <app-board class="action-panel-board" width="100%" height="100%">
+    <button class="close-btn" (click)="closePanel()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+
+    <div class="panel-content">
+      <div class="actions-grid">
+        <app-button
+          type="success"
+          [border]="true"
+          btnClass="flex h-full center column rounded-sm text-lg gap-1"
+          (handleClick)="completeTask()"
+        >
+          <ion-icon name="checkmark-circle-outline" size="30"></ion-icon>
+          <span>Completar</span>
+        </app-button>
+
+        <div class="other-buttons">
+          @if (!isTodayTask) {
+            <app-button
+              type="primary"
+              [border]="true"
+              btnClass="action-btn flex center rounded-sm"
+              (handleClick)="doToday()"
+            >
+              <ion-icon name="sunny-outline"></ion-icon>
+              <span>Hacer hoy</span>
+            </app-button>
+          } @else {
+            <app-button
+              type="secondary"
+              [border]="true"
+              btnClass="action-btn flex center rounded-sm"
+              [disabled]="!canPostpone"
+              (handleClick)="postponeTask()"
+            >
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+              <span>+1 día</span>
+            </app-button>
+          }
+
+          <app-button
+            type="danger"
+            [border]="true"
+            btnClass="action-btn flex center rounded-sm"
+            (handleClick)="deleteTask()"
+          >
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </app-button>
+
+          <app-button
+            type="warning"
+            [border]="true"
+            btnClass="action-btn flex center rounded-sm"
+            (handleClick)="editTask()"
+          >
+            <ion-icon name="create-outline"></ion-icon>
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </app-board>
+</div>

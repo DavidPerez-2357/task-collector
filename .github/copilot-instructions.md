@@ -6,15 +6,15 @@ Task Collector is a gamified task-management mobile/web application built with *
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Angular 20 (standalone components) |
-| UI | Ionic 8 |
-| Mobile bridge | Capacitor 8 |
-| Language | TypeScript 5.9, SCSS |
-| Database | SQLite via `@capacitor-community/sqlite` + `jeep-sqlite` (web) |
-| Linter | ESLint 9 + Angular ESLint + Prettier |
-| Package manager | npm |
+| Layer           | Technology                                                     |
+| --------------- | -------------------------------------------------------------- |
+| Framework       | Angular 20 (standalone components)                             |
+| UI              | Ionic 8                                                        |
+| Mobile bridge   | Capacitor 8                                                    |
+| Language        | TypeScript 5.9, SCSS                                           |
+| Database        | SQLite via `@capacitor-community/sqlite` + `jeep-sqlite` (web) |
+| Linter          | ESLint 9 + Angular ESLint + Prettier                           |
+| Package manager | npm                                                            |
 
 ## Getting Started
 
@@ -146,42 +146,42 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 
 ### Common gitmoji used in this project
 
-| Emoji | Code | Use for |
-|-------|------|---------|
-| ✨ | `:sparkles:` | New feature |
-| 🐛 | `:bug:` | Bug fix |
-| 🚑️ | `:ambulance:` | Critical hotfix |
-| ♻️ | `:recycle:` | Refactor code |
-| 🎨 | `:art:` | Improve code structure or formatting |
-| 🚧 | `:construction:` | Work in progress |
-| ⚡️ | `:zap:` | Improve performance |
-| 🔥 | `:fire:` | Remove code or files |
-| 💄 | `:lipstick:` | UI or style changes |
-| ✏️ | `:pencil2:` | Fix typos |
-| 🚸 | `:children_crossing:` | Improve UX or usability |
-| 📱 | `:iphone:` | Mobile responsive or device fixes |
-| 📝 | `:memo:` | Documentation |
-| 🔒️ | `:lock:` | Security fix |
-| 🔧 | `:wrench:` | Configuration changes |
-| 📦️ | `:package:` | Build artifacts or packages |
-| 🗃️ | `:card_file_box:` | Database or storage changes |
-| ⬆️ | `:arrow_up:` | Upgrade dependencies |
-| ⬇️ | `:arrow_down:` | Downgrade dependencies |
-| ➕ | `:heavy_plus_sign:` | Add dependency |
-| ➖ | `:heavy_minus_sign:` | Remove dependency |
-| 🚚 | `:truck:` | Move or rename files |
-| 🔊 | `:loud_sound:` | Add or update logs |
-| 🔇 | `:mute:` | Remove logs |
-| 🌐 | `:globe_with_meridians:` | Internationalization |
-| 🥚 | `:egg:` | Easter egg or hidden feature |
-| 💥 | `:boom:` | Breaking changes |
-| 🥅 | `:goal_net:` | Catch errors |
-| 💫 | `:dizzy:` | Animations and transitions |
-| 🧱 | `:bricks:` | Infrastructure |
-| 🧑‍💻 | `:technologist:` | Developer experience |
-| 🦺 | `:safety_vest:` | Validation |
-| ✈️ | `:airplane:` | Offline support |
-| 🦖 | `:t-rex:` | Backwards compatibility |
+| Emoji | Code                     | Use for                              |
+| ----- | ------------------------ | ------------------------------------ |
+| ✨    | `:sparkles:`             | New feature                          |
+| 🐛    | `:bug:`                  | Bug fix                              |
+| 🚑️    | `:ambulance:`            | Critical hotfix                      |
+| ♻️    | `:recycle:`              | Refactor code                        |
+| 🎨    | `:art:`                  | Improve code structure or formatting |
+| 🚧    | `:construction:`         | Work in progress                     |
+| ⚡️    | `:zap:`                  | Improve performance                  |
+| 🔥    | `:fire:`                 | Remove code or files                 |
+| 💄    | `:lipstick:`             | UI or style changes                  |
+| ✏️    | `:pencil2:`              | Fix typos                            |
+| 🚸    | `:children_crossing:`    | Improve UX or usability              |
+| 📱    | `:iphone:`               | Mobile responsive or device fixes    |
+| 📝    | `:memo:`                 | Documentation                        |
+| 🔒️    | `:lock:`                 | Security fix                         |
+| 🔧    | `:wrench:`               | Configuration changes                |
+| 📦️    | `:package:`              | Build artifacts or packages          |
+| 🗃️    | `:card_file_box:`        | Database or storage changes          |
+| ⬆️    | `:arrow_up:`             | Upgrade dependencies                 |
+| ⬇️    | `:arrow_down:`           | Downgrade dependencies               |
+| ➕    | `:heavy_plus_sign:`      | Add dependency                       |
+| ➖    | `:heavy_minus_sign:`     | Remove dependency                    |
+| 🚚    | `:truck:`                | Move or rename files                 |
+| 🔊    | `:loud_sound:`           | Add or update logs                   |
+| 🔇    | `:mute:`                 | Remove logs                          |
+| 🌐    | `:globe_with_meridians:` | Internationalization                 |
+| 🥚    | `:egg:`                  | Easter egg or hidden feature         |
+| 💥    | `:boom:`                 | Breaking changes                     |
+| 🥅    | `:goal_net:`             | Catch errors                         |
+| 💫    | `:dizzy:`                | Animations and transitions           |
+| 🧱    | `:bricks:`               | Infrastructure                       |
+| 🧑‍💻    | `:technologist:`         | Developer experience                 |
+| 🦺    | `:safety_vest:`          | Validation                           |
+| ✈️    | `:airplane:`             | Offline support                      |
+| 🦖    | `:t-rex:`                | Backwards compatibility              |
 
 ### Format
 
@@ -201,21 +201,21 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 🚚 Upload UI assets
 ```
 
-Keep messages **short and concise** — describe *what* was done, not *how*.
+Keep messages **short and concise** — describe _what_ was done, not _how_.
 
 ## Branch Naming
 
 Use a prefix that reflects the type of work, followed by a **concise** kebab-case name.
 
-| Prefix | Use for |
-|--------|---------|
-| `feature/` | New functionalities |
-| `bugfix/` | Bug fixes |
-| `hotfix/` | Urgent production fixes |
-| `refactor/` | Code refactoring |
-| `docs/` | Documentation updates |
-| `test/` | Tests and test improvements |
-| `chore/` | Maintenance and general tasks |
+| Prefix      | Use for                       |
+| ----------- | ----------------------------- |
+| `feature/`  | New functionalities           |
+| `bugfix/`   | Bug fixes                     |
+| `hotfix/`   | Urgent production fixes       |
+| `refactor/` | Code refactoring              |
+| `docs/`     | Documentation updates         |
+| `test/`     | Tests and test improvements   |
+| `chore/`    | Maintenance and general tasks |
 
 ### Format
 

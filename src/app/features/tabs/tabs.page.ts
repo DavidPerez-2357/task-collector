@@ -1,8 +1,7 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { triangle, ellipse, square } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
+import { UIService } from '@core/services/ui.service';
 
 @Component({
   selector: 'app-tabs',
@@ -13,7 +12,6 @@ import { RouterLink } from '@angular/router';
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
 
-  constructor() {
-    addIcons({ triangle, ellipse, square });
-  }
+  // Exponer el servicio para que la plantilla pueda leer la signal
+  public ui = inject(UIService);
 }

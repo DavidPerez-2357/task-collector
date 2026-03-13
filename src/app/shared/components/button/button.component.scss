@@ -11,6 +11,15 @@ button:enabled:active {
   filter: brightness(1.2);
 }
 
+/* Width & height classes */
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
 /* Utility classes */
 .flex {
   display: flex;
@@ -19,6 +28,10 @@ button:enabled:active {
 .center {
   justify-content: center;
   align-items: center;
+}
+
+.column {
+  flex-direction: column;
 }
 
 .around {

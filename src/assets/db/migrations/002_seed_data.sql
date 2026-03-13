@@ -1,5 +1,5 @@
 
-INSERT OR IGNORE INTO player_state (id, coins) VALUES (1, 50);
+INSERT OR IGNORE INTO player_state (id, coins) VALUES (1, 350);
 
 INSERT OR IGNORE INTO item (id, name, rarity, description, image_name, sell_price) VALUES
 (1, 'Ánfora de barro', 0, 'Puede servir para el Mafuba', 'fb1.png', 10),

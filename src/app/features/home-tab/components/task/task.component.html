@@ -1,0 +1,7 @@
+<div class="task-container" [class.selected]="isSelected">
+  <header>
+    <span class="task-due-date" [style.color]="dueDateColor">{{ relativeDueDate }}</span>
+    <span class="task-name">{{ task.name }}</span>
+  </header>
+  <div class="task-body" (click)="handleTaskClick.emit(task)"></div>
+</div>

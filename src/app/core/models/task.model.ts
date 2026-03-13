@@ -1,4 +1,4 @@
-import { category } from '@core/models/category.model';
+import { Category } from '@core/models/category.model';
 
 export enum TaskFrequency {
   No_repeat = 0,
@@ -21,9 +21,7 @@ export interface Task {
   frequency: TaskFrequency;
   interval: number;
   effort: TaskEffort;
-  category: category;
-  resetOnCycle: boolean;
-  deleted: boolean;
+  category: Category;
 }
 
 export interface WeeklyTask extends Task {
@@ -31,11 +29,11 @@ export interface WeeklyTask extends Task {
 }
 
 export interface TaskActive extends Task {
-  startDate: Date;
-  endDate: Date;
+  startDate: number; // timestamp
+  endDate: number;
 }
 
 export interface TaskHistory extends Task {
-  completionDate: Date;
+  completionDate: number; // timestamp
   daysLate: number;
 }

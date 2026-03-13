@@ -1,9 +1,55 @@
 <ion-content [fullscreen]="true">
-  <div class="world-container">
-    <!-- El fondo estático principal como primera pieza gráfica del flujo -->
-    <img class="home-img" src="/assets/backgrounds/home-bg.png" alt="Home Layout" />
+  <div class="backdrop-overlay" [class.visible]="selectedTask" (click)="actionPanelClosed()"></div>
 
-    <!-- El fondo de la calle que se repite mágicamente debajo de forma infinita -->
-    <div class="street-area ion-padding"></div>
+  <div class="world-container">
+    <app-gem-counter class="gem-counter" [amount]="playerGems" />
+    <div class="store-bg">
+      <img src="/assets/ui/inside-store-top.png" alt="" aria-hidden="true" />
+      <div class="inside-store-task-container">
+        @for (task of todayTasks; track task.id) {
+          <div class="inside-store-row">
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+            <app-task
+              [task]="task"
+              class="task"
+              [class.selected]="selectedTask?.id === task.id"
+              [attr.id]="'task-' + task.id"
+              (handleTaskClick)="handleTaskClick(task, true)"
+              [isSelected]="selectedTask?.id === task.id"
+            />
+          </div>
+        }
+
+        @if (todayTasks.length === 0) {
+          <div class="inside-store-row">
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+          </div>
+        }
+      </div>
+      <img src="/assets/ui/inside-store-bottom.png" alt="" aria-hidden="true" />
+    </div>
+
+    <div class="street-area ion-padding">
+      @for (task of otherTasks; track task.id) {
+        <div class="street-row">
+          <app-task
+            [task]="task"
+            class="task"
+            [class.selected]="selectedTask?.id === task.id"
+            [attr.id]="'task-' + task.id"
+            (handleTaskClick)="handleTaskClick(task, false)"
+            [isSelected]="selectedTask?.id === task.id"
+          />
+        </div>
+      }
+    </div>
   </div>
+
+  <app-action-panel
+    [isOpen]="isActionPanelVisible"
+    [selectedTask]="selectedTask"
+    [isTodayTask]="isSelectedTaskToday"
+    (didClose)="actionPanelClosed()"
+  />
 </ion-content>

@@ -1,5 +1,8 @@
 import { inject, Injectable, isDevMode } from '@angular/core';
 import { ItemRepository } from '@core/repositories/item.repository';
+import { TaskRepository } from '@core/repositories/task.repository';
+import { Task, TaskEffort, TaskFrequency } from '@core/models/task.model';
+import { CategoryRepository } from '@core/repositories/category.repository';
 
 /**
  * Development-only service for seeding and resetting app state during local testing.
@@ -10,6 +13,8 @@ import { ItemRepository } from '@core/repositories/item.repository';
 })
 export class DevToolsService {
   private itemRepository = inject(ItemRepository);
+  private taskRepository = inject(TaskRepository);
+  private categoryRepository = inject(CategoryRepository);
 
   async addTestItemsToInventory(): Promise<void> {
     if (!isDevMode()) {
@@ -29,6 +34,64 @@ export class DevToolsService {
     // Añade cada item con cantidad 1
     for (const id of itemIds) {
       await this.itemRepository.addItemToInventory(id, false, 1);
+    }
+  }
+
+  async createTestCategories(): Promise<void> {
+    if (!isDevMode()) {
+      return;
+    }
+
+    const testCategories = [
+      { name: 'Categoría 1', imageName: 'categoria1.png' },
+      { name: 'Categoría 2', imageName: 'categoria2.png' },
+      { name: 'Categoría 3', imageName: 'categoria3.png' },
+      { name: 'Categoría 4', imageName: 'categoria4.png' },
+    ];
+
+    for (const category of testCategories) {
+      await this.categoryRepository.createCategory(category.name, category.imageName);
+    }
+  }
+
+  async createTestTasks(): Promise<void> {
+    if (!isDevMode()) {
+      return;
+    }
+
+    const testTasks: Omit<Task, 'id'>[] = [
+      {
+        name: 'Tarea de prueba 1',
+        frequency: TaskFrequency.No_repeat,
+        interval: 2,
+        effort: TaskEffort.Medium,
+        category: { id: 1, name: 'Categoría 1', imageName: 'categoria1.png' },
+      },
+      {
+        name: 'Tarea de prueba 2',
+        frequency: TaskFrequency.Daily,
+        interval: 1,
+        effort: TaskEffort.High,
+        category: { id: 2, name: 'Categoría 2', imageName: 'categoria2.png' },
+      },
+      {
+        name: 'Tarea de prueba 3',
+        frequency: TaskFrequency.Weekly,
+        interval: 1,
+        effort: TaskEffort.Low,
+        category: { id: 3, name: 'Categoría 3', imageName: 'categoria3.png' },
+      },
+      {
+        name: 'Tarea de prueba 4',
+        frequency: TaskFrequency.Monthly,
+        interval: 1,
+        effort: TaskEffort.Very_high,
+        category: { id: 4, name: 'Categoría 4', imageName: 'categoria4.png' },
+      },
+    ];
+
+    for (const task of testTasks) {
+      await this.taskRepository.createTask(task);
     }
   }
 }
