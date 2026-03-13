@@ -8,12 +8,12 @@ import { Collection } from '@core/models/collection.model';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ShopBuyModalComponent } from './components/shop-buy-modal/shop-buy-modal.component';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
-
+import {ShopCardComponent} from './components/shop-card/shop-card.component';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
   styleUrls: ['shop-tab.component.scss'],
-  imports: [IonContent, TitleSignComponent, ButtonComponent, IonSpinner, ShopBuyModalComponent, GemCounterComponent],
+  imports: [IonContent, TitleSignComponent, ButtonComponent, IonSpinner, ShopBuyModalComponent, GemCounterComponent, ShopCardComponent],
 })
 export class ShopTabComponent implements OnInit {
   private collectionService = inject(CollectionService);
