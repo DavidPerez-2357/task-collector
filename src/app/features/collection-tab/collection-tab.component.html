@@ -1,18 +1,19 @@
 <ion-content [fullscreen]="true">
-  <app-title-sign title="Tus colecciones" />
+  <div class="collection-wall ion-padding">
+    <app-title-sign title="Tus colecciones" />
 
-  <div class="collections-list">
-    @for (collection of collections; track collection.id) {
-      <app-collection-card [collection]="collection" (itemClicked)="onItemClicked($event)" />
-    }
+    <div class="collections-list">
+      @for (collection of collections; track collection.id) {
+        <app-collection-card [collection]="collection" (itemClicked)="onItemClicked($event)" />
+      }
 
-    @if (collections.length === 0) {
-      <div class="empty-state">
-        <p>Aún no tienes ninguna colección. ¡Visita la tienda!</p>
-      </div>
-    }
+      @if (collections.length === 0) {
+        <div class="empty-state">
+          <p>Aún no tienes ninguna colección. ¡Visita la tienda!</p>
+        </div>
+      }
+    </div>
   </div>
-
   @if (selectedItem && selectedCollectionId !== null) {
     <app-collection-item-modal
       [isOpen]="isModalOpen"

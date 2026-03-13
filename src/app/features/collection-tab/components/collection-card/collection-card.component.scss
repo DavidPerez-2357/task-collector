@@ -92,7 +92,7 @@ $slot-size: 52px;
   /* Item is in the collection DB but not deposited by player yet → dimmed */
   &.empty-slot {
     opacity: 0.35;
-    filter: grayscale(80%);
+    filter: grayscale(50%);
     cursor: default;
   }
 

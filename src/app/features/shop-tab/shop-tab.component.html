@@ -1,3 +1,38 @@
-<ion-content [fullscreen]="true" class="ion-padding">
-  <app-title-sign title="Tienda"></app-title-sign>
+<ion-content [fullscreen]="true">
+  <div class="shop-wall ion-padding">
+    <app-title-sign title="Tienda"></app-title-sign>
+
+    <app-gem-counter [amount]="playerCoins"></app-gem-counter>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else if (unownedCollections.length === 0) {
+      <p class="empty-text">¡Enhorabuena, ya tienes todas las colecciones!</p>
+    } @else {
+      <div class="shop-list">
+        @for (collection of unownedCollections; track collection.id) {
+          <app-shop-card
+            [collection]="collection"
+            [playerCoins]="playerCoins"
+            (buyClicked)="openBuyModal($event)"
+          >
+          </app-shop-card>
+        }
+      </div>
+    }
+  </div>
+
+  @if (selectedCollection) {
+    <app-shop-buy-modal
+      [isOpen]="isModalOpen"
+      [collection]="selectedCollection"
+      [isBuying]="isBuying"
+      [playerCoins]="playerCoins"
+      (dismissed)="onModalDismissed()"
+      (confirmPurchase)="handlePurchase($event)"
+      (insufficientFunds)="handleInsufficientFunds()"
+    ></app-shop-buy-modal>
+  }
 </ion-content>

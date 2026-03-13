@@ -22,7 +22,7 @@
             [class.deposited]="slot.deposited !== undefined"
             [class.empty-slot]="slot.deposited === undefined && !slot.ownedEligible"
             [class.owned-eligible]="slot.ownedEligible"
-            [class.shiny]="slot.deposited?.isShiny"
+            [class.shiny]="slot.isShiny || slot.deposited?.isShiny"
             [style.--mask]="'url(' + itemImagePath(slot) + ')'"
             (click)="onSlotClicked(slot)"
           >
