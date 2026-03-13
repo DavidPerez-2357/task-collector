@@ -4,12 +4,12 @@
   <div class="world-container">
     <app-gem-counter class="gem-counter" [amount]="playerGems" />
     <div class="store-bg">
-      <img src="/assets/ui/inside-store-top.png" alt="Home Layout" />
+      <img src="/assets/ui/inside-store-top.png" alt="" aria-hidden="true" />
       <div class="inside-store-task-container">
         @for (task of todayTasks; track task.id) {
           <div class="inside-store-row">
-            <img src="/assets/ui/inside-store-middle.png" alt="Home Layout" />
-            <img src="/assets/ui/inside-store-middle.png" alt="Home Layout" />
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
             <app-task
               [task]="task"
               class="task"
@@ -23,11 +23,11 @@
 
         @if (todayTasks.length === 0) {
           <div class="inside-store-row">
-            <img src="/assets/ui/inside-store-middle.png" alt="Home Layout" />
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
           </div>
         }
       </div>
-      <img src="/assets/ui/inside-store-bottom.png" alt="Home Layout" />
+      <img src="/assets/ui/inside-store-bottom.png" alt="" aria-hidden="true" />
     </div>
 
     <div class="street-area ion-padding">

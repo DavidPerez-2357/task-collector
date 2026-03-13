@@ -7,7 +7,7 @@ export function getStartOfToday(): number {
 }
 
 export function daysBetween(fromMs: number, toMs: number) {
-  return Math.floor((toMs - fromMs) / 86400000);
+  return Math.floor((toMs - fromMs) / DAY_MS);
 }
 
 export function weeksBetween(fromMs: number, toMs: number) {
