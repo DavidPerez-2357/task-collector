@@ -289,19 +289,29 @@ export class CollectionRepository {
   }
 
   async buyCollectionUsingGems(collectionId: number, price: number) {
-    const set = [
-      {
-        statement: 'INSERT INTO player_collection (collection_id, purchased_at) VALUES (?, ?)',
-        values: [collectionId, new Date().toISOString()],
-      },
-      {
-        statement: 'UPDATE player_state SET coins = coins - ? WHERE id = 1',
-        values: [price],
-      },
-    ];
-
     await this.databaseService.withConn(async (conn) => {
-      await conn.executeSet(set, true);
+      const result = await conn.executeSet(
+        [
+          {
+            statement:
+              'WITH updated AS (' +
+              '  UPDATE player_state' +
+              '  SET coins = coins - ?' +
+              '  WHERE id = 1 AND coins >= ?' +
+              '  RETURNING id' +
+              ')' +
+              ' INSERT INTO player_collection (collection_id, purchased_at)' +
+              ' SELECT ?, ? FROM updated',
+            values: [price, price, collectionId, new Date().toISOString()],
+          },
+        ],
+        true,
+      );
+
+      const changes = result?.changes?.changes ?? 0;
+      if (changes === 0) {
+        throw new Error('Not enough coins to buy collection');
+      }
     });
   }
 }

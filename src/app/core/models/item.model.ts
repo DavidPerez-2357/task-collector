@@ -23,11 +23,3 @@ export interface ItemSold extends Item {
   coinsEarned: number;
   dateSold: Date;
 }
-
-export interface ItemCollection extends Item {
-  isShiny: boolean;
-}
-
-export interface ItemShop extends Item {
-  isShiny: boolean;
-}

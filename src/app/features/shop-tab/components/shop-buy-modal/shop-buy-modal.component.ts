@@ -20,15 +20,23 @@ export class ShopBuyModalComponent {
 
   @Output() dismissed = new EventEmitter<void>();
   @Output() confirmPurchase = new EventEmitter<Collection>();
+  @Output() insufficientFunds = new EventEmitter<void>();
 
   onDismiss() {
     this.dismissed.emit();
   }
 
   onConfirm() {
-    if (this.collection && !this.isBuying) {
-      this.confirmPurchase.emit(this.collection);
+    if (!this.collection || this.isBuying) {
+      return;
     }
+
+    if (this.playerCoins < this.collection.price) {
+      this.insufficientFunds.emit();
+      return;
+    }
+
+    this.confirmPurchase.emit(this.collection);
   }
 
   closeModal() {
