@@ -64,7 +64,7 @@ export class CollectionService {
     return allCollections.filter((c) => !ownedSet.has(c.id));
   }
 
-  async buyCollection(collectionId: number, price: number){
+  async buyCollection(collectionId: number, price: number) {
     await this.collectionRepository.buyCollectionUsingGems(collectionId, price);
-  }  
+  }
 }

@@ -1,4 +1,5 @@
-<ion-content [fullscreen]="true"> <div class="shop-wall ion-padding">
+<ion-content [fullscreen]="true">
+  <div class="shop-wall ion-padding">
     <app-title-sign title="Tienda"></app-title-sign>
 
     <app-gem-counter [amount]="playerCoins"></app-gem-counter>
@@ -12,17 +13,17 @@
     } @else {
       <div class="shop-list">
         @for (collection of unownedCollections; track collection.id) {
-        
-          <app-shop-card 
-            [collection]="collection" 
-            [playerCoins]="playerCoins" 
-            (buyClicked)="openBuyModal($event)">
+          <app-shop-card
+            [collection]="collection"
+            [playerCoins]="playerCoins"
+            (buyClicked)="openBuyModal($event)"
+          >
           </app-shop-card>
-
         }
       </div>
     }
-  </div> <app-shop-buy-modal
+  </div>
+  <app-shop-buy-modal
     [isOpen]="isModalOpen"
     [collection]="selectedCollection"
     [isBuying]="isBuying"
@@ -30,5 +31,4 @@
     (dismissed)="onModalDismissed()"
     (confirmPurchase)="handlePurchase($event)"
   ></app-shop-buy-modal>
-
 </ion-content>

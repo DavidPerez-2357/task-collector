@@ -1,7 +1,6 @@
 <ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
   <ng-template class="ion-no-padding">
     <app-board width="">
-
       <!-- PASO 1: Detalle del objeto -->
       @if (step === 'detail' && item) {
         <div class="item-details">
@@ -32,11 +31,7 @@
           <p class="item-quantity">Tienes {{ item.quantity }} en tu inventario</p>
 
           <div class="item-actions">
-            <app-button
-              btnClass="use-button"
-              type="primary"
-              (handleClick)="openCollectionStep()"
-            >
+            <app-button btnClass="use-button" type="primary" (handleClick)="openCollectionStep()">
               Añadir a colección
             </app-button>
             <app-button
@@ -55,7 +50,10 @@
       @if (step === 'collections' && item) {
         <div class="collection-step">
           <h2 class="step-title">Añadir a colección</h2>
-          <p class="step-subtitle">¿Dónde quieres colocar <strong>{{ item.name }}</strong>?</p>
+          <p class="step-subtitle">
+            ¿Dónde quieres colocar <strong>{{ item.name }}</strong
+            >?
+          </p>
 
           @if (loadingCollections) {
             <div class="loading-row">
@@ -66,13 +64,15 @@
           } @else {
             <div class="collections-list">
               @for (col of eligibleCollections; track col.id) {
-                <button
-                  class="collection-row"
-                  [disabled]="depositing"
-                  (click)="depositInto(col)"
-                >
+                <button class="collection-row" [disabled]="depositing" (click)="depositInto(col)">
                   <img
-                    [src]="col.badgeImageName ? (col.badgeImageName.startsWith('/') ? col.badgeImageName : '/' + col.badgeImageName) : undefined"
+                    [src]="
+                      col.badgeImageName
+                        ? col.badgeImageName.startsWith('/')
+                          ? col.badgeImageName
+                          : '/' + col.badgeImageName
+                        : undefined
+                    "
                     [alt]="col.name"
                     class="badge-img"
                   />
@@ -86,7 +86,7 @@
           }
 
           <app-button
-            btnClass="back-btn" 
+            btnClass="back-btn"
             type="primary"
             [fill]="false"
             (handleClick)="step = 'detail'"
@@ -95,7 +95,6 @@
           </app-button>
         </div>
       }
-
     </app-board>
   </ng-template>
 </ion-modal>

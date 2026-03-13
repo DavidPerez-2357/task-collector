@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true">
-  
   <div class="collection-wall ion-padding">
     <app-title-sign title="Tus colecciones" />
 
@@ -14,7 +13,8 @@
         </div>
       }
     </div>
-  </div> @if (selectedItem && selectedCollectionId !== null) {
+  </div>
+  @if (selectedItem && selectedCollectionId !== null) {
     <app-collection-item-modal
       [isOpen]="isModalOpen"
       [item]="selectedItem!"

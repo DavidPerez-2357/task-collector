@@ -25,7 +25,7 @@ import { PlayerStateService } from '@core/services/player-state.service';
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     InventoryItemModalComponent,
-    GemCounterComponent
+    GemCounterComponent,
   ],
 })
 export class InventoryTabComponent implements ViewWillEnter {

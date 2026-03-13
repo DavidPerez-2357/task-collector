@@ -11,7 +11,14 @@ import { ShopCardComponent } from './components/shop-card/shop-card.component';
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
   styleUrls: ['shop-tab.component.scss'],
-  imports: [IonContent, TitleSignComponent, IonSpinner, ShopBuyModalComponent, GemCounterComponent, ShopCardComponent],
+  imports: [
+    IonContent,
+    TitleSignComponent,
+    IonSpinner,
+    ShopBuyModalComponent,
+    GemCounterComponent,
+    ShopCardComponent,
+  ],
 })
 export class ShopTabComponent implements OnInit {
   private collectionService = inject(CollectionService);
@@ -35,58 +42,62 @@ export class ShopTabComponent implements OnInit {
     await this.loadData();
   }
 
-  async loadData(){
+  async loadData() {
     this.isLoading = true;
-    try{
+    try {
       const [collections, coins] = await Promise.all([
         this.collectionService.getUnownedCollections(),
-        this.playerStateService.getCoins()
+        this.playerStateService.getCoins(),
       ]);
       this.unownedCollections = collections;
       this.playerCoins = coins;
-    }catch(error){
-      console.error("Error al cargar la tienda", error);
-    }finally{
+    } catch (error) {
+      console.error('Error al cargar la tienda', error);
+    } finally {
       this.isLoading = false;
     }
   }
-  
+
   openBuyModal(collection: Collection) {
     this.selectedCollection = collection;
     this.isModalOpen = true;
   }
 
-  onModalDismissed(){
+  onModalDismissed() {
     this.isModalOpen = false;
   }
 
-  async handlePurchase(collection: Collection){
-    if(this.isBuying) return;
+  async handlePurchase(collection: Collection) {
+    if (this.isBuying) return;
     this.isBuying = true;
-    try{
+    try {
       await this.collectionService.buyCollection(collection.id, collection.price);
       this.updateUISuccess(collection);
-      await this.showToast(`¡Colección ${collection.name} adquirida!`, 'success', 'checkmark-circle');
-    }catch(error){
-      console.error("Error al comprar la colección", error);
-    }finally{
+      await this.showToast(
+        `¡Colección ${collection.name} adquirida!`,
+        'success',
+        'checkmark-circle',
+      );
+    } catch (error) {
+      console.error('Error al comprar la colección', error);
+    } finally {
       this.isBuying = false;
     }
   }
 
-  private updateUISuccess(collection: Collection){
-    this.unownedCollections = this.unownedCollections.filter(c => c.id !== collection.id);
+  private updateUISuccess(collection: Collection) {
+    this.unownedCollections = this.unownedCollections.filter((c) => c.id !== collection.id);
     this.playerCoins -= collection.price;
     this.isModalOpen = false;
   }
-  
+
   private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
     const toast = await this.toastController.create({
       message,
       duration: 2500,
       color,
       position: 'top',
-      icon
+      icon,
     });
     await toast.present();
   }

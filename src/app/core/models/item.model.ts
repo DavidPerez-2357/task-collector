@@ -31,4 +31,3 @@ export interface ItemCollection extends Item {
 export interface ItemShop extends Item {
   isShiny: boolean;
 }
-

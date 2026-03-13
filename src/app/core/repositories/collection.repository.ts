@@ -288,7 +288,7 @@ export class CollectionRepository {
     };
   }
 
-  async buyCollectionUsingGems(collectionId: number, price: number){
+  async buyCollectionUsingGems(collectionId: number, price: number) {
     const set = [
       {
         statement: 'INSERT INTO player_collection (collection_id, purchased_at) VALUES (?, ?)',
@@ -299,10 +299,9 @@ export class CollectionRepository {
         values: [price],
       },
     ];
-    
+
     await this.databaseService.withConn(async (conn) => {
       await conn.executeSet(set, true);
     });
   }
-
 }

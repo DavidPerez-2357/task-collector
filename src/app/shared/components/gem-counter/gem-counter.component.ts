@@ -9,5 +9,5 @@ import { BoardComponent } from '../board/board.component';
 })
 export class GemCounterComponent {
   // Recibe la cantidad de gemas desde el componente padre
-  @Input() amount: number = 0; 
+  @Input() amount: number = 0;
 }

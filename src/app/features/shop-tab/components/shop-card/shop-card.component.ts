@@ -6,12 +6,12 @@ import { ButtonComponent } from '@shared/components/button/button.component';
   selector: 'app-shop-card',
   templateUrl: './shop-card.component.html',
   styleUrls: ['./shop-card.component.scss'],
-  imports: [ButtonComponent]
+  imports: [ButtonComponent],
 })
 export class ShopCardComponent {
   @Input({ required: true }) collection!: Collection;
   @Input({ required: true }) playerCoins!: number;
-  
+
   @Output() buyClicked = new EventEmitter<Collection>();
 
   itemImagePath(imageName: string): string {

@@ -4,23 +4,26 @@
       @if (collection) {
         <div class="modal-content">
           <h2>Comprar Colección</h2>
-          <p>¿Seguro que deseas comprar <em>{{ collection.name }}</em>?</p>
+          <p>
+            ¿Seguro que deseas comprar <em>{{ collection.name }}</em
+            >?
+          </p>
           <p class="price-text">
-            Precio: <em>{{ collection.price }}</em> 
+            Precio: <em>{{ collection.price }}</em>
             <img src="/assets/icons/gems-icon.png" alt="Gemas" class="gem-icon-modal" />
           </p>
 
           <div class="modal-actions">
-            <app-button 
-              type="medium" 
-              [fill]="false" 
+            <app-button
+              type="medium"
+              [fill]="false"
               (handleClick)="closeModal()"
               [disabled]="isBuying"
             >
               Cancelar
             </app-button>
-            <app-button 
-              [type]="collection && playerCoins < collection.price ? 'danger' : 'gem'" 
+            <app-button
+              [type]="collection && playerCoins < collection.price ? 'danger' : 'gem'"
               (handleClick)="onConfirm()"
               [disabled]="isBuying"
               btnClass="btn-modal"
