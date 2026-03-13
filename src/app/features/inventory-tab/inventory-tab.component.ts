@@ -11,7 +11,7 @@ import { ItemInventory } from '@core/models/item.model';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { InventoryItemModalComponent } from '@features/inventory-tab/components/inventory-item-modal/inventory-item-modal.component';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
-import { GemCounterComponent } from '@app/shared/components/gem-counter/gem-counter.component';
+import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 
 @Component({
