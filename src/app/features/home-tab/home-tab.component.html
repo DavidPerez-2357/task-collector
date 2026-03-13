@@ -2,6 +2,7 @@
   <div class="backdrop-overlay" [class.visible]="selectedTask" (click)="actionPanelClosed()"></div>
 
   <div class="world-container">
+    <app-gem-counter class="gem-counter" [amount]="playerGems" />
     <div class="store-bg">
       <img src="/assets/ui/inside-store-top.png" alt="Home Layout" />
       <div class="inside-store-task-container">

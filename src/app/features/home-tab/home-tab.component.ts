@@ -6,12 +6,14 @@ import { ActionPanelComponent } from '@features/home-tab/components/action-panel
 import { UIService } from '@core/services/ui.service';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { DevToolsService } from '@core/services/dev-tools.service';
+import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
+import { PlayerStateService } from '@core/services/player-state.service';
 
 @Component({
   selector: 'app-home-tab',
   templateUrl: 'home-tab.component.html',
   styleUrls: ['home-tab.component.scss'],
-  imports: [IonContent, TaskComponent, ActionPanelComponent],
+  imports: [IonContent, TaskComponent, ActionPanelComponent, GemCounterComponent],
 })
 export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   @ViewChild(IonContent) private content!: IonContent;
@@ -19,6 +21,9 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   private readonly uiService = inject(UIService);
   private readonly taskService = inject(TaskService);
   private readonly devToolsService = inject(DevToolsService);
+  private readonly playerStateService = inject(PlayerStateService);
+
+  playerGems = 0;
 
   isActionPanelVisible = false;
   selectedTask: TaskActive | null = null;
@@ -39,6 +44,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     }
 
     await this.loadTasks();
+    this.playerGems = await this.playerStateService.getCoins();
   }
 
   async loadTasks(): Promise<void> {
