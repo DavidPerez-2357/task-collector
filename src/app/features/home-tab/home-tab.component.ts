@@ -34,10 +34,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   loading = false;
 
   async ionViewWillEnter(): Promise<void> {
-    // await this.devToolsService.createTestCategories();
-    // await this.devToolsService.createTestTasks();
     const created = await this.taskService.checkIfRecurringTasksWereCreatedToday();
-    console.log(`Tareas recurrentes creadas hoy: ${created}`);
 
     if (!created) {
       await this.taskService.createRecurringTasksForToday();
@@ -51,8 +48,6 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     this.loading = true;
     try {
       const { today, others } = await this.taskService.getTodayAndOtherTasks();
-      console.log(`Tareas de hoy: ${today.length}, Otras tareas: ${others.length}`);
-      console.table(others);
       this.todayTasks = today;
       this.otherTasks = others;
     } catch (e) {
