@@ -11,6 +11,8 @@ import { ItemInventory } from '@core/models/item.model';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { InventoryItemModalComponent } from '@features/inventory-tab/components/inventory-item-modal/inventory-item-modal.component';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
+import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
+import { PlayerStateService } from '@core/services/player-state.service';
 
 @Component({
   selector: 'app-inventory-tab',
@@ -23,6 +25,7 @@ import { InfiniteScrollCustomEvent } from '@ionic/angular';
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     InventoryItemModalComponent,
+    GemCounterComponent,
   ],
 })
 export class InventoryTabComponent implements ViewWillEnter {
@@ -32,6 +35,7 @@ export class InventoryTabComponent implements ViewWillEnter {
   protected readonly PAGE_SIZE = this.ITEMS_PER_SHELF * this.SHELVES_PER_PAGE;
 
   private readonly itemService = inject(ItemService);
+  private readonly playerStateService = inject(PlayerStateService);
 
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
@@ -39,6 +43,7 @@ export class InventoryTabComponent implements ViewWillEnter {
   actualPage: number = 1;
   allItems: ItemInventory[] = [];
   itemsShelves: ItemInventory[][] = [];
+  playerCoins: number = 0;
 
   // Modal
   selectedItem: ItemInventory | null = null;
@@ -48,6 +53,7 @@ export class InventoryTabComponent implements ViewWillEnter {
     this.allItems = [];
     this.itemsShelves = [];
     this.actualPage = 1;
+    this.playerCoins = await this.playerStateService.getCoins();
 
     // Poner el scroll al principio
     await this.scrollToTop();

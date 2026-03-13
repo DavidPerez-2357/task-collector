@@ -1,0 +1,29 @@
+<div class="shop-card">
+  <h3 class="collection-name">{{ collection.name }}</h3>
+
+  <div class="collection-grid">
+    @for (item of collection.items; track item.id) {
+      <div
+        class="grid-slot"
+        [class.shiny]="item.isShiny"
+        [style.--mask]="'url(' + itemImagePath(item.imageName) + ')'"
+      >
+        <img [src]="itemImagePath(item.imageName)" [alt]="item.name" />
+      </div>
+    }
+  </div>
+
+  <div class="shop-action">
+    <app-button
+      [type]="playerCoins < collection.price ? 'danger' : 'gem'"
+      (handleClick)="onBuyClick()"
+      [disabled]="playerCoins < collection.price"
+      btnClass="btn-shop"
+    >
+      <div class="btn-content">
+        Comprar: {{ collection.price }}
+        <img src="/assets/icons/gems-icon.png" alt="Gema" class="gem-icon-button" />
+      </div>
+    </app-button>
+  </div>
+</div>

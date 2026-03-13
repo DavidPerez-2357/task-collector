@@ -1,3 +1,25 @@
 ion-content {
-  --background: url('/assets/backgrounds/collection-bg.png') no-repeat top center / cover;
+--background: var(--ion-color-dark-brown);
+}
+
+.shop-wall {
+  min-height: 100%;
+  background: url('/assets/backgrounds/collection-bg.png') repeat-y top center;
+  background-size: 100% auto;
+}
+
+.loading-container, .empty-text {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--ion-color-light);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.shop-list {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
 }

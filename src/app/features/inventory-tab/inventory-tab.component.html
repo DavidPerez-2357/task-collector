@@ -1,6 +1,8 @@
 <ion-content [fullscreen]="true">
   <app-title-sign title="Tus objetos" />
 
+  <app-gem-counter [amount]="playerCoins"></app-gem-counter>
+
   <div class="inventory-list">
     @for (itemShelf of itemsShelves.entries(); track itemShelf[0]) {
       <app-shelf [items]="itemShelf[1]" (itemClicked)="itemClicked($event)" />

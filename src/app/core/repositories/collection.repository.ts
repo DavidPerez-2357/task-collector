@@ -287,4 +287,28 @@ export class CollectionRepository {
       items: items,
     };
   }
+
+  async buyCollectionUsingGems(collectionId: number, price: number) {
+    await this.databaseService.withConn(async (conn) => {
+      const checkRes = await conn.query('SELECT coins FROM player_state WHERE id = 1');
+      const coins = checkRes.values?.[0]?.coins ?? 0;
+
+      if (coins < price) {
+        throw new Error('Not enough coins to buy collection');
+      }
+
+      const set = [
+        {
+          statement: 'UPDATE player_state SET coins = coins - ? WHERE id = 1',
+          values: [price],
+        },
+        {
+          statement: 'INSERT INTO player_collection (collection_id, purchased_at) VALUES (?, ?)',
+          values: [collectionId, new Date().toISOString()],
+        },
+      ];
+
+      await conn.executeSet(set, true);
+    });
+  }
 }

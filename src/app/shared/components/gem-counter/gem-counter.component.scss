@@ -1,0 +1,27 @@
+.coins-wrapper {
+  display: flex;
+  justify-content: center;
+
+  .coins-content {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+  }
+  
+  .coin-amount {
+    color: var(--ion-color-light);
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .gem-icon {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+  }
+}

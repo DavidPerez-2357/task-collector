@@ -1,0 +1,41 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template>
+    <app-board width="">
+      @if (collection) {
+        <div class="modal-content">
+          <h2>Comprar Colección</h2>
+          <p>
+            ¿Seguro que deseas comprar <em>{{ collection.name }}</em
+            >?
+          </p>
+          <p class="price-text">
+            Precio: <em>{{ collection.price }}</em>
+            <img src="/assets/icons/gems-icon.png" alt="Gemas" class="gem-icon-modal" />
+          </p>
+
+          <div class="modal-actions">
+            <app-button
+              type="medium"
+              [fill]="false"
+              (handleClick)="closeModal()"
+              [disabled]="isBuying"
+            >
+              Cancelar
+            </app-button>
+            <app-button
+              [type]="collection && playerCoins < collection.price ? 'danger' : 'gem'"
+              (handleClick)="onConfirm()"
+              [disabled]="isBuying"
+              btnClass="btn-modal"
+            >
+              <div class="btn-content">
+                Comprar
+                <img src="/assets/icons/gems-icon.png" alt="Gema" class="gem-icon-button" />
+              </div>
+            </app-button>
+          </div>
+        </div>
+      }
+    </app-board>
+  </ng-template>
+</ion-modal>

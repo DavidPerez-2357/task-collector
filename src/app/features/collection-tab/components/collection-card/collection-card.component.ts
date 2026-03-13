@@ -36,8 +36,9 @@ export class CollectionCardComponent {
   }
 
   get badgeImagePath(): string {
-    return this.collection.badgeImageName.startsWith('/') ?
-      this.collection.badgeImageName : `/${this.collection.badgeImageName}`;
+    return this.collection.badgeImageName.startsWith('/')
+      ? this.collection.badgeImageName
+      : `/${this.collection.badgeImageName}`;
   }
 
   itemImagePath(item: CollectionItem): string {
