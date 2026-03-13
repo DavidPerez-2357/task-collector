@@ -36,12 +36,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   async ionViewWillEnter(): Promise<void> {
     // await this.devToolsService.createTestCategories();
     // await this.devToolsService.createTestTasks();
-    const created = await this.taskService.checkIfRecurringTasksWereCreatedToday();
-    console.log(`Tareas recurrentes creadas hoy: ${created}`);
-
-    if (!created) {
-      await this.taskService.createRecurringTasksForToday();
-    }
+    await this.taskService.createRecurringTasksForToday();
 
     await this.loadTasks();
     this.playerGems = await this.playerStateService.getCoins();
