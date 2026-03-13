@@ -2,10 +2,25 @@
   <!-- Iconos flotantes de acceso rápido: config y tienda -->
   @if (ui.showCornerButtons()) {
     <div class="corner-buttons">
-      <a [routerLink]="['/task/create']" class="corner-btn--create"></a>
+      <a
+        [routerLink]="['/task/create']"
+        class="corner-btn--create"
+        aria-label="Crear tarea"
+        title="Crear tarea"
+      ></a>
       <div class="corner-btn-group">
-        <a [routerLink]="['/config']" class="corner-btn corner-btn--config"></a>
-        <a [routerLink]="['/tabs/shop']" class="corner-btn corner-btn--shop"></a>
+        <a
+          [routerLink]="['/config']"
+          class="corner-btn corner-btn--config"
+          aria-label="Configuración"
+          title="Configuración"
+        ></a>
+        <a
+          [routerLink]="['/tabs/shop']"
+          class="corner-btn corner-btn--shop"
+          aria-label="Tienda"
+          title="Tienda"
+        ></a>
       </div>
     </div>
   }
