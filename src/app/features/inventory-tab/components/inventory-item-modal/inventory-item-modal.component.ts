@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IonModal, IonSpinner, ToastController } from '@ionic/angular/standalone';
+import { IonModal, IonSpinner } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
@@ -16,6 +16,7 @@ import { getShinyPrice } from '@core/utils/shiny.util';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemService } from '@features/inventory-tab/services/item.service';
+import { ToastService } from '@core/services/toast.service';
 
 interface EligibleCollection {
   id: number;
@@ -40,7 +41,7 @@ export class InventoryItemModalComponent implements OnChanges {
   @Output() dismissed = new EventEmitter<void>();
 
   private collectionService = inject(CollectionService);
-  private toastController = inject(ToastController);
+  private toast = inject(ToastService);
   private itemService = inject(ItemService);
 
   step: ModalStep = 'detail';
@@ -112,14 +113,7 @@ export class InventoryItemModalComponent implements OnChanges {
 
       this.item.quantity -= 1;
 
-      const toast = await this.toastController.create({
-        message: `${this.item.name} añadido a la colección ${col.name}!`,
-        duration: 2500,
-        color: 'success',
-        position: 'top',
-        icon: 'checkmark-circle',
-      });
-      await toast.present();
+      await this.toast.success(`${this.item.name} añadido a la colección ${col.name}!`);
 
       if (this.item.quantity <= 0) {
         this.isOpen = false;
@@ -128,13 +122,7 @@ export class InventoryItemModalComponent implements OnChanges {
       }
     } catch (e) {
       console.error('Error depositing item:', e);
-      const toast = await this.toastController.create({
-        message: 'Error al añadir el objeto a la colección',
-        duration: 2500,
-        color: 'danger',
-        position: 'top',
-      });
-      await toast.present();
+      await this.toast.error('Error al añadir el objeto a la colección');
     } finally {
       this.depositing = false;
     }
