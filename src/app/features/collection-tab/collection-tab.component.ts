@@ -1,11 +1,12 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { IonContent, ViewWillEnter, ToastController } from '@ionic/angular/standalone';
+import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 import { CollectionCardComponent } from '@features/collection-tab/components/collection-card/collection-card.component';
 import { CollectionItemClickEvent } from '@features/collection-tab/interfaces/collection.interface';
 import { CollectionItemModalComponent } from '@features/collection-tab/components/collection-item-modal/collection-item-modal.component';
 import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { Collection, CollectionItem } from '@core/models/collection.model';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-collection-tab',
@@ -17,7 +18,7 @@ export class CollectionTabComponent implements ViewWillEnter {
   @ViewChild(IonContent) content!: IonContent;
 
   private collectionService = inject(CollectionService);
-  private toastController = inject(ToastController);
+  private toast = inject(ToastService);
 
   collections: Collection[] = [];
 
@@ -88,11 +89,11 @@ export class CollectionTabComponent implements ViewWillEnter {
         depositShiny, // Lo que depositamos realmente
       );
 
-      await this.showToast(`${item.name} añadido a la colección!`, 'success', 'checkmark-circle');
+      await this.toast.success(`${item.name} añadido a la colección!`);
       await this.reloadCollection(collectionId);
     } catch (error) {
       console.error('Error depositing item directly:', error);
-      await this.showToast('Error al añadir el objeto a la colección', 'danger');
+      await this.toast.error('Error al añadir el objeto a la colección');
     }
   }
 
@@ -101,17 +102,6 @@ export class CollectionTabComponent implements ViewWillEnter {
     if (item.ownedNormal) return false; // El hueco es normal y tenemos normal
 
     return !!item.ownedShiny; // El hueco es normal, no tenemos normal, pero sí shiny
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      color,
-      position: 'top',
-      icon,
-    });
-    await toast.present();
   }
 
   async onModalDismissed() {

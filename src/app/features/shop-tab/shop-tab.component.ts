@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { IonContent, IonSpinner, ToastController, ViewWillEnter} from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, ViewWillEnter } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
@@ -7,6 +7,7 @@ import { ShopBuyModalComponent } from './components/shop-buy-modal/shop-buy-moda
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { ShopCardComponent } from './components/shop-card/shop-card.component';
 import { ShopService } from './services/shop.service';
+import { ToastService } from '@core/services/toast.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -24,7 +25,7 @@ export class ShopTabComponent implements ViewWillEnter {
   @ViewChild(IonContent) content!: IonContent;
   private shopService = inject(ShopService);
   private playerStateService = inject(PlayerStateService);
-  private toastController = inject(ToastController);
+  private toast = inject(ToastService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
@@ -67,7 +68,7 @@ export class ShopTabComponent implements ViewWillEnter {
     this.isModalOpen = false;
   }
   async handleInsufficientFunds() {
-    await this.showToast('No tienes gemas suficientes.', 'danger');
+    await this.toast.error('No tienes gemas suficientes.');
   }
   async handlePurchase(collection: Collection) {
     if (this.isBuying) return;
@@ -75,11 +76,7 @@ export class ShopTabComponent implements ViewWillEnter {
     try {
       await this.shopService.buyCollection(collection.id, collection.price);
       this.updateUISuccess(collection);
-      await this.showToast(
-        `¡Colección ${collection.name} adquirida!`,
-        'success',
-        'checkmark-circle',
-      );
+      await this.toast.success(`¡Colección ${collection.name} adquirida!`);
     } catch (error) {
       console.error('Error al comprar la colección', error);
     } finally {
@@ -94,14 +91,12 @@ export class ShopTabComponent implements ViewWillEnter {
   }
 
   private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      color,
-      position: 'top',
-      icon,
-    });
-    await toast.present();
+    // Mantener método por compatibilidad, delega al ToastService
+    if (color === 'success') {
+      await this.toast.success(message);
+    } else {
+      await this.toast.error(message);
+    }
   }
 
   itemImagePath(imageName: string): string {
