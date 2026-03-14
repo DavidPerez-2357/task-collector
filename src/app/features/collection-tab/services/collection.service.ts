@@ -34,10 +34,6 @@ export class CollectionService {
     );
   }
 
-  async getEligibleCollectionsForItem(itemId: number, isShiny: boolean) {
-    return this.collectionRepository.getEligibleCollectionsForItem(itemId, isShiny);
-  }
-
   async depositItemToCollection(
     collectionId: number,
     itemId: number,

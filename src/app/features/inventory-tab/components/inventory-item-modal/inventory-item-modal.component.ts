@@ -13,7 +13,7 @@ import { BoardComponent } from '@shared/components/board/board.component';
 import { ItemInventory } from '@core/models/item.model';
 import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
 import { getShinyPrice } from '@core/utils/shiny.util';
-import { CollectionService } from '@features/collection-tab/services/collection.service';
+import { CollectionService } from '@features/inventory-tab/services/collection.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { ToastService } from '@core/services/toast.service';
@@ -31,6 +31,7 @@ type ModalStep = 'detail' | 'collections';
   selector: 'app-inventory-item-modal',
   templateUrl: './inventory-item-modal.component.html',
   styleUrls: ['./inventory-item-modal.component.scss'],
+  providers: [CollectionService, ItemService],
   imports: [IonModal, BoardComponent, ButtonComponent, IonSpinner],
 })
 export class InventoryItemModalComponent implements OnChanges {
