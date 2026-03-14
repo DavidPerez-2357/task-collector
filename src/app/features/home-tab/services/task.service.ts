@@ -45,4 +45,44 @@ export class TaskService {
   async createRecurringTasksForToday(): Promise<void> {
     return await this.taskRepository.createRecurringTasksForToday();
   }
+
+  /**
+   * Pospone una instancia activa de tarea sumando ms a start_date y end_date.
+   */
+  async postponeTaskById(taskActiveId: number, ms: number): Promise<void> {
+    return await this.taskRepository.postponeTaskActiveById(taskActiveId, ms);
+  }
+
+  /**
+   * Establece start_date y end_date de una instancia activa por id.
+   * Usado para la acción "Hacer hoy".
+   */
+  async setTaskActiveDatesById(taskActiveId: number, start: number, end: number): Promise<void> {
+    return await this.taskRepository.setTaskActiveDatesById(taskActiveId, start, end);
+  }
+
+  /**
+   * Elimina una instancia activa de tarea por su id.
+   */
+  async deleteTaskActiveById(taskActiveId: number): Promise<void> {
+    return await this.taskRepository.deleteTaskActiveById(taskActiveId);
+  }
+
+  /**
+   * Marca una instancia activa como completada (mueve a historial).
+   */
+  async completeTaskActiveById(taskActiveId: number, completedAt: number): Promise<void> {
+    return await this.taskRepository.completeTaskActiveById(taskActiveId, completedAt);
+  }
+
+  /**
+   * Registra un skip (usuario eliminó la instancia) y borra la instancia en una transacción.
+   */
+  async skipTaskActiveById(
+    taskActiveId: number,
+    skippedAt: number,
+    reason = 'user_deleted',
+  ): Promise<void> {
+    return await this.taskRepository.skipTaskActiveById(taskActiveId, skippedAt, reason);
+  }
 }
