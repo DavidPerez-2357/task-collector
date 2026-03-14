@@ -121,4 +121,20 @@ export class ItemRepository {
       await conn.executeSet(set, true);
     });
   }
+
+  /**
+   * Selecciona aleatoriamente un item_id de la tabla `item` filtrando por rarity.
+   * Devuelve null si no hay coincidencias.
+   */
+  async getRandomItemIdByRarity(rarity: number): Promise<number | null> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `SELECT id FROM item WHERE rarity = ? ORDER BY RANDOM() LIMIT 1`,
+        [rarity],
+      );
+      const values = res.values || [];
+      if (!values.length) return null;
+      return Number(values[0].id);
+    });
+  }
 }
