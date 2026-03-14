@@ -1,10 +1,12 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonContent, ViewWillEnter, ViewWillLeave } from '@ionic/angular/standalone';
 import { TaskComponent } from '@features/home-tab/components/task/task.component';
 import { TaskActive } from '@core/models/task.model';
 import { ActionPanelComponent } from '@features/home-tab/components/action-panel/action-panel.component';
 import { UIService } from '@core/services/ui.service';
 import { TaskService } from '@features/home-tab/services/task.service';
+import { CreateTaskService } from '@core/services/create-task.service'; // Añadido
 import { DevToolsService } from '@core/services/dev-tools.service';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
@@ -20,22 +22,30 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
 
   private readonly uiService = inject(UIService);
   private readonly taskService = inject(TaskService);
+  private readonly createTaskService = inject(CreateTaskService); // Añadido
   private readonly devToolsService = inject(DevToolsService);
   private readonly playerStateService = inject(PlayerStateService);
+  private readonly destroyRef = inject(DestroyRef); // Añadido
 
   playerGems = 0;
-
   isActionPanelVisible = false;
   selectedTask: TaskActive | null = null;
-
   todayTasks: TaskActive[] = [];
   otherTasks: TaskActive[] = [];
-
   loading = false;
+  isSelectedTaskToday = false;
+
+  constructor() {
+    // ¡Escuchamos al servicio global! Si se crea una tarea, recargamos automáticamente
+    this.createTaskService.taskCreated$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.loadTasks(); 
+    });
+  }
 
   async ionViewWillEnter(): Promise<void> {
     await this.taskService.createRecurringTasksForToday();
-
     await this.loadTasks();
     this.playerGems = await this.playerStateService.getCoins();
   }
@@ -57,16 +67,11 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     this.uiService.show();
   }
 
-  isSelectedTaskToday = false;
-
   handleTaskClick(task: TaskActive, isTodayTask: boolean): void {
     this.uiService.hide();
     this.isActionPanelVisible = true;
     this.selectedTask = task;
     this.isSelectedTaskToday = isTodayTask;
-    console.log(
-      `Tarea seleccionada: ${task.name} (ID: ${task.id}), Es tarea de hoy: ${isTodayTask}`,
-    );
     this.scrollToTask(task.id);
   }
 
@@ -74,7 +79,6 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     try {
       const el = document.getElementById('task-' + taskId);
       if (!el) return;
-
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (e) {
       console.warn('Error al hacer scroll a la tarea:', e);
@@ -82,10 +86,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   actionPanelClosed(): void {
-    // Mostrar los corner buttons al cerrar el panel de acciones
     this.uiService.show();
-
-    // Ocultar el panel de acciones
     this.isActionPanelVisible = false;
     this.selectedTask = null;
   }

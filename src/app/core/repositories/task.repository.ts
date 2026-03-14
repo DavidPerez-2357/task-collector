@@ -46,15 +46,37 @@ export class TaskRepository {
    * Inserta una nueva definición de tarea en la tabla `task`.
    * No devuelve valor, lanza si hay error durante la inserción.
    */
-  async createTask(task: Omit<Task, 'id'>): Promise<void> {
+  async createTask(task: Omit<Task, 'id'> & { dueDate?: string }): Promise<void> {
+    const start = getStartOfToday();
+
+    // Si el usuario eligió fecha límite, usamos el final de ese día; si no, hoy.
+    let end: number;
+    if (task.dueDate) {
+      const parts = task.dueDate.split('-');
+      const dueDay = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      dueDay.setHours(23, 59, 59, 999);
+      end = dueDay.getTime();
+    } else {
+      end = start + DAY_MS;
+    }
+
     return await this.databaseService.withConn(async (conn) => {
-      await conn.run(
+      const insertResult = await conn.run(
         `
         INSERT INTO task (name, frequency, interval, effort, category_id)
         VALUES (?, ?, ?, ?, ?)
       `,
         [task.name, task.frequency, task.interval, task.effort, task.category.id],
       );
+
+      const newTaskId = insertResult?.changes?.lastId;
+
+      if (newTaskId) {
+        await conn.run(
+          `INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`,
+          [newTaskId, start, end],
+        );
+      }
     });
   }
 

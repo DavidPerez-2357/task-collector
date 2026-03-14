@@ -22,13 +22,13 @@ export class TaskService {
     const now = new Date();
 
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const endOfToday = startOfToday + DAY_MS;
+    const startOfNextDay = startOfToday + DAY_MS;
 
     const today: TaskActive[] = [];
     const others: TaskActive[] = [];
 
     for (const task of tasks) {
-      if (task.endDate >= startOfToday && task.endDate <= endOfToday) {
+      if (task.endDate >= startOfToday && task.endDate < startOfNextDay) {
         today.push(task);
       } else {
         others.push(task);

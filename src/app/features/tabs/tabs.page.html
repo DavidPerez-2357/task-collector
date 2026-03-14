@@ -1,16 +1,15 @@
 <ion-tabs>
-  <!-- Iconos flotantes de acceso rápido: config y tienda -->
   @if (ui.showCornerButtons()) {
     <div class="corner-buttons">
       <a
-        [routerLink]="['/task/create']"
+        (click)="isCreateModalOpen = true"
         class="corner-btn--create"
         aria-label="Crear tarea"
         title="Crear tarea"
       ></a>
       <div class="corner-btn-group">
         <a
-          [routerLink]="['/config']"
+          (click)="isConfigOpen = true"
           class="corner-btn corner-btn--config"
           aria-label="Configuración"
           title="Configuración"
@@ -39,3 +38,9 @@
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
+
+
+<app-create-task-modal 
+  [isOpen]="isCreateModalOpen" 
+  (dismissed)="isCreateModalOpen = false">
+</app-create-task-modal>

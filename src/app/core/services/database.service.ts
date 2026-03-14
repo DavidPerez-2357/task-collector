@@ -76,6 +76,11 @@ export class DatabaseService {
       sqlAssetPath: 'assets/db/migrations/002_seed_data.sql',
       description: 'Seed initial data',
     },
+    {
+      version: 3,
+      sqlAssetPath: 'assets/db/migrations/003_add_categories.sql',
+      description: 'Add initial categories',
+    },
   ];
 
   async init(): Promise<void> {
