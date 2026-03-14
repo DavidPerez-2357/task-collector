@@ -76,6 +76,17 @@ export class DatabaseService {
       sqlAssetPath: 'assets/db/migrations/002_seed_data.sql',
       description: 'Seed initial data',
     },
+    {
+      version: 3,
+      sqlAssetPath: 'assets/db/migrations/003_add_task_skips.sql',
+      description: 'Add task_skips table to record user-deleted instances',
+    },
+    {
+      version: 4,
+      sqlAssetPath: 'assets/db/migrations/004_add_indexes.sql',
+      description:
+        'Add useful indexes for performance (task_active, task_history, collection_item, sales)',
+    },
   ];
 
   async init(): Promise<void> {
