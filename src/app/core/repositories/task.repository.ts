@@ -30,7 +30,8 @@ export class TaskRepository {
       : ({} as Category);
 
     return {
-      id: Number(row.id),
+      id: Number(row.id),            // task_active.id
+      task_id: Number(row.task_id),  // task.id (for UPDATE)
       name: row.name,
       frequency: Number(row.frequency),
       interval: Number(row.interval),
@@ -48,17 +49,7 @@ export class TaskRepository {
    */
   async createTask(task: Omit<Task, 'id'> & { dueDate?: string }): Promise<void> {
     const start = getStartOfToday();
-
-    // Si el usuario eligió fecha límite, usamos el final de ese día; si no, hoy.
-    let end: number;
-    if (task.dueDate) {
-      const parts = task.dueDate.split('-');
-      const dueDay = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      dueDay.setHours(23, 59, 59, 999);
-      end = dueDay.getTime();
-    } else {
-      end = start + DAY_MS;
-    }
+    const end = this.parseDueDate(task.dueDate) ?? (start + DAY_MS);
 
     return await this.databaseService.withConn(async (conn) => {
       const insertResult = await conn.run(
@@ -79,6 +70,40 @@ export class TaskRepository {
       }
     });
   }
+
+  /**
+   * Actualiza la definición de una tarea existente y su end_date en task_active.
+   */
+  async updateTask(taskId: number, activeTaskId: number, task: Omit<Task, 'id'> & { dueDate?: string }): Promise<void> {
+    const end = this.parseDueDate(task.dueDate);
+
+    return await this.databaseService.withConn(async (conn) => {
+      await conn.run(
+        `UPDATE task SET name = ?, frequency = ?, interval = ?, effort = ?, category_id = ? WHERE id = ?`,
+        [task.name, task.frequency, task.interval, task.effort, task.category.id, taskId],
+      );
+
+      if (end !== null) {
+        await conn.run(
+          `UPDATE task_active SET end_date = ? WHERE id = ?`,
+          [end, activeTaskId],
+        );
+      }
+    });
+  }
+
+  /**
+   * Convierte una fecha "YYYY-MM-DD" al timestamp del final de ese día (23:59:59.999).
+   * Devuelve null si no hay fecha.
+   */
+  private parseDueDate(dueDate?: string): number | null {
+    if (!dueDate) return null;
+    const parts = dueDate.split('-');
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  }
+
 
   /**
    * Obtiene todas las tareas activas (task_active) no eliminadas y las mapea a TaskActive.

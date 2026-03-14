@@ -3,7 +3,7 @@
     <div class="modal-wrapper">
       <app-board width="medium">
         <div class="modal-content">
-          <h2>Nueva Tarea</h2>
+          <h2>{{ isEditMode ? 'Editar Tarea' : 'Nueva Tarea' }}</h2>
           
           <div class="form-container">
             <div class="input-group">
@@ -61,7 +61,7 @@
             </app-button>
             
             <app-button type="gem" (handleClick)="onSubmit()" [disabled]="isSubmitting || !taskName.trim() || selectedCategoryId === null">
-              Crear
+              {{ isEditMode ? 'Guardar' : 'Crear' }}
             </app-button>
           </div>
         </div>

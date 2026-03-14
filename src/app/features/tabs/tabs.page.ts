@@ -1,25 +1,45 @@
-import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { Component, DestroyRef, EnvironmentInjector, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { triangle, ellipse, square } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 import { CreateTaskModalComponent } from '@shared/components/create-task-modal/create-task-modal.component';
 import { UIService } from '@core/services/ui.service';
+import { EditTaskService } from '@core/services/edit-task.service';
+import { TaskActive } from '@core/models/task.model';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
-  imports: [IonTabs, IonTabBar, IonTabButton, RouterLink, CreateTaskModalComponent], // Añadido
+  imports: [IonTabs, IonTabBar, IonTabButton, RouterLink, CreateTaskModalComponent],
 })
-export class TabsPage {
+export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
   public ui = inject(UIService);
-  
+  private editTaskService = inject(EditTaskService);
+  private destroyRef = inject(DestroyRef);
+
   public isConfigOpen = false;
-  public isCreateModalOpen = false; // Añadido
+  public isCreateModalOpen = false;
+  public taskToEdit: TaskActive | null = null;
 
   constructor() {
     addIcons({ triangle, ellipse, square });
   }
-}
+
+  ngOnInit(): void {
+    this.editTaskService.editRequested$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((task) => {
+        this.taskToEdit = task;
+        this.isCreateModalOpen = true;
+      });
+  }
+
+  onModalDismissed(): void {
+    this.isCreateModalOpen = false;
+    this.taskToEdit = null;
+  }
+}

@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { TaskActive } from '@core/models/task.model';
 import { IonIcon } from '@ionic/angular/standalone';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { addIcons } from 'ionicons';
+import { EditTaskService } from '@core/services/edit-task.service';
 import {
   checkmarkCircleOutline,
   createOutline,
@@ -28,6 +29,8 @@ export class ActionPanelComponent {
   @Input() isOpen = false;
   @Input() selectedTask: TaskActive | null = null;
   @Input() isTodayTask = false;
+
+  private editTaskService = inject(EditTaskService);
 
   @Output() didClose = new EventEmitter<void>();
 
@@ -66,7 +69,9 @@ export class ActionPanelComponent {
   }
 
   protected editTask(): void {
-    // TODO
+    if (!this.selectedTask) return;
+    this.editTaskService.requestEdit(this.selectedTask);
+    this.closePanel();
   }
 
   protected deleteTask(): void {

@@ -41,6 +41,7 @@
 
 
 <app-create-task-modal 
-  [isOpen]="isCreateModalOpen" 
-  (dismissed)="isCreateModalOpen = false">
+  [isOpen]="isCreateModalOpen"
+  [taskToEdit]="taskToEdit"
+  (dismissed)="onModalDismissed()">
 </app-create-task-modal>

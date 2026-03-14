@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonModal, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '../board/board.component';
 import { ButtonComponent } from '../button/button.component';
-import { Task, TaskEffort, TaskFrequency } from '@core/models/task.model';
+import { Task, TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
 import { Category } from '@core/models/category.model';
 import { CategoryService } from '@core/services/category.service';
 import { CreateTaskService, CreateTaskInput } from '@core/services/create-task.service';
+import { EditTaskService } from '@core/services/edit-task.service';
 
 @Component({
   selector: 'app-create-task-modal',
@@ -14,13 +15,15 @@ import { CreateTaskService, CreateTaskInput } from '@core/services/create-task.s
   styleUrls: ['./create-task-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent, FormsModule]
 })
-export class CreateTaskModalComponent implements OnInit {
+export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
+  @Input() taskToEdit: TaskActive | null = null;
   @Output() dismissed = new EventEmitter<void>();
   readonly TaskFrequency = TaskFrequency;
 
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
+  private editTaskService = inject(EditTaskService);
   private toastController = inject(ToastController);
 
   categories: Category[] = [];
@@ -46,11 +49,39 @@ export class CreateTaskModalComponent implements OnInit {
   taskDueDate: string = this.getTodayString();
   isSubmitting: boolean = false;
 
+  get isEditMode(): boolean {
+    return this.taskToEdit !== null;
+  }
+
   async ngOnInit() {
     this.categories = await this.categoryService.getAllCategories();
     if (this.categories.length > 0) {
       this.selectedCategoryId = this.categories[0]?.id ?? null;
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const task = changes['taskToEdit']?.currentValue as TaskActive | null;
+    if (task) {
+      this.prefillForm(task);
+    }
+  }
+
+  private prefillForm(task: TaskActive): void {
+    this.taskName = task.name;
+    this.taskFrequency = task.frequency;
+    this.taskInterval = task.interval;
+    this.taskEffort = task.effort;
+    this.selectedCategoryId = task.category?.id ?? null;
+    this.taskDueDate = this.timestampToDateString(task.endDate);
+  }
+
+  private timestampToDateString(ts: number): string {
+    const d = new Date(ts);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   onDismiss() {
@@ -61,44 +92,50 @@ export class CreateTaskModalComponent implements OnInit {
   async onSubmit() {
     if (!this.taskName.trim() || this.selectedCategoryId === null) return;
     this.isSubmitting = true;
-    
+
     const selectedCategory = this.categories.find(c => c.id === Number(this.selectedCategoryId))!;
+    const taskData: CreateTaskInput = {
+      name: this.taskName,
+      category: selectedCategory,
+      frequency: Number(this.taskFrequency),
+      interval: Number(this.taskInterval),
+      effort: Number(this.taskEffort),
+      dueDate: this.taskDueDate
+    };
 
     try {
-      await this.createTaskService.createTask({
-        name: this.taskName,
-        category: selectedCategory,
-        frequency: Number(this.taskFrequency),
-        interval: Number(this.taskInterval),
-        effort: Number(this.taskEffort),
-        dueDate: this.taskDueDate
-      });
-      
+      if (this.isEditMode && this.taskToEdit) {
+        // Modo edición: task_id es el ID de la tabla `task`, id es el ID de `task_active`
+        const taskId = (this.taskToEdit as any)['task_id'];
+        const activeTaskId = this.taskToEdit.id;
+        await this.editTaskService.updateTask(taskId, activeTaskId, taskData);
+        await this.showToast('¡Tarea actualizada con éxito!', 'success');
+      } else {
+        // Modo creación: creamos una nueva tarea
+        await this.createTaskService.createTask(taskData);
+        await this.showToast('¡Tarea creada con éxito!', 'success');
+      }
+
       this.resetForm();
       this.dismissed.emit();
 
-      // Aviso de éxito global
-      const toast = await this.toastController.create({
-        message: '¡Tarea creada con éxito!',
-        duration: 2000,
-        color: 'success',
-        position: 'top',
-        icon: 'checkmark-circle'
-      });
-      await toast.present();
-
     } catch (error) {
       console.error('Error guardando tarea', error);
-      const errorToast = await this.toastController.create({
-        message: 'Error al crear la tarea.',
-        duration: 2000,
-        color: 'danger',
-        position: 'top'
-      });
-      await errorToast.present();
+      await this.showToast('Error al guardar la tarea.', 'danger');
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top',
+      icon: color === 'success' ? 'checkmark-circle' : undefined
+    });
+    await toast.present();
   }
 
   getIntervalLabel(): string {
