@@ -1,7 +1,7 @@
 <ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
-  <ng-template class="ion-no-padding">
-    <app-board width="">
-      @if (item) {
+  @if (item) {
+    <ng-template class="ion-no-padding">
+      <app-board width="">
         <div class="item-details acquired">
           <main>
             <h2 class="title">Recompensa por completar</h2>
@@ -26,7 +26,7 @@
             </div>
           </main>
         </div>
-      }
-    </app-board>
-  </ng-template>
+      </app-board>
+    </ng-template>
+  }
 </ion-modal>
