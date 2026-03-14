@@ -10,6 +10,7 @@
           type="success"
           [border]="true"
           btnClass="flex h-full center column rounded-sm text-lg gap-1"
+          [disabled]="isBusy"
           (handleClick)="completeTask()"
         >
           <ion-icon name="checkmark-circle-outline" size="30"></ion-icon>
@@ -21,7 +22,8 @@
             <app-button
               type="primary"
               [border]="true"
-              btnClass="action-btn flex center rounded-sm"
+              btnClass="action-btn flex center rounded-sm h-full"
+              [disabled]="isBusy"
               (handleClick)="doToday()"
             >
               <ion-icon name="sunny-outline"></ion-icon>
@@ -31,8 +33,8 @@
             <app-button
               type="secondary"
               [border]="true"
-              btnClass="action-btn flex center rounded-sm"
-              [disabled]="!canPostpone"
+              btnClass="action-btn flex center rounded-sm h-full"
+              [disabled]="isBusy || !canPostpone"
               (handleClick)="postponeTask()"
             >
               <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -43,8 +45,9 @@
           <app-button
             type="danger"
             [border]="true"
-            btnClass="action-btn flex center rounded-sm"
-            (handleClick)="deleteTask()"
+            btnClass="action-btn flex center rounded-sm h-full"
+            [disabled]="isBusy"
+            (handleClick)="confirmDeleteOpen = true"
           >
             <ion-icon name="close-circle-outline"></ion-icon>
           </app-button>
@@ -52,7 +55,8 @@
           <app-button
             type="warning"
             [border]="true"
-            btnClass="action-btn flex center rounded-sm"
+            btnClass="action-btn flex center rounded-sm h-full"
+            [disabled]="isBusy"
             (handleClick)="editTask()"
           >
             <ion-icon name="create-outline"></ion-icon>
@@ -61,4 +65,21 @@
       </div>
     </div>
   </app-board>
+
+  <app-confirm-modal
+    [isOpen]="confirmDeleteOpen"
+    title="Cancelar tarea"
+    [message]="
+      selectedTask
+        ? 'Al calcelar «' +
+          selectedTask.name +
+          '» se quitará de tu lista de tareas. Solo se elimina esta instancia, no la tarea en sí.'
+        : ''
+    "
+    confirmLabel="Quitar"
+    cancelLabel="Cancelar"
+    confirmColor="danger"
+    (dismissed)="confirmDeleteOpen = false"
+    (confirmed)="onDeleteConfirmed($event)"
+  />
 </div>
