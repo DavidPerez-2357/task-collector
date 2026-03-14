@@ -48,10 +48,8 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
 
   constructor() {
     // ¡Escuchamos al servicio global! Si se crea una tarea, recargamos automáticamente
-    this.createTaskService.taskCreated$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.loadTasks(); 
+    this.createTaskService.taskCreated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.loadTasks();
     });
   }
 

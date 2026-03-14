@@ -46,7 +46,9 @@ export class TaskRepository {
   /**
    * Inserta una nueva definición de tarea en la tabla `task`.
    */
-  async createTask(task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] }): Promise<void> {
+  async createTask(
+    task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] },
+  ): Promise<void> {
     const todayStart = getStartOfToday();
 
     // Para tareas semanales con días seleccionados, la primera instancia
@@ -59,7 +61,7 @@ export class TaskRepository {
       firstEnd = firstStart + DAY_MS - 1;
     } else {
       firstStart = todayStart;
-      firstEnd = this.parseDueDate(task.dueDate) ?? (todayStart + DAY_MS - 1);
+      firstEnd = this.parseDueDate(task.dueDate) ?? todayStart + DAY_MS - 1;
     }
 
     return await this.databaseService.withConn(async (conn) => {
@@ -77,18 +79,19 @@ export class TaskRepository {
         // Si es semanal y tiene días seleccionados, los guardamos
         if (task.frequency === 2 && task.weekdays?.length) {
           for (const weekday of task.weekdays) {
-            await conn.run(
-              `INSERT INTO weekly_recurrence (task_id, weekday) VALUES (?, ?)`,
-              [newTaskId, weekday]
-            );
+            await conn.run(`INSERT INTO weekly_recurrence (task_id, weekday) VALUES (?, ?)`, [
+              newTaskId,
+              weekday,
+            ]);
           }
         }
 
         // Insertamos la primera instancia activa
-        await conn.run(
-          `INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`,
-          [newTaskId, firstStart, firstEnd],
-        );
+        await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [
+          newTaskId,
+          firstStart,
+          firstEnd,
+        ]);
       }
     });
   }
@@ -116,7 +119,11 @@ export class TaskRepository {
   /**
    * Actualiza la definición de una tarea existente y su end_date en task_active.
    */
-  async updateTask(taskId: number, activeTaskId: number, task: Omit<Task, 'id'> & { dueDate?: string }): Promise<void> {
+  async updateTask(
+    taskId: number,
+    activeTaskId: number,
+    task: Omit<Task, 'id'> & { dueDate?: string },
+  ): Promise<void> {
     const end = this.parseDueDate(task.dueDate);
 
     return await this.databaseService.withConn(async (conn) => {
@@ -126,10 +133,7 @@ export class TaskRepository {
       );
 
       if (end !== null) {
-        await conn.run(
-          `UPDATE task_active SET end_date = ? WHERE id = ?`,
-          [end, activeTaskId],
-        );
+        await conn.run(`UPDATE task_active SET end_date = ? WHERE id = ?`, [end, activeTaskId]);
       }
     });
   }
@@ -142,16 +146,13 @@ export class TaskRepository {
     const end = this.parseDueDate(dueDate);
     return await this.databaseService.withConn(async (conn) => {
       // Nota: la tabla task_active no tiene nombre, el nombre viene de la tabla task.
-      // Si queremos que SOLO esta instancia tenga un nombre diferente, tendríamos que 
-      // modificar el esquema o crear una excepción. 
+      // Si queremos que SOLO esta instancia tenga un nombre diferente, tendríamos que
+      // modificar el esquema o crear una excepción.
       // Por ahora, actualizaremos el end_date. Si el usuario quiere cambiar el nombre
       // de "solo esta vez", implicaría complicar el modelo.
       // Implementaremos el cambio de fecha límite por ahora.
       if (end !== null) {
-        await conn.run(
-          `UPDATE task_active SET end_date = ? WHERE id = ?`,
-          [end, activeTaskId],
-        );
+        await conn.run(`UPDATE task_active SET end_date = ? WHERE id = ?`, [end, activeTaskId]);
       }
     });
   }
@@ -163,7 +164,7 @@ export class TaskRepository {
     return await this.databaseService.withConn(async (conn) => {
       // 1. Marcar como borrada globalmente
       await conn.run(`UPDATE task SET deleted = 1 WHERE id = ?`, [taskId]);
-      
+
       // 2. Eliminar cualquier instancia activa relacionada
       await conn.run(`DELETE FROM task_active WHERE task_id = ?`, [taskId]);
     });
@@ -180,7 +181,6 @@ export class TaskRepository {
     d.setHours(23, 59, 59, 999);
     return d.getTime();
   }
-
 
   /**
    * Obtiene todas las tareas activas (task_active) no eliminadas y las mapea a TaskActive.
@@ -483,10 +483,10 @@ export class TaskRepository {
    */
   async postponeTaskActiveById(taskActiveId: number, ms: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
-      await conn.run(
-        `UPDATE task_active SET end_date = end_date + ? WHERE id = ?`,
-        [ms, taskActiveId],
-      );
+      await conn.run(`UPDATE task_active SET end_date = end_date + ? WHERE id = ?`, [
+        ms,
+        taskActiveId,
+      ]);
     });
   }
 
@@ -519,9 +519,10 @@ export class TaskRepository {
    */
   async completeTaskActiveById(taskActiveId: number, completedAt: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT task_id, start_date, end_date FROM task_active WHERE id = ?`, [
-        taskActiveId,
-      ]);
+      const res = await conn.query(
+        `SELECT task_id, start_date, end_date FROM task_active WHERE id = ?`,
+        [taskActiveId],
+      );
       const values = res.values || [];
       if (!values.length) throw new Error(`task_active with id ${taskActiveId} not found`);
 
@@ -552,11 +553,18 @@ export class TaskRepository {
    * Genera la siguiente recurrencia de una tarea en task_active comprobando los 365 días próximos
    * a partir del día siguiente al indicado. Optimizada para no hacer consultas dentro del bucle.
    */
-  private async generateNextRecurrence(conn: any, taskId: number, afterDateMs: number): Promise<void> {
+  private async generateNextRecurrence(
+    conn: any,
+    taskId: number,
+    afterDateMs: number,
+  ): Promise<void> {
     // 1. Cargamos la configuración global de la tarea
-    const resCount = await conn.query(`SELECT id, frequency, interval FROM task WHERE id = ? AND frequency != 0 AND deleted = 0`, [taskId]);
+    const resCount = await conn.query(
+      `SELECT id, frequency, interval FROM task WHERE id = ? AND frequency != 0 AND deleted = 0`,
+      [taskId],
+    );
     if (!resCount.values?.length) return;
-    
+
     const task = {
       id: Number(resCount.values[0].id),
       frequency: Number(resCount.values[0].frequency),
@@ -564,33 +572,40 @@ export class TaskRepository {
     };
 
     // 2. Historial y días de la semana
-    const rc = await conn.query(`SELECT MAX(completed_at) AS last_completed FROM task_history WHERE task_id = ?`, [taskId]);
-    const lastCompleted = rc.values?.[0]?.last_completed ? Number(rc.values[0].last_completed) : null;
+    const rc = await conn.query(
+      `SELECT MAX(completed_at) AS last_completed FROM task_history WHERE task_id = ?`,
+      [taskId],
+    );
+    const lastCompleted = rc.values?.[0]?.last_completed
+      ? Number(rc.values[0].last_completed)
+      : null;
 
-    const rw = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [taskId]);
+    const rw = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [
+      taskId,
+    ]);
     const weekdays = rw.values?.map((r: any) => Number(r.weekday)) ?? [];
 
     // 3. Definimos el rango de fechas (Hoy + 1 hasta Hoy + 366)
     let d = new Date(afterDateMs);
     d.setDate(d.getDate() + 1);
     d.setHours(0, 0, 0, 0);
-    
+
     const startRangeMs = d.getTime();
-    
+
     const endRangeDate = new Date(startRangeMs);
     endRangeDate.setDate(endRangeDate.getDate() + 365);
     const endRangeMs = endRangeDate.getTime();
 
     // 4. LA MAGIA: Traemos todas las instancias futuras y las saltadas de golpe a la memoria (Sets)
     const activeRes = await conn.query(
-      `SELECT start_date FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date < ?`, 
-      [taskId, startRangeMs, endRangeMs]
+      `SELECT start_date FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date < ?`,
+      [taskId, startRangeMs, endRangeMs],
     );
     const activeSet = new Set((activeRes.values || []).map((r: any) => Number(r.start_date)));
 
     const skipsRes = await conn.query(
-      `SELECT start_date FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date < ?`, 
-      [taskId, startRangeMs, endRangeMs]
+      `SELECT start_date FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date < ?`,
+      [taskId, startRangeMs, endRangeMs],
     );
     const skipsSet = new Set((skipsRes.values || []).map((r: any) => Number(r.start_date)));
 
@@ -598,9 +613,15 @@ export class TaskRepository {
     for (let offset = 0; offset < 365; offset++) {
       const todayWeekday = d.getDay();
       const dMs = d.getTime();
-      
-      const shouldCreate = this.shouldCreateTaskToday(task, lastCompleted, weekdays, todayWeekday, dMs);
-      
+
+      const shouldCreate = this.shouldCreateTaskToday(
+        task,
+        lastCompleted,
+        weekdays,
+        todayWeekday,
+        dMs,
+      );
+
       if (shouldCreate) {
         // Si ya hay una tarea creada para este día, paramos (ya está cubierta)
         if (activeSet.has(dMs)) {
@@ -617,10 +638,14 @@ export class TaskRepository {
         // Si debe crearse, no está activa y no está cancelada, ¡la insertamos en BD y rompemos el bucle!
         const start = dMs;
         const end = start + DAY_MS - 1;
-        await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [taskId, start, end]);
+        await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [
+          taskId,
+          start,
+          end,
+        ]);
         break;
       }
-      
+
       d.setDate(d.getDate() + 1);
       d.setHours(0, 0, 0, 0);
     }

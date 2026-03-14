@@ -3,7 +3,7 @@ import { CategoryRepository } from '@core/repositories/category.repository';
 import { Category } from '@core/models/category.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
   private categoryRepository = inject(CategoryRepository);

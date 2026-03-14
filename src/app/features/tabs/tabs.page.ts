@@ -44,4 +44,4 @@ export class TabsPage implements OnInit {
     this.isCreateModalOpen = false;
     this.taskToEdit = null;
   }
-}
+}

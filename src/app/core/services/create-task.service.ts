@@ -11,10 +11,10 @@ export type CreateTaskInput = Omit<Task, 'id'> & { dueDate?: string };
 export class CreateTaskService {
   private taskRepository = inject(TaskRepository);
 
-  public taskCreated$ = new Subject<void>(); 
+  public taskCreated$ = new Subject<void>();
 
   async createTask(task: Omit<Task, 'id'> & { weekdays?: number[] }): Promise<void> {
     await this.taskRepository.createTask(task);
-    this.taskCreated$.next(); 
+    this.taskCreated$.next();
   }
 }

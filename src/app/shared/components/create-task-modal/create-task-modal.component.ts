@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonModal, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '../board/board.component';
@@ -13,7 +22,7 @@ import { EditTaskService } from '@core/services/edit-task.service';
   selector: 'app-create-task-modal',
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss'],
-  imports: [IonModal, BoardComponent, ButtonComponent, FormsModule]
+  imports: [IonModal, BoardComponent, ButtonComponent, FormsModule],
 })
 export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
@@ -32,14 +41,14 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     { value: TaskFrequency.No_repeat, label: 'Una sola vez' },
     { value: TaskFrequency.Daily, label: 'Diaria' },
     { value: TaskFrequency.Weekly, label: 'Semanal' },
-    { value: TaskFrequency.Monthly, label: 'Mensual' }
+    { value: TaskFrequency.Monthly, label: 'Mensual' },
   ];
   efforts = [
     { value: TaskEffort.Very_low, label: 'Muy Bajo' },
     { value: TaskEffort.Low, label: 'Bajo' },
     { value: TaskEffort.Medium, label: 'Medio' },
     { value: TaskEffort.High, label: 'Alto' },
-    { value: TaskEffort.Very_high, label: 'Muy Alto' }
+    { value: TaskEffort.Very_high, label: 'Muy Alto' },
   ];
 
   taskName: string = '';
@@ -125,13 +134,17 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     }
 
     this.isSubmitting = true;
-    const selectedCategory = this.categories.find(c => c.id === Number(this.selectedCategoryId))!;
+    const selectedCategory = this.categories.find((c) => c.id === Number(this.selectedCategoryId))!;
 
     try {
       if (this.isEditMode && this.taskToEdit) {
         if (this.editMode === 'instance') {
           // Solo actualizamos la instancia (end_date)
-          await this.editTaskService.updateTaskInstance(this.taskToEdit.taskActiveId, this.taskName, this.taskDueDate);
+          await this.editTaskService.updateTaskInstance(
+            this.taskToEdit.taskActiveId,
+            this.taskName,
+            this.taskDueDate,
+          );
           await this.showToast('¡Instancia actualizada!', 'success');
         } else {
           // Edición global: actualiza la definición de la tarea
@@ -162,7 +175,6 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
       this.resetForm();
       this.dismissed.emit();
-
     } catch (error) {
       console.error('Error guardando tarea', error);
       await this.showToast('Error al guardar la tarea.', 'danger');
@@ -177,17 +189,21 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       duration: 2000,
       color,
       position: 'top',
-      icon: color === 'success' ? 'checkmark-circle' : undefined
+      icon: color === 'success' ? 'checkmark-circle' : undefined,
     });
     await toast.present();
   }
 
   getIntervalLabel(): string {
     switch (Number(this.taskFrequency)) {
-      case TaskFrequency.Daily: return this.taskInterval === 1 ? 'día' : 'días';
-      case TaskFrequency.Weekly: return this.taskInterval === 1 ? 'semana' : 'semanas';
-      case TaskFrequency.Monthly: return this.taskInterval === 1 ? 'mes' : 'meses';
-      default: return '';
+      case TaskFrequency.Daily:
+        return this.taskInterval === 1 ? 'día' : 'días';
+      case TaskFrequency.Weekly:
+        return this.taskInterval === 1 ? 'semana' : 'semanas';
+      case TaskFrequency.Monthly:
+        return this.taskInterval === 1 ? 'mes' : 'meses';
+      default:
+        return '';
     }
   }
 

@@ -39,10 +39,10 @@
   </ion-tab-bar>
 </ion-tabs>
 
-
-<app-create-task-modal 
+<app-create-task-modal
   [isOpen]="isCreateModalOpen"
   [taskToEdit]="taskToEdit"
   [editMode]="editMode"
-  (dismissed)="onModalDismissed()">
+  (dismissed)="onModalDismissed()"
+>
 </app-create-task-modal>
