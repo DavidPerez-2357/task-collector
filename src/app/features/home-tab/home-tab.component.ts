@@ -65,9 +65,9 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     this.selectedTask = task;
     this.isSelectedTaskToday = isTodayTask;
     console.log(
-      `Tarea seleccionada: ${task.name} (ID: ${task.id}), Es tarea de hoy: ${isTodayTask}`,
+      `Tarea seleccionada: ${task.name} (taskId: ${task.id}, activeId: ${task.taskActiveId}), Es tarea de hoy: ${isTodayTask}`,
     );
-    this.scrollToTask(task.id);
+    this.scrollToTask(task.taskActiveId);
   }
 
   private async scrollToTask(taskId: number): Promise<void> {
@@ -88,5 +88,8 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     // Ocultar el panel de acciones
     this.isActionPanelVisible = false;
     this.selectedTask = null;
+
+    // Recargar tareas para reflejar cambios realizados desde el panel de acciones
+    void this.loadTasks();
   }
 }
