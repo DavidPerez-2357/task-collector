@@ -13,8 +13,8 @@ export class CreateTaskService {
 
   public taskCreated$ = new Subject<void>(); 
 
-  async createTask(task: CreateTaskInput): Promise<void> {
+  async createTask(task: Omit<Task, 'id'> & { weekdays?: number[] }): Promise<void> {
     await this.taskRepository.createTask(task);
-    this.taskCreated$.next(); // Avisa a toda la app
+    this.taskCreated$.next(); 
   }
-}
+}

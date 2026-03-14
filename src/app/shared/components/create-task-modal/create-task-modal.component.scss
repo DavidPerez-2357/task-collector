@@ -72,7 +72,47 @@ ion-modal {
         box-sizing: border-box;
         color-scheme: dark; // Hace el calendario nativo oscuro
       }
+/* --- NUEVO: Estilos para las bolitas de los días --- */
+      .weekdays-selector {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-top: 4px;
 
+        .weekday-chip {
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.05);
+          border: 2px solid rgba(0, 0, 0, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 1.1rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          user-select: none;
+
+          &.selected {
+            background: var(--ion-color-primary);
+            color: white;
+            border-color: var(--ion-color-primary-shade);
+            transform: scale(1.1);
+          }
+
+          &.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .info-text span {
+        font-size: 0.85rem;
+        opacity: 0.6;
+        font-style: italic;
+      }
       .interval-input {
         display: flex;
         align-items: center;

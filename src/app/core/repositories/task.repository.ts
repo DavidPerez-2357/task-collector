@@ -45,11 +45,22 @@ export class TaskRepository {
 
   /**
    * Inserta una nueva definición de tarea en la tabla `task`.
-   * No devuelve valor, lanza si hay error durante la inserción.
    */
-  async createTask(task: Omit<Task, 'id'> & { dueDate?: string }): Promise<void> {
-    const start = getStartOfToday();
-    const end = this.parseDueDate(task.dueDate) ?? (start + DAY_MS - 1);
+  async createTask(task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] }): Promise<void> {
+    const todayStart = getStartOfToday();
+
+    // Para tareas semanales con días seleccionados, la primera instancia
+    // se pone en el próximo día de la semana coincidente (incluyendo hoy si aplica).
+    let firstStart: number;
+    let firstEnd: number;
+
+    if (task.frequency === 2 /* Weekly */ && task.weekdays?.length) {
+      firstStart = this.getNextWeekdayMs(task.weekdays, todayStart);
+      firstEnd = firstStart + DAY_MS - 1;
+    } else {
+      firstStart = todayStart;
+      firstEnd = this.parseDueDate(task.dueDate) ?? (todayStart + DAY_MS - 1);
+    }
 
     return await this.databaseService.withConn(async (conn) => {
       const insertResult = await conn.run(
@@ -63,12 +74,43 @@ export class TaskRepository {
       const newTaskId = insertResult?.changes?.lastId;
 
       if (newTaskId) {
+        // Si es semanal y tiene días seleccionados, los guardamos
+        if (task.frequency === 2 && task.weekdays?.length) {
+          for (const weekday of task.weekdays) {
+            await conn.run(
+              `INSERT INTO weekly_recurrence (task_id, weekday) VALUES (?, ?)`,
+              [newTaskId, weekday]
+            );
+          }
+        }
+
+        // Insertamos la primera instancia activa
         await conn.run(
           `INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`,
-          [newTaskId, start, end],
+          [newTaskId, firstStart, firstEnd],
         );
       }
     });
+  }
+
+  /**
+   * Dado un array de weekdays (0=Dom..6=Sáb) y un timestamp de inicio del día actual,
+   * devuelve el timestamp del inicio del próximo día de semana coincidente (incluyendo hoy).
+   */
+  private getNextWeekdayMs(weekdays: number[], fromStartOfDay: number): number {
+    if (!weekdays.length) return fromStartOfDay;
+    let best: number | null = null;
+    for (let offset = 0; offset < 7; offset++) {
+      const d = new Date(fromStartOfDay);
+      d.setDate(d.getDate() + offset);
+      d.setHours(0, 0, 0, 0);
+      if (weekdays.includes(d.getDay())) {
+        const ms = d.getTime();
+        if (best === null || ms < best) best = ms;
+        break; // ya es el más próximo
+      }
+    }
+    return best ?? fromStartOfDay;
   }
 
   /**
@@ -508,9 +550,10 @@ export class TaskRepository {
 
   /**
    * Genera la siguiente recurrencia de una tarea en task_active comprobando los 365 días próximos
-   * a partir del día siguiente al indicado.
+   * a partir del día siguiente al indicado. Optimizada para no hacer consultas dentro del bucle.
    */
   private async generateNextRecurrence(conn: any, taskId: number, afterDateMs: number): Promise<void> {
+    // 1. Cargamos la configuración global de la tarea
     const resCount = await conn.query(`SELECT id, frequency, interval FROM task WHERE id = ? AND frequency != 0 AND deleted = 0`, [taskId]);
     if (!resCount.values?.length) return;
     
@@ -520,37 +563,60 @@ export class TaskRepository {
       interval: Number(resCount.values[0].interval),
     };
 
+    // 2. Historial y días de la semana
     const rc = await conn.query(`SELECT MAX(completed_at) AS last_completed FROM task_history WHERE task_id = ?`, [taskId]);
     const lastCompleted = rc.values?.[0]?.last_completed ? Number(rc.values[0].last_completed) : null;
 
     const rw = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [taskId]);
     const weekdays = rw.values?.map((r: any) => Number(r.weekday)) ?? [];
 
+    // 3. Definimos el rango de fechas (Hoy + 1 hasta Hoy + 366)
     let d = new Date(afterDateMs);
     d.setDate(d.getDate() + 1);
     d.setHours(0, 0, 0, 0);
+    
+    const startRangeMs = d.getTime();
+    
+    const endRangeDate = new Date(startRangeMs);
+    endRangeDate.setDate(endRangeDate.getDate() + 365);
+    const endRangeMs = endRangeDate.getTime();
 
+    // 4. LA MAGIA: Traemos todas las instancias futuras y las saltadas de golpe a la memoria (Sets)
+    const activeRes = await conn.query(
+      `SELECT start_date FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date < ?`, 
+      [taskId, startRangeMs, endRangeMs]
+    );
+    const activeSet = new Set((activeRes.values || []).map((r: any) => Number(r.start_date)));
+
+    const skipsRes = await conn.query(
+      `SELECT start_date FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date < ?`, 
+      [taskId, startRangeMs, endRangeMs]
+    );
+    const skipsSet = new Set((skipsRes.values || []).map((r: any) => Number(r.start_date)));
+
+    // 5. Bucle puro en memoria (Pasa de tardar segundos a tardar milisegundos)
     for (let offset = 0; offset < 365; offset++) {
       const todayWeekday = d.getDay();
       const dMs = d.getTime();
       
       const shouldCreate = this.shouldCreateTaskToday(task, lastCompleted, weekdays, todayWeekday, dMs);
+      
       if (shouldCreate) {
-        const start = dMs;
-        const end = start + DAY_MS - 1;
-        
-        // Verificar no duplicar en task_active
-        const rActive = await conn.query(`SELECT id FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date < ?`, [taskId, start, start + DAY_MS]);
-        if (rActive.values?.length) break;
+        // Si ya hay una tarea creada para este día, paramos (ya está cubierta)
+        if (activeSet.has(dMs)) {
+          break;
+        }
 
-        // Verificar si fue cancelada
-        const rSkip = await conn.query(`SELECT id FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date < ?`, [taskId, start, start + DAY_MS]);
-        if (rSkip.values?.length) {
+        // Si el usuario ya la había borrado/saltado este día concreto, pasamos al siguiente día
+        if (skipsSet.has(dMs)) {
           d.setDate(d.getDate() + 1);
           d.setHours(0, 0, 0, 0);
           continue;
         }
 
+        // Si debe crearse, no está activa y no está cancelada, ¡la insertamos en BD y rompemos el bucle!
+        const start = dMs;
+        const end = start + DAY_MS - 1;
         await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [taskId, start, end]);
         break;
       }

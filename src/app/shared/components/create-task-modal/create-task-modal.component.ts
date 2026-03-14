@@ -54,6 +54,31 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     return this.taskToEdit !== null;
   }
 
+  // --- NUEVAS VARIABLES PARA TAREAS SEMANALES ---
+  weekdaysList = [
+    { value: 1, label: 'L' },
+    { value: 2, label: 'M' },
+    { value: 3, label: 'X' },
+    { value: 4, label: 'J' },
+    { value: 5, label: 'V' },
+    { value: 6, label: 'S' },
+    { value: 0, label: 'D' }, // El 0 es Domingo en JS
+  ];
+  selectedWeekdays: number[] = [];
+
+  get isWeekly(): boolean {
+    return Number(this.taskFrequency) === TaskFrequency.Weekly;
+  }
+
+  toggleWeekday(day: number) {
+    const index = this.selectedWeekdays.indexOf(day);
+    if (index > -1) {
+      this.selectedWeekdays.splice(index, 1); // Lo quita si ya estaba
+    } else {
+      this.selectedWeekdays.push(day); // Lo añade
+    }
+  }
+
   async ngOnInit() {
     this.categories = await this.categoryService.getAllCategories();
     if (this.categories.length > 0) {
@@ -92,17 +117,15 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
   async onSubmit() {
     if (!this.taskName.trim() || this.selectedCategoryId === null) return;
-    this.isSubmitting = true;
 
+    // Validación días semana
+    if (this.isWeekly && this.selectedWeekdays.length === 0) {
+      await this.showToast('Selecciona al menos un día de la semana.', 'warning');
+      return;
+    }
+
+    this.isSubmitting = true;
     const selectedCategory = this.categories.find(c => c.id === Number(this.selectedCategoryId))!;
-    const taskData: CreateTaskInput = {
-      name: this.taskName,
-      category: selectedCategory,
-      frequency: Number(this.taskFrequency),
-      interval: Number(this.taskInterval),
-      effort: Number(this.taskEffort),
-      dueDate: this.taskDueDate
-    };
 
     try {
       if (this.isEditMode && this.taskToEdit) {
@@ -111,15 +134,29 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
           await this.editTaskService.updateTaskInstance(this.taskToEdit.taskActiveId, this.taskName, this.taskDueDate);
           await this.showToast('¡Instancia actualizada!', 'success');
         } else {
-          // Modo edición global: task_id es el ID de la tabla `task`, taskActiveId es el ID de `task_active`
+          // Edición global: actualiza la definición de la tarea
           const taskId = this.taskToEdit.id;
           const activeTaskId = this.taskToEdit.taskActiveId;
-          await this.editTaskService.updateTask(taskId, activeTaskId, taskData);
+          await this.editTaskService.updateTask(taskId, activeTaskId, {
+            name: this.taskName,
+            category: selectedCategory,
+            frequency: Number(this.taskFrequency),
+            interval: Number(this.taskInterval),
+            effort: Number(this.taskEffort),
+            dueDate: this.taskDueDate,
+          });
           await this.showToast('¡Tarea global actualizada!', 'success');
         }
       } else {
-        // Modo creación: creamos una nueva tarea
-        await this.createTaskService.createTask(taskData);
+        // Modo creación
+        await this.createTaskService.createTask({
+          name: this.taskName,
+          category: selectedCategory,
+          frequency: Number(this.taskFrequency),
+          interval: Number(this.taskInterval),
+          effort: Number(this.taskEffort),
+          weekdays: this.isWeekly ? this.selectedWeekdays : [],
+        });
         await this.showToast('¡Tarea creada con éxito!', 'success');
       }
 
@@ -134,7 +171,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-  private async showToast(message: string, color: 'success' | 'danger'): Promise<void> {
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
     const toast = await this.toastController.create({
       message,
       duration: 2000,

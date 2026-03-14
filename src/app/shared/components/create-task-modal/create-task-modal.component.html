@@ -35,6 +35,23 @@
               </select>
             </div>
 
+            @if (isWeekly) {
+              <div class="input-group">
+                <label>Días de la semana</label>
+                <div class="weekdays-selector">
+                  @for (day of weekdaysList; track day.value) {
+                    <div 
+                      class="weekday-chip" 
+                      [class.selected]="selectedWeekdays.includes(day.value)"
+                      [class.disabled]="isEditMode && editMode === 'instance'"
+                      (click)="!(isEditMode && editMode === 'instance') && toggleWeekday(day.value)"
+                    >
+                      {{ day.label }}
+                    </div>
+                  }
+                </div>
+              </div>
+            }
             @if (taskFrequency != TaskFrequency.No_repeat) {
               <div class="input-group">
                 <label>Intervalo</label>
@@ -55,10 +72,17 @@
               </select>
             </div>
 
-            <div class="input-group">
-              <label>Fecha límite</label>
-              <input type="date" [(ngModel)]="taskDueDate" class="date-input">
-            </div>
+            @if (!isWeekly) {
+              <div class="input-group">
+                <label>Fecha límite</label>
+                <input type="date" [(ngModel)]="taskDueDate" class="date-input">
+              </div>
+            } @else {
+              <div class="input-group info-text">
+                <label>Fecha límite</label>
+                <span>Se calcula automáticamente según los días seleccionados</span>
+              </div>
+            }
           </div>
 
           <div class="modal-actions">
