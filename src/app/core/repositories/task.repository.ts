@@ -30,13 +30,14 @@ export class TaskRepository {
       : ({} as Category);
 
     return {
-      id: Number(row.id),
+      // `row.id` proviene de ta.id (task_active.id). El id de la definición de la tarea viene en row.task_id
+      taskActiveId: Number(row.id),
+      id: Number(row.task_id),
       name: row.name,
       frequency: Number(row.frequency),
       interval: Number(row.interval),
       effort: Number(row.effort),
       category,
-      resetOnCycle: !!row.reset_on_cycle,
       startDate: Number(row.start_date),
       endDate: Number(row.end_date),
     } as TaskActive;
