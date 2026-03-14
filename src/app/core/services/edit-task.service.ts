@@ -2,8 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { TaskActive } from '@core/models/task.model';
 import { TaskRepository } from '@core/repositories/task.repository';
-import { CreateTaskInput } from '@core/services/create-task.service';
-import { CreateTaskService } from '@core/services/create-task.service';
+import { CreateTaskService, CreateTaskInput } from '@core/services/create-task.service';
+
+export type EditMode = 'global' | 'instance';
+
+export interface EditRequest {
+  task: TaskActive;
+  mode: EditMode;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +18,25 @@ export class EditTaskService {
   private taskRepository = inject(TaskRepository);
   private createTaskService = inject(CreateTaskService);
 
-  /** Emite la tarea que se quiere editar. TabsPage escucha y abre el modal. */
-  public editRequested$ = new Subject<TaskActive>();
+  /** Emite la tarea que se quiere editar y el modo. */
+  public editRequested$ = new Subject<EditRequest>();
 
-  requestEdit(task: TaskActive): void {
-    this.editRequested$.next(task);
+  requestEdit(task: TaskActive, mode: EditMode = 'global'): void {
+    this.editRequested$.next({ task, mode });
   }
 
   async updateTask(taskId: number, activeTaskId: number, data: CreateTaskInput): Promise<void> {
     await this.taskRepository.updateTask(taskId, activeTaskId, data);
-    // Reutilizamos el mismo Subject para recargar el home tab
+    this.createTaskService.taskCreated$.next();
+  }
+
+  async updateTaskInstance(activeTaskId: number, name: string, dueDate?: string): Promise<void> {
+    await this.taskRepository.updateTaskInstance(activeTaskId, name, dueDate);
+    this.createTaskService.taskCreated$.next();
+  }
+
+  async deleteGlobalTask(taskId: number): Promise<void> {
+    await this.taskRepository.deleteGlobalTask(taskId);
     this.createTaskService.taskCreated$.next();
   }
 }

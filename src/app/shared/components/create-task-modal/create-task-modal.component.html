@@ -3,7 +3,13 @@
     <div class="modal-wrapper">
       <app-board width="medium">
         <div class="modal-content">
-          <h2>{{ isEditMode ? 'Editar Tarea' : 'Nueva Tarea' }}</h2>
+          <h2>
+            @if (isEditMode) {
+              {{ editMode === 'global' ? 'Editar Tarea Global' : 'Editar esta vez' }}
+            } @else {
+              Nueva Tarea
+            }
+          </h2>
           
           <div class="form-container">
             <div class="input-group">
@@ -13,7 +19,7 @@
 
             <div class="input-group">
               <label>Categoría</label>
-              <select [(ngModel)]="selectedCategoryId">
+              <select [(ngModel)]="selectedCategoryId" [disabled]="isEditMode && editMode === 'instance'">
                 @for (category of categories; track category.id) {
                   <option [value]="category.id">{{ category.name }}</option>
                 }
@@ -22,7 +28,7 @@
 
             <div class="input-group">
               <label>Frecuencia</label>
-              <select [(ngModel)]="taskFrequency">
+              <select [(ngModel)]="taskFrequency" [disabled]="isEditMode && editMode === 'instance'">
                 @for (freq of frequencies; track freq.value) {
                   <option [value]="freq.value">{{ freq.label }}</option>
                 }
@@ -34,7 +40,7 @@
                 <label>Intervalo</label>
                 <div class="interval-input">
                   <span>Repetir cada</span>
-                  <input type="number" [(ngModel)]="taskInterval" min="1" max="365">
+                  <input type="number" [(ngModel)]="taskInterval" min="1" max="365" [disabled]="isEditMode && editMode === 'instance'">
                   <span>{{ getIntervalLabel() }}</span>
                 </div>
               </div>
@@ -42,7 +48,7 @@
 
             <div class="input-group">
               <label>Esfuerzo (Determina el coste)</label>
-              <select [(ngModel)]="taskEffort">
+              <select [(ngModel)]="taskEffort" [disabled]="isEditMode && editMode === 'instance'">
                 @for (effort of efforts; track effort.value) {
                   <option [value]="effort.value">{{ effort.label }}</option>
                 }

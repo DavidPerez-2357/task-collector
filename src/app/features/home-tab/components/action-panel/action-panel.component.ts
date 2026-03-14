@@ -46,6 +46,7 @@ export class ActionPanelComponent {
 
   // Estado para mostrar el modal de confirmación
   confirmDeleteOpen = false;
+  confirmDeleteGlobalOpen = false;
 
   constructor() {
     addIcons({
@@ -66,7 +67,8 @@ export class ActionPanelComponent {
     if (!this.selectedTask) return false;
     const endDate = new Date(this.selectedTask.endDate);
     endDate.setHours(0, 0, 0, 0);
-    return endDate.getTime() >= getStartOfToday() + DAY_MS;
+    // Permitir posponer si la tarea es para hoy o el futuro
+    return endDate.getTime() >= getStartOfToday();
   }
 
   protected closePanel(): void {
@@ -98,9 +100,15 @@ export class ActionPanelComponent {
     }
   }
 
-  protected editTask(): void {
+  protected editInstance(): void {
     if (!this.selectedTask) return;
-    this.editTaskService.requestEdit(this.selectedTask);
+    this.editTaskService.requestEdit(this.selectedTask, 'instance');
+    this.closePanel();
+  }
+
+  protected editGlobal(): void {
+    if (!this.selectedTask) return;
+    this.editTaskService.requestEdit(this.selectedTask, 'global');
     this.closePanel();
   }
 
@@ -128,7 +136,7 @@ export class ActionPanelComponent {
     if (!this.selectedTask || this.isBusy) return;
 
     const start = getStartOfToday();
-    const end = start + DAY_MS;
+    const end = start + DAY_MS - 1; // Hoy a las 23:59:59.999
 
     this.isBusy = true;
     try {
@@ -166,10 +174,33 @@ export class ActionPanelComponent {
     }
   }
 
+  protected async deleteGlobalTask(): Promise<void> {
+    if (!this.selectedTask || this.isBusy) return;
+
+    this.isBusy = true;
+    try {
+      await this.editTaskService.deleteGlobalTask(this.selectedTask.id);
+      await this.toast.success('Tarea eliminada globalmente');
+      this.closePanel();
+    } catch (e) {
+      console.error('Error al eliminar la tarea global:', e);
+      await this.toast.error('Error al eliminar la tarea global');
+    } finally {
+      this.isBusy = false;
+    }
+  }
+
   protected async onDeleteConfirmed(confirmed: boolean): Promise<void> {
     this.confirmDeleteOpen = false;
     if (confirmed) {
       await this.deleteActiveTask();
+    }
+  }
+
+  protected async onDeleteGlobalConfirmed(confirmed: boolean): Promise<void> {
+    this.confirmDeleteGlobalOpen = false;
+    if (confirmed) {
+      await this.deleteGlobalTask();
     }
   }
 }

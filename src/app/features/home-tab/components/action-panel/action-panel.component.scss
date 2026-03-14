@@ -76,6 +76,7 @@
   color: var(--ion-color-light);
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -127,4 +128,9 @@
   & > :first-child {
     grid-column: span 2;
   }
+}
+.action-btn-small {
+  width: 100%;
+  height: 100%;
+  font-size: 1.4rem !important;
 }

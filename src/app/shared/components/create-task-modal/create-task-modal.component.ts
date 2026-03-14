@@ -18,6 +18,7 @@ import { EditTaskService } from '@core/services/edit-task.service';
 export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() taskToEdit: TaskActive | null = null;
+  @Input() editMode: 'global' | 'instance' = 'global';
   @Output() dismissed = new EventEmitter<void>();
   readonly TaskFrequency = TaskFrequency;
 
@@ -105,11 +106,17 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
     try {
       if (this.isEditMode && this.taskToEdit) {
-        // Modo edición: task_id es el ID de la tabla `task`, id es el ID de `task_active`
-        const taskId = (this.taskToEdit as any)['task_id'];
-        const activeTaskId = this.taskToEdit.id;
-        await this.editTaskService.updateTask(taskId, activeTaskId, taskData);
-        await this.showToast('¡Tarea actualizada con éxito!', 'success');
+        if (this.editMode === 'instance') {
+          // Solo actualizamos la instancia (end_date)
+          await this.editTaskService.updateTaskInstance(this.taskToEdit.taskActiveId, this.taskName, this.taskDueDate);
+          await this.showToast('¡Instancia actualizada!', 'success');
+        } else {
+          // Modo edición global: task_id es el ID de la tabla `task`, taskActiveId es el ID de `task_active`
+          const taskId = this.taskToEdit.id;
+          const activeTaskId = this.taskToEdit.taskActiveId;
+          await this.editTaskService.updateTask(taskId, activeTaskId, taskData);
+          await this.showToast('¡Tarea global actualizada!', 'success');
+        }
       } else {
         // Modo creación: creamos una nueva tarea
         await this.createTaskService.createTask(taskData);

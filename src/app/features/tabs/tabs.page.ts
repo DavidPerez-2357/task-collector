@@ -24,6 +24,7 @@ export class TabsPage implements OnInit {
   public isConfigOpen = false;
   public isCreateModalOpen = false;
   public taskToEdit: TaskActive | null = null;
+  public editMode: 'global' | 'instance' = 'global';
 
   constructor() {
     addIcons({ triangle, ellipse, square });
@@ -32,8 +33,9 @@ export class TabsPage implements OnInit {
   ngOnInit(): void {
     this.editTaskService.editRequested$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((task) => {
-        this.taskToEdit = task;
+      .subscribe((request) => {
+        this.taskToEdit = request.task;
+        this.editMode = request.mode;
         this.isCreateModalOpen = true;
       });
   }
