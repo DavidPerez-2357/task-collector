@@ -13,12 +13,13 @@ import { InventoryItemModalComponent } from '@features/inventory-tab/components/
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
+import { CollectionService } from '@features/inventory-tab/services/collection.service';
 
 @Component({
   selector: 'app-inventory-tab',
   templateUrl: 'inventory-tab.component.html',
   styleUrls: ['inventory-tab.component.scss'],
-  providers: [ItemService],
+  providers: [ItemService, CollectionService],
   imports: [
     IonContent,
     TitleSignComponent,

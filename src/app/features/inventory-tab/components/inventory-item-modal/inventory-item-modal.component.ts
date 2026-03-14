@@ -31,7 +31,6 @@ type ModalStep = 'detail' | 'collections';
   selector: 'app-inventory-item-modal',
   templateUrl: './inventory-item-modal.component.html',
   styleUrls: ['./inventory-item-modal.component.scss'],
-  providers: [CollectionService, ItemService],
   imports: [IonModal, BoardComponent, ButtonComponent, IonSpinner],
 })
 export class InventoryItemModalComponent implements OnChanges {
