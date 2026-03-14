@@ -5,7 +5,7 @@ import { getRewardRarityForTask } from '@core/utils/reward.util';
 import { rollForShiny } from '@core/utils/shiny.util';
 import { ItemInventory } from '@core/models/item.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ItemService {
   private itemRepository = inject(ItemRepository);
 

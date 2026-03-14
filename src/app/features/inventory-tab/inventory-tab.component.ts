@@ -18,6 +18,7 @@ import { PlayerStateService } from '@core/services/player-state.service';
   selector: 'app-inventory-tab',
   templateUrl: 'inventory-tab.component.html',
   styleUrls: ['inventory-tab.component.scss'],
+  providers: [ItemService],
   imports: [
     IonContent,
     TitleSignComponent,

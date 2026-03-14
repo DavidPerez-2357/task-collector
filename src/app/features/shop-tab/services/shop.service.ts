@@ -1,9 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { CollectionRepository } from '@core/repositories/collection.repository';
 import { Collection } from '@core/models/collection.model';
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ShopService {
   private collectionRepository = inject(CollectionRepository);
 

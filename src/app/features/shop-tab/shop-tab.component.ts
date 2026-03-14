@@ -12,6 +12,7 @@ import { ToastService } from '@core/services/toast.service';
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
   styleUrls: ['shop-tab.component.scss'],
+  providers: [ShopService],
   imports: [
     IonContent,
     TitleSignComponent,

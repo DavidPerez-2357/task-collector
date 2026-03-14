@@ -3,9 +3,7 @@ import { TaskRepository } from '@core/repositories/task.repository';
 import { TaskActive } from '@core/models/task.model';
 import { DAY_MS } from '@core/utils/date.util';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TaskService {
   private taskRepository = inject(TaskRepository);
 

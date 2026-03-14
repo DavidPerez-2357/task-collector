@@ -12,6 +12,7 @@ import { ToastService } from '@core/services/toast.service';
   selector: 'app-collection-tab',
   templateUrl: 'collection-tab.component.html',
   styleUrls: ['collection-tab.component.scss'],
+  providers: [CollectionService],
   imports: [IonContent, TitleSignComponent, CollectionCardComponent, CollectionItemModalComponent],
 })
 export class CollectionTabComponent implements ViewWillEnter {

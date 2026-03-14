@@ -15,6 +15,7 @@ import { ItemService } from '@features/home-tab/services/item.service';
   selector: 'app-home-tab',
   templateUrl: 'home-tab.component.html',
   styleUrls: ['home-tab.component.scss'],
+  providers: [TaskService, ItemService],
   imports: [
     IonContent,
     TaskComponent,
