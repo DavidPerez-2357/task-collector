@@ -124,16 +124,18 @@ export class TaskRepository {
 
       const taskIds = tasks.map((t) => t.id);
 
-      const [lastCompletedByTask, activeToday, weekdaysByTask] = await Promise.all([
+      const [lastCompletedByTask, activeToday, weekdaysByTask, skippedToday] = await Promise.all([
         this.getLastCompletions(conn, taskIds),
         this.getActiveTasksToday(conn, taskIds, start, end),
         this.getWeeklyRecurrence(conn, taskIds),
+        this.getSkippedTasksToday(conn, taskIds, start, end),
       ]);
 
       const todayWeekday = new Date(start).getDay();
 
       const tasksToCreate = tasks
         .filter((t) => !activeToday.has(t.id))
+        .filter((t) => !skippedToday.has(t.id))
         .filter((t) =>
           this.shouldCreateTaskToday(
             t,
@@ -193,6 +195,59 @@ export class TaskRepository {
     }
 
     return set;
+  }
+
+  /**
+   * Devuelve un Set con los IDs de tareas que tienen un skip (usuario borró) en el rango dado.
+   */
+  private async getSkippedTasksToday(conn: any, taskIds: number[], start: number, end: number) {
+    if (!taskIds.length) return new Set<number>();
+    const placeholders = taskIds.map(() => '?').join(',');
+
+    const res = await conn.query(
+      `SELECT task_id FROM task_skips WHERE start_date >= ? AND start_date < ? AND task_id IN (${placeholders})`,
+      [start, end, ...taskIds],
+    );
+
+    const set = new Set<number>();
+    for (const r of res.values ?? []) set.add(Number((r as any).task_id));
+    return set;
+  }
+
+  /**
+   * Registra un skip (el usuario borró/omitió la instancia activa) y borra la fila de task_active en una transacción.
+   */
+  async skipTaskActiveById(
+    taskActiveId: number,
+    skippedAt: number,
+    reason = 'user_deleted',
+  ): Promise<void> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `SELECT task_id, start_date, end_date FROM task_active WHERE id = ?`,
+        [taskActiveId],
+      );
+      const values = res.values || [];
+      if (!values.length) throw new Error(`task_active with id ${taskActiveId} not found`);
+
+      const r: any = values[0];
+      const taskId = Number(r.task_id);
+      const startDate = Number(r.start_date);
+      const endDate = Number(r.end_date);
+
+      const set = [
+        {
+          statement: `INSERT INTO task_skips (task_id, start_date, end_date, skipped_at, reason) VALUES (?, ?, ?, ?, ?)`,
+          values: [taskId, startDate, endDate, skippedAt, reason],
+        },
+        {
+          statement: `DELETE FROM task_active WHERE id = ?`,
+          values: [taskActiveId],
+        },
+      ];
+
+      await conn.executeSet(set, true);
+    });
   }
 
   /**
@@ -296,5 +351,74 @@ export class TaskRepository {
      VALUES ${placeholders}`,
       params,
     );
+  }
+
+  /**
+   * Posponer una instancia en `task_active` sumando milisegundos a start_date y end_date.
+   * Usado para la acción "+1 día" en el panel de acciones.
+   */
+  async postponeTaskActiveById(taskActiveId: number, ms: number): Promise<void> {
+    return await this.databaseService.withConn(async (conn) => {
+      await conn.run(
+        `UPDATE task_active SET start_date = start_date + ?, end_date = end_date + ? WHERE id = ?`,
+        [ms, ms, taskActiveId],
+      );
+    });
+  }
+
+  /**
+   * Actualiza start_date y end_date de una instancia en `task_active` por su id.
+   * Usado para mover una tarea a "hoy".
+   */
+  async setTaskActiveDatesById(taskActiveId: number, start: number, end: number): Promise<void> {
+    return await this.databaseService.withConn(async (conn) => {
+      await conn.run(`UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, [
+        start,
+        end,
+        taskActiveId,
+      ]);
+    });
+  }
+
+  /**
+   * Elimina una instancia de `task_active` por su id.
+   */
+  async deleteTaskActiveById(taskActiveId: number): Promise<void> {
+    return await this.databaseService.withConn(async (conn) => {
+      await conn.run(`DELETE FROM task_active WHERE id = ?`, [taskActiveId]);
+    });
+  }
+
+  /**
+   * Marca una instancia activa como completada: inserta fila en task_history y elimina la fila en task_active.
+   * Calcula days_late comparando end_date con completedAt.
+   */
+  async completeTaskActiveById(taskActiveId: number, completedAt: number): Promise<void> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(`SELECT task_id, end_date FROM task_active WHERE id = ?`, [
+        taskActiveId,
+      ]);
+      const values = res.values || [];
+      if (!values.length) throw new Error(`task_active with id ${taskActiveId} not found`);
+
+      const r: any = values[0];
+      const taskId = Number(r.task_id);
+      const endDate = Number(r.end_date);
+
+      const daysLate = Math.max(0, daysBetween(endDate, completedAt));
+
+      const set = [
+        {
+          statement: `INSERT INTO task_history (task_id, completed_at, days_late) VALUES (?, ?, ?)`,
+          values: [taskId, completedAt, daysLate],
+        },
+        {
+          statement: `DELETE FROM task_active WHERE id = ?`,
+          values: [taskActiveId],
+        },
+      ];
+
+      await conn.executeSet(set, true);
+    });
   }
 }
