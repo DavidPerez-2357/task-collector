@@ -27,6 +27,7 @@ export class ConfirmModalComponent {
   }
 
   onConfirm() {
+    this.closeModal();
     this.confirmed.emit(true);
   }
 
