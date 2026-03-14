@@ -51,5 +51,14 @@
     [selectedTask]="selectedTask"
     [isTodayTask]="isSelectedTaskToday"
     (didClose)="actionPanelClosed()"
+    (acquired)="handleAcquired($event)"
+  />
+
+  <app-item-acquired-modal
+    [isOpen]="isItemAcquiredModalOpen"
+    [item]="acquiredItem"
+    [amount]="acquiredAmount"
+    (dismissed)="isItemAcquiredModalOpen = false"
+    (acknowledged)="onAcquiredAcknowledged()"
   />
 </ion-content>
