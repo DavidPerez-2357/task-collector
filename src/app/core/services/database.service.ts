@@ -13,7 +13,7 @@ export class DatabaseService {
   private conn?: SQLiteDBConnection;
 
   private readonly dbName = 'task-collector';
-  private readonly dbVersion = 1;
+  private readonly dbVersion = 4;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
   private opening?: Promise<void>;
