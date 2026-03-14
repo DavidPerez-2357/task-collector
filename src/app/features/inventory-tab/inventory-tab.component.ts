@@ -140,6 +140,9 @@ export class InventoryTabComponent implements ViewWillEnter {
   async onModalDismissed() {
     this.isModalOpen = false;
 
+    // Recargar gemas
+    this.playerCoins = await this.playerStateService.getCoins();
+
     if (this.selectedItem && this.selectedItem.quantity <= 0) {
       this.removeItemFromShelves(this.selectedItem);
     }
