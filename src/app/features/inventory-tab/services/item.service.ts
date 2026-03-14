@@ -2,9 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ItemRepository } from '@core/repositories/item.repository';
 import { getShinyPrice } from '@core/utils/shiny.util';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ItemService {
   private itemRepository = inject(ItemRepository);
 
