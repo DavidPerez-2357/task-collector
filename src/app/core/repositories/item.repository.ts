@@ -38,28 +38,12 @@ export class ItemRepository {
     quantity: number = 1,
   ): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
-      const existing = await conn.query(
-        `SELECT quantity FROM inventory WHERE item_id = ? AND is_shiny = ?`,
-        [itemId, isShiny ? 1 : 0],
+      await conn.run(
+        `INSERT INTO inventory (item_id, is_shiny, quantity)
+         VALUES (?, ?, ?)
+         ON CONFLICT(item_id, is_shiny) DO UPDATE SET quantity = quantity + excluded.quantity`,
+        [itemId, isShiny ? 1 : 0, quantity],
       );
-
-      // Si ya existe, actualizamos la cantidad
-      if (existing.values && existing.values.length > 0) {
-        const currentQty = Number(existing.values[0].quantity) || 0;
-        await conn.run(`UPDATE inventory SET quantity = ? WHERE item_id = ? AND is_shiny = ?`, [
-          currentQty + quantity,
-          itemId,
-          isShiny ? 1 : 0,
-        ]);
-        return;
-      }
-
-      // Si no existe, insertamos nuevo
-      await conn.run(`INSERT INTO inventory (item_id, is_shiny, quantity) VALUES (?, ?, ?)`, [
-        itemId,
-        isShiny ? 1 : 0,
-        quantity,
-      ]);
     });
   }
 
@@ -135,6 +119,22 @@ export class ItemRepository {
 
     return await this.databaseService.withConn(async (conn) => {
       await conn.executeSet(set, true);
+    });
+  }
+
+  /**
+   * Selecciona aleatoriamente un item_id de la tabla `item` filtrando por rarity.
+   * Devuelve null si no hay coincidencias.
+   */
+  async getRandomItemIdByRarity(rarity: number): Promise<number | null> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `SELECT id FROM item WHERE rarity = ? ORDER BY RANDOM() LIMIT 1`,
+        [rarity],
+      );
+      const values = res.values || [];
+      if (!values.length) return null;
+      return Number(values[0].id);
     });
   }
 }

@@ -6,17 +6,17 @@
     <div class="store-bg">
       <img src="/assets/ui/inside-store-top.png" alt="" aria-hidden="true" />
       <div class="inside-store-task-container">
-        @for (task of todayTasks; track task.id) {
+        @for (task of todayTasks; track task.taskActiveId) {
           <div class="inside-store-row">
             <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
             <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
             <app-task
               [task]="task"
               class="task"
-              [class.selected]="selectedTask?.id === task.id"
-              [attr.id]="'task-' + task.id"
+              [class.selected]="selectedTask?.taskActiveId === task.taskActiveId"
+              [attr.id]="'task-' + task.taskActiveId"
               (handleTaskClick)="handleTaskClick(task, true)"
-              [isSelected]="selectedTask?.id === task.id"
+              [isSelected]="selectedTask?.taskActiveId === task.taskActiveId"
             />
           </div>
         }
@@ -31,15 +31,15 @@
     </div>
 
     <div class="street-area ion-padding">
-      @for (task of otherTasks; track task.id) {
+      @for (task of otherTasks; track task.taskActiveId) {
         <div class="street-row">
           <app-task
             [task]="task"
             class="task"
-            [class.selected]="selectedTask?.id === task.id"
-            [attr.id]="'task-' + task.id"
+            [class.selected]="selectedTask?.taskActiveId === task.taskActiveId"
+            [attr.id]="'task-' + task.taskActiveId"
             (handleTaskClick)="handleTaskClick(task, false)"
-            [isSelected]="selectedTask?.id === task.id"
+            [isSelected]="selectedTask?.taskActiveId === task.taskActiveId"
           />
         </div>
       }
@@ -51,5 +51,14 @@
     [selectedTask]="selectedTask"
     [isTodayTask]="isSelectedTaskToday"
     (didClose)="actionPanelClosed()"
+    (acquired)="handleAcquired($event)"
+  />
+
+  <app-item-acquired-modal
+    [isOpen]="isItemAcquiredModalOpen"
+    [item]="acquiredItem"
+    [amount]="acquiredAmount"
+    (dismissed)="isItemAcquiredModalOpen = false"
+    (acknowledged)="onAcquiredAcknowledged()"
   />
 </ion-content>

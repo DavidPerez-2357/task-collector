@@ -29,6 +29,7 @@ export interface WeeklyTask extends Task {
 }
 
 export interface TaskActive extends Task {
+  taskActiveId: number; // id de la fila en task_active
   startDate: number; // timestamp
   endDate: number;
 }

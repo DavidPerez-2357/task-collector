@@ -13,11 +13,13 @@ import { InventoryItemModalComponent } from '@features/inventory-tab/components/
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
+import { CollectionService } from '@features/inventory-tab/services/collection.service';
 
 @Component({
   selector: 'app-inventory-tab',
   templateUrl: 'inventory-tab.component.html',
   styleUrls: ['inventory-tab.component.scss'],
+  providers: [ItemService, CollectionService],
   imports: [
     IonContent,
     TitleSignComponent,
@@ -139,6 +141,9 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   async onModalDismissed() {
     this.isModalOpen = false;
+
+    // Recargar gemas
+    this.playerCoins = await this.playerStateService.getCoins();
 
     if (this.selectedItem && this.selectedItem.quantity <= 0) {
       this.removeItemFromShelves(this.selectedItem);
