@@ -136,71 +136,105 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   async onSubmit() {
-    if (!this.taskName.trim() || this.selectedCategoryId === null) return;
-
-    // Validación días semana
-    if (this.isWeekly && this.selectedWeekdays.length === 0) {
-      await this.toast.show({ message: 'Selecciona al menos un día de la semana.', color: 'warning' });
-      return;
-    }
+    if (!(await this.validateForm())) return;
 
     this.isSubmitting = true;
-    const selectedCategory = this.categories.find((c) => c.id === Number(this.selectedCategoryId))!;
-
     try {
-      if (this.isEditMode && this.taskToEdit) {
-        if (this.editMode === 'instance') {
-          // Solo actualizamos la instancia (end_date)
-          await this.editTaskService.updateTaskInstance(
-            this.taskToEdit.taskActiveId,
-            this.taskDueDate,
-          );
-          await this.toast.success('¡Instancia actualizada!');
-        } else {
-          // Edición global: actualiza la definición de la tarea
-          const taskId = this.taskToEdit.id;
-          const activeTaskId = this.taskToEdit.taskActiveId;
-          // Para tareas no-semanales, solo enviamos dueDate si el usuario la cambió
-          // explícitamente. De lo contrario, el modal habrá pre-rellenado la fecha de la
-          // instancia activa (que puede diferir del anchor_date original), y enviársela al
-          // repositorio corrompería silenciosamente el ancla de tareas mensuales.
-          const dueDateForEdit = (!this.isWeekly && this.dueDateExplicitlyChanged)
-            ? this.taskDueDate
-            : undefined;
+      const selectedCategory = this.categories.find(
+        (c) => c.id === Number(this.selectedCategoryId)
+      )!;
 
-          await this.editTaskService.updateTask(taskId, activeTaskId, {
-            name: this.taskName,
-            category: selectedCategory,
-            frequency: Number(this.taskFrequency),
-            interval: Number(this.taskInterval),
-            effort: Number(this.taskEffort),
-            dueDate: dueDateForEdit,
-            weekdays: this.isWeekly ? this.selectedWeekdays : [],
-          });
-          await this.toast.success('¡Tarea global actualizada!');
-        }
+      if (this.isEditMode && this.taskToEdit) {
+        await this.handleEditMode(selectedCategory);
       } else {
-        // Modo creación
-        await this.createTaskService.createTask({
-          name: this.taskName,
-          category: selectedCategory,
-          frequency: Number(this.taskFrequency),
-          interval: Number(this.taskInterval),
-          effort: Number(this.taskEffort),
-          dueDate: !this.isWeekly ? this.taskDueDate : undefined,
-          weekdays: this.isWeekly ? this.selectedWeekdays : [],
-        });
-        await this.toast.success('¡Tarea creada con éxito!');
+        await this.handleCreateMode(selectedCategory);
       }
 
-      this.resetForm();
-      this.dismissed.emit();
+      this.completeSubmission();
     } catch (error) {
-      console.error('Error guardando tarea', error);
-      await this.toast.error('Error al guardar la tarea.');
+      this.handleError(error);
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  private async validateForm(): Promise<boolean> {
+    if (!this.taskName.trim() || this.selectedCategoryId === null) return false;
+
+    if (this.isWeekly && this.selectedWeekdays.length === 0) {
+      await this.toast.show({
+        message: 'Selecciona al menos un día de la semana.',
+        color: 'warning',
+      });
+      return false;
+    }
+    return true;
+  }
+
+  private async handleCreateMode(category: Category): Promise<void> {
+    await this.createTaskService.createTask({
+      name: this.taskName,
+      category,
+      frequency: Number(this.taskFrequency),
+      interval: Number(this.taskInterval),
+      effort: Number(this.taskEffort),
+      dueDate: !this.isWeekly ? this.taskDueDate : undefined,
+      weekdays: this.isWeekly ? this.selectedWeekdays : [],
+    });
+    await this.toast.success('¡Tarea creada con éxito!');
+  }
+
+  private async handleEditMode(category: Category): Promise<void> {
+    if (!this.taskToEdit) return;
+
+    if (this.editMode === 'instance') {
+      await this.updateInstance();
+    } else {
+      await this.updateGlobal(category);
+    }
+  }
+
+  private async updateInstance(): Promise<void> {
+    if (!this.taskToEdit) return;
+    await this.editTaskService.updateTaskInstance(
+      this.taskToEdit.taskActiveId,
+      this.taskDueDate
+    );
+    await this.toast.success('¡Instancia actualizada!');
+  }
+
+  private async updateGlobal(category: Category): Promise<void> {
+    if (!this.taskToEdit) return;
+
+    const dueDateForEdit =
+      !this.isWeekly && this.dueDateExplicitlyChanged
+        ? this.taskDueDate
+        : undefined;
+
+    await this.editTaskService.updateTask(
+      this.taskToEdit.id,
+      this.taskToEdit.taskActiveId,
+      {
+        name: this.taskName,
+        category,
+        frequency: Number(this.taskFrequency),
+        interval: Number(this.taskInterval),
+        effort: Number(this.taskEffort),
+        dueDate: dueDateForEdit,
+        weekdays: this.isWeekly ? this.selectedWeekdays : [],
+      }
+    );
+    await this.toast.success('¡Tarea global actualizada!');
+  }
+
+  private completeSubmission(): void {
+    this.resetForm();
+    this.dismissed.emit();
+  }
+
+  private async handleError(error: any): Promise<void> {
+    console.error('Error guardando tarea', error);
+    await this.toast.error('Error al guardar la tarea.');
   }
 
 
