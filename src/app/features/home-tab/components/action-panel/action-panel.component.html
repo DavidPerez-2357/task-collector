@@ -50,7 +50,10 @@
             (handleClick)="editInstance()"
             [title]="'Editar esta vez'"
           >
-            <ion-icon name="create-outline"></ion-icon>
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="instance-indicator">1</span>
+            </div>
           </app-button>
 
           <app-button
@@ -61,7 +64,7 @@
             (handleClick)="editGlobal()"
             [title]="'Editar Tarea Global'"
           >
-            <ion-icon name="repeat-outline"></ion-icon>
+            <ion-icon name="create-outline"></ion-icon>
           </app-button>
 
           <app-button
