@@ -151,7 +151,6 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
           // Solo actualizamos la instancia (end_date)
           await this.editTaskService.updateTaskInstance(
             this.taskToEdit.taskActiveId,
-            this.taskName,
             this.taskDueDate,
           );
           await this.showToast('¡Instancia actualizada!', 'success');
