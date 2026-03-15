@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { TaskRepository } from '@core/repositories/task.repository';
 import { Task } from '@core/models/task.model';
 
-export type CreateTaskInput = Omit<Task, 'id'> & { dueDate?: string };
+export type CreateTaskInput = Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] };
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class CreateTaskService {
 
   public taskCreated$ = new Subject<void>();
 
-  async createTask(task: Omit<Task, 'id'> & { weekdays?: number[] }): Promise<void> {
+  async createTask(task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] }): Promise<void> {
     await this.taskRepository.createTask(task);
     this.taskCreated$.next();
   }

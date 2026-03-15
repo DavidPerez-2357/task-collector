@@ -57,6 +57,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   taskInterval: number = 1;
   taskEffort: TaskEffort = TaskEffort.Medium;
   taskDueDate: string = this.getTodayString();
+  /** True solo si el usuario tocó el campo de fecha manualmente en esta sesión de edición. */
+  dueDateExplicitlyChanged: boolean = false;
   isSubmitting: boolean = false;
 
   get isEditMode(): boolean {
@@ -109,6 +111,13 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.taskEffort = task.effort;
     this.selectedCategoryId = task.category?.id ?? null;
     this.taskDueDate = this.timestampToDateString(task.endDate);
+    this.selectedWeekdays = task.weekdays ? [...task.weekdays] : [];
+    // Resetear: el usuario aún no ha cambiado la fecha en esta apertura del modal
+    this.dueDateExplicitlyChanged = false;
+  }
+
+  onDueDateChange(): void {
+    this.dueDateExplicitlyChanged = true;
   }
 
   private timestampToDateString(ts: number): string {
@@ -150,13 +159,22 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
           // Edición global: actualiza la definición de la tarea
           const taskId = this.taskToEdit.id;
           const activeTaskId = this.taskToEdit.taskActiveId;
+          // Para tareas no-semanales, solo enviamos dueDate si el usuario la cambió
+          // explícitamente. De lo contrario, el modal habrá pre-rellenado la fecha de la
+          // instancia activa (que puede diferir del anchor_date original), y enviársela al
+          // repositorio corrompería silenciosamente el ancla de tareas mensuales.
+          const dueDateForEdit = (!this.isWeekly && this.dueDateExplicitlyChanged)
+            ? this.taskDueDate
+            : undefined;
+
           await this.editTaskService.updateTask(taskId, activeTaskId, {
             name: this.taskName,
             category: selectedCategory,
             frequency: Number(this.taskFrequency),
             interval: Number(this.taskInterval),
             effort: Number(this.taskEffort),
-            dueDate: this.taskDueDate,
+            dueDate: dueDateForEdit,
+            weekdays: this.isWeekly ? this.selectedWeekdays : [],
           });
           await this.showToast('¡Tarea global actualizada!', 'success');
         }
@@ -168,6 +186,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
           frequency: Number(this.taskFrequency),
           interval: Number(this.taskInterval),
           effort: Number(this.taskEffort),
+          dueDate: !this.isWeekly ? this.taskDueDate : undefined,
           weekdays: this.isWeekly ? this.selectedWeekdays : [],
         });
         await this.showToast('¡Tarea creada con éxito!', 'success');
@@ -213,6 +232,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.taskInterval = 1;
     this.taskEffort = TaskEffort.Medium;
     this.taskDueDate = this.getTodayString();
+    this.selectedWeekdays = [];
+    this.dueDateExplicitlyChanged = false;
     if (this.categories.length > 0) {
       this.selectedCategoryId = this.categories[0]?.id ?? null;
     }

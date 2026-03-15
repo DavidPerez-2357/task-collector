@@ -19,6 +19,7 @@
                 [(ngModel)]="taskName"
                 placeholder="Ej. Estudiar inglés"
                 maxlength="40"
+                [disabled]="isEditMode && editMode === 'instance'"
               />
             </div>
 
@@ -92,7 +93,7 @@
             @if (!isWeekly) {
               <div class="input-group">
                 <label>Fecha límite</label>
-                <input type="date" [(ngModel)]="taskDueDate" class="date-input" />
+                <input type="date" [(ngModel)]="taskDueDate" (change)="onDueDateChange()" class="date-input" />
               </div>
             } @else {
               <div class="input-group info-text">

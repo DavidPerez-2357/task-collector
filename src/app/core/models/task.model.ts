@@ -22,6 +22,7 @@ export interface Task {
   interval: number;
   effort: TaskEffort;
   category: Category;
+  anchorDate?: number; // timestamp
 }
 
 export interface WeeklyTask extends Task {
@@ -32,6 +33,7 @@ export interface TaskActive extends Task {
   taskActiveId: number; // id de la fila en task_active
   startDate: number; // timestamp
   endDate: number;
+  weekdays?: number[]; // Días de la semana marcados (para recargas al editar semanas)
 }
 
 export interface TaskHistory extends Task {

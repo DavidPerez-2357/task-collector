@@ -13,7 +13,7 @@ export class DatabaseService {
   private conn?: SQLiteDBConnection;
 
   private readonly dbName = 'task-collector';
-  private readonly dbVersion = 5;
+  private readonly dbVersion = 7;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
   private opening?: Promise<void>;
@@ -91,6 +91,16 @@ export class DatabaseService {
       sqlAssetPath: 'assets/db/migrations/005_add_indexes.sql',
       description:
         'Add useful indexes for performance (task_active, task_history, collection_item, sales)',
+    },
+    {
+      version: 6,
+      sqlAssetPath: 'assets/db/migrations/006_add_task_anchor_date.sql',
+      description: 'Add anchor_date to task table to fix monthly logic',
+    },
+    {
+      version: 7,
+      sqlAssetPath: 'assets/db/migrations/007_add_missing_recurrence_columns.sql',
+      description: 'Add last_cron_run to player_state and end_date to task_history',
     },
   ];
 
