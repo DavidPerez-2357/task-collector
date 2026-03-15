@@ -67,13 +67,13 @@ export function getNextWeekdayMs(weekdays: number[], fromMs: number): number {
   // Ordenamos los días de menor a mayor (Domingo a Sábado)
   const sortedWeekdays = [...weekdays].sort((a, b) => a - b);
 
-  // Buscamos el primer día de la semana configurado que sea MAYOR que el día actual
-  const nextDay = sortedWeekdays.find((day) => day > todayWeekday);
+  // Buscamos el primer día de la semana configurado que sea MAYOR O IGUAL que el día actual
+  const eligibleDay = sortedWeekdays.find((day) => day >= todayWeekday);
   const firstDay = sortedWeekdays[0];
 
-  if (nextDay !== undefined) {
-    // El siguiente día está en esta misma semana
-    d.setDate(d.getDate() + (nextDay - todayWeekday));
+  if (eligibleDay !== undefined) {
+    // El día elegible (o hoy mismo) está en esta misma semana
+    d.setDate(d.getDate() + (eligibleDay - todayWeekday));
   } else if (firstDay !== undefined) {
     // El siguiente día está en la semana que viene (volvemos a empezar el ciclo)
     d.setDate(d.getDate() + (7 - todayWeekday + firstDay));
