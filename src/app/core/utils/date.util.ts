@@ -26,8 +26,8 @@ export function getStartOfDayMs(timestamp: number): number {
 export function daysBetween(fromMs: number, toMs: number): number {
   const startFrom = getStartOfDayMs(fromMs);
   const startTo = getStartOfDayMs(toMs);
-  
-  // Usamos Math.round porque los cambios de horario (DST) pueden hacer que 
+
+  // Usamos Math.round porque los cambios de horario (DST) pueden hacer que
   // la diferencia real sea 23.99 horas o 24.01 horas.
   return Math.round((startTo - startFrom) / DAY_MS);
 }
@@ -88,14 +88,14 @@ export function getNextWeekdayMs(weekdays: number[], fromMs: number): number {
  */
 export function parseDueDateToEndOfDay(dueDate?: string): number | null {
   if (!dueDate) return null;
-  
+
   const parts = dueDate.split('-');
   if (parts.length !== 3) return null; // Protección contra strings mal formados
-  
+
   const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-  
+
   if (isNaN(d.getTime())) return null; // Protección contra fechas inválidas
-  
+
   d.setHours(23, 59, 59, 999);
   return d.getTime();
 }

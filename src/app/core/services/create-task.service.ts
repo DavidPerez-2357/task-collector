@@ -13,7 +13,9 @@ export class CreateTaskService {
 
   public taskCreated$ = new Subject<void>();
 
-  async createTask(task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] }): Promise<void> {
+  async createTask(
+    task: Omit<Task, 'id'> & { dueDate?: string; weekdays?: number[] },
+  ): Promise<void> {
     await this.taskRepository.createTask(task);
     this.taskCreated$.next();
   }

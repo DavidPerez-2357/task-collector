@@ -3,7 +3,7 @@ import { TaskRepository } from '@core/repositories/task.repository';
 import { TaskRecurrenceService } from './task-recurrence.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TaskActionService {
   private taskRepository = inject(TaskRepository);
@@ -14,8 +14,11 @@ export class TaskActionService {
    */
   async completeTask(activeTaskId: number, completedAt: number = Date.now()): Promise<void> {
     // 1. El Almacenero hace la transacción en BD y nos devuelve los datos
-    const { taskId, endDate } = await this.taskRepository.completeTaskActiveById(activeTaskId, completedAt);
-    
+    const { taskId, endDate } = await this.taskRepository.completeTaskActiveById(
+      activeTaskId,
+      completedAt,
+    );
+
     // 2. El Cerebro proyecta el futuro basándose en la Fecha Límite (Magia Mensual)
     await this.taskRecurrenceService.generateNextInstances(taskId, endDate);
   }
@@ -23,10 +26,18 @@ export class TaskActionService {
   /**
    * Salta una tarea (skip), la borra de la pantalla y orquesta la creación de la siguiente.
    */
-  async skipTask(activeTaskId: number, skippedAt: number = Date.now(), reason: string = 'user_deleted'): Promise<void> {
+  async skipTask(
+    activeTaskId: number,
+    skippedAt: number = Date.now(),
+    reason: string = 'user_deleted',
+  ): Promise<void> {
     // 1. El Almacenero borra la tarea, guarda el salto y nos devuelve los datos
-    const { taskId, startDate } = await this.taskRepository.skipTaskActiveById(activeTaskId, skippedAt, reason);
-    
+    const { taskId, startDate } = await this.taskRepository.skipTaskActiveById(
+      activeTaskId,
+      skippedAt,
+      reason,
+    );
+
     // 2. El Cerebro proyecta el futuro basándose en el inicio de la que hemos saltado
     await this.taskRecurrenceService.generateNextInstances(taskId, startDate);
   }

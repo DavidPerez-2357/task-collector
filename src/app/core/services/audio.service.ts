@@ -12,11 +12,17 @@ export class AudioService {
   // NOTA: Recuerda que los archivos reales en src/assets/sounds/ deben ser convertidos a .mp3
   private readonly SOUNDS = {
     BUY_COLLECTION: { id: 'buy-collection', path: 'assets/sounds/buy-collection.ogg' },
-    COMPLETE_COLLECTION: { id: 'complete-collection', path: 'assets/sounds/complete-collection.ogg' },
+    COMPLETE_COLLECTION: {
+      id: 'complete-collection',
+      path: 'assets/sounds/complete-collection.ogg',
+    },
     COMPLETED_TASK: { id: 'completed-task', path: 'assets/sounds/completed-task.ogg' },
     SELL_ITEM: { id: 'sell-item', path: 'assets/sounds/sell-item.ogg' },
     REMOVE_TASK: { id: 'remove-task', path: 'assets/sounds/remove-task.ogg' },
-    PUT_ITEM_COLLECTION: { id: 'put-item-collection', path: 'assets/sounds/put-item-collection.ogg' },
+    PUT_ITEM_COLLECTION: {
+      id: 'put-item-collection',
+      path: 'assets/sounds/put-item-collection.ogg',
+    },
     BG_MUSIC: { id: 'bg-music', path: 'assets/sounds/main-theme.mp3' },
   };
 
@@ -24,7 +30,7 @@ export class AudioService {
 
   async init() {
     if (this.isInitialized) return;
-    
+
     try {
       if (Capacitor.isNativePlatform()) {
         await this.platform.ready();
@@ -57,7 +63,7 @@ export class AudioService {
       try {
         await NativeAudio.preload({
           assetId: s.id,
-          assetPath: this.getAssetPath(s.path), 
+          assetPath: this.getAssetPath(s.path),
           audioChannelNum: s.channels,
           isUrl: false,
         });

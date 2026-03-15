@@ -8,7 +8,7 @@ import {
   getStartOfToday,
   getStartOfDayMs,
   getNextWeekdayMs,
-  parseDueDateToEndOfDay
+  parseDueDateToEndOfDay,
 } from '@core/utils/date.util';
 
 @Injectable({
@@ -56,7 +56,7 @@ export class TaskRepository {
       firstStart = getNextWeekdayMs(task.weekdays, todayStart);
       firstEnd = firstStart + DAY_MS - 1;
     } else {
-      firstEnd = parseDueDateToEndOfDay(task.dueDate) ?? (todayStart + DAY_MS - 1);
+      firstEnd = parseDueDateToEndOfDay(task.dueDate) ?? todayStart + DAY_MS - 1;
       firstStart = getStartOfDayMs(firstEnd);
     }
 
@@ -107,24 +107,27 @@ export class TaskRepository {
     return await this.databaseService.withConn(async (conn) => {
       const oldTaskRes = await conn.query(
         `SELECT frequency, interval, anchor_date FROM task WHERE id = ?`,
-        [taskId]
+        [taskId],
       );
       const oldActiveRes = await conn.query(
         `SELECT start_date, end_date FROM task_active WHERE id = ?`,
-        [activeTaskId]
+        [activeTaskId],
       );
-      
+
       const oldTask = oldTaskRes.values?.[0];
       const oldActive = oldActiveRes.values?.[0];
-      
+
       let oldWeekdays: number[] = [];
       if (oldTask && Number(oldTask.frequency) === 2) {
-        const rw = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [taskId]);
+        const rw = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [
+          taskId,
+        ]);
         oldWeekdays = rw.values?.map((r: any) => Number(r.weekday)) ?? [];
       }
 
-      const recurrenceChanged = !oldTask || 
-        Number(oldTask.frequency) !== task.frequency || 
+      const recurrenceChanged =
+        !oldTask ||
+        Number(oldTask.frequency) !== task.frequency ||
         Number(oldTask.interval) !== task.interval ||
         JSON.stringify(oldWeekdays.sort()) !== JSON.stringify((task.weekdays || []).sort());
 
@@ -133,7 +136,7 @@ export class TaskRepository {
         if (!recurrenceChanged && oldTask?.anchor_date && !end) {
           newAnchorDate = Number(oldTask.anchor_date);
         } else {
-          newAnchorDate = end ?? (todayStart + DAY_MS - 1);
+          newAnchorDate = end ?? todayStart + DAY_MS - 1;
         }
       }
 
@@ -148,28 +151,33 @@ export class TaskRepository {
 
       if (task.frequency === 2 /* Weekly */ && task.weekdays?.length) {
         for (const weekday of task.weekdays) {
-          await conn.run(`INSERT INTO weekly_recurrence (task_id, weekday) VALUES (?, ?)`, [taskId, weekday]);
+          await conn.run(`INSERT INTO weekly_recurrence (task_id, weekday) VALUES (?, ?)`, [
+            taskId,
+            weekday,
+          ]);
         }
-        
+
         const currentIsFuture = oldActive && Number(oldActive.start_date) >= todayStart;
-        
+
         if (!recurrenceChanged && currentIsFuture) {
           // No hacemos nada
         } else {
           const newStart = getNextWeekdayMs(task.weekdays, todayStart);
           const newEnd = newStart + DAY_MS - 1;
-          
-          await conn.run(
-            `UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, 
-            [newStart, newEnd, activeTaskId]
-          );
+
+          await conn.run(`UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, [
+            newStart,
+            newEnd,
+            activeTaskId,
+          ]);
         }
       } else if (end !== null) {
         const newStart = getStartOfDayMs(end);
-        await conn.run(
-          `UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, 
-          [newStart, end, activeTaskId]
-        );
+        await conn.run(`UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, [
+          newStart,
+          end,
+          activeTaskId,
+        ]);
       }
     });
   }
@@ -179,13 +187,10 @@ export class TaskRepository {
    */
   async updateTaskInstance(activeTaskId: number, dueDate?: string): Promise<void> {
     const end = parseDueDateToEndOfDay(dueDate);
-    
+
     return await this.databaseService.withConn(async (conn) => {
       if (end !== null) {
-        await conn.run(
-          `UPDATE task_active SET end_date = ? WHERE id = ?`, 
-          [end, activeTaskId]
-        );
+        await conn.run(`UPDATE task_active SET end_date = ? WHERE id = ?`, [end, activeTaskId]);
       }
     });
   }
@@ -244,7 +249,9 @@ export class TaskRepository {
     });
   }
 
-  async getGlobalRecurringTasks(): Promise<{ id: number; frequency: number; interval: number; anchorDate?: number }[]> {
+  async getGlobalRecurringTasks(): Promise<
+    { id: number; frequency: number; interval: number; anchorDate?: number }[]
+  > {
     return await this.databaseService.withConn(async (conn) => {
       const res = await conn.query(
         `SELECT id, frequency, interval, anchor_date FROM task WHERE frequency != 0 AND deleted = 0`,
@@ -260,14 +267,18 @@ export class TaskRepository {
     });
   }
 
-  async getActiveTasksTodaySet(taskIds: number[], start: number, end: number): Promise<Set<number>> {
+  async getActiveTasksTodaySet(
+    taskIds: number[],
+    start: number,
+    end: number,
+  ): Promise<Set<number>> {
     if (!taskIds || taskIds.length === 0) return new Set<number>();
 
     return await this.databaseService.withConn(async (conn) => {
       const placeholders = taskIds.map(() => '?').join(',');
 
       // EL ARREGLO: Volvemos a la comprobación de solapamiento.
-      // "Si la tarea empezó antes del fin de hoy, y su fecha límite es después del inicio de hoy... 
+      // "Si la tarea empezó antes del fin de hoy, y su fecha límite es después del inicio de hoy...
       // significa que sigue viva en pantalla, así que NO crees otra nueva".
       const res = await conn.query(
         `SELECT DISTINCT task_id
@@ -285,67 +296,99 @@ export class TaskRepository {
     });
   }
 
-  async getSkippedTasksTodaySet(taskIds: number[], start: number, end: number): Promise<Set<number>> {
+  async getSkippedTasksTodaySet(
+    taskIds: number[],
+    start: number,
+    end: number,
+  ): Promise<Set<number>> {
     if (!taskIds || taskIds.length === 0) return new Set<number>();
 
     return await this.databaseService.withConn(async (conn) => {
       const placeholders = taskIds.map(() => '?').join(',');
-      
+
       const res = await conn.query(
         `SELECT DISTINCT task_id 
          FROM task_skips 
          WHERE task_id IN (${placeholders}) 
            AND start_date >= ? AND start_date <= ?`,
-        [...taskIds, start, end]
+        [...taskIds, start, end],
       );
-      
+
       return new Set((res.values ?? []).map((r: any) => Number(r.task_id)));
     });
   }
 
   async getTaskDefinition(taskId: number): Promise<any> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT id, frequency, interval, anchor_date FROM task WHERE id = ?`, [taskId]);
+      const res = await conn.query(
+        `SELECT id, frequency, interval, anchor_date FROM task WHERE id = ?`,
+        [taskId],
+      );
       if (!res.values?.length) return null;
       const r = res.values[0];
-      return { 
-        id: Number(r.id), frequency: Number(r.frequency), 
-        interval: Number(r.interval), anchorDate: r.anchor_date ? Number(r.anchor_date) : undefined 
+      return {
+        id: Number(r.id),
+        frequency: Number(r.frequency),
+        interval: Number(r.interval),
+        anchorDate: r.anchor_date ? Number(r.anchor_date) : undefined,
       };
     });
   }
 
   async getLastCompletedDueDate(taskId: number): Promise<number | null> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT MAX(end_date) as last_due FROM task_history WHERE task_id = ?`, [taskId]);
+      const res = await conn.query(
+        `SELECT MAX(end_date) as last_due FROM task_history WHERE task_id = ?`,
+        [taskId],
+      );
       return res.values?.[0]?.last_due ? Number(res.values[0].last_due) : null;
     });
   }
 
   async getTaskWeekdays(taskId: number): Promise<number[]> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [taskId]);
+      const res = await conn.query(`SELECT weekday FROM weekly_recurrence WHERE task_id = ?`, [
+        taskId,
+      ]);
       return (res.values ?? []).map((r: any) => Number(r.weekday));
     });
   }
 
-  async getActiveTaskDatesSet(taskId: number, startMs: number, endMs: number): Promise<Set<number>> {
+  async getActiveTaskDatesSet(
+    taskId: number,
+    startMs: number,
+    endMs: number,
+  ): Promise<Set<number>> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT start_date FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date <= ?`, [taskId, startMs, endMs]);
+      const res = await conn.query(
+        `SELECT start_date FROM task_active WHERE task_id = ? AND start_date >= ? AND start_date <= ?`,
+        [taskId, startMs, endMs],
+      );
       return new Set((res.values ?? []).map((r: any) => Number(r.start_date)));
     });
   }
 
-  async getSkippedTaskDatesSet(taskId: number, startMs: number, endMs: number): Promise<Set<number>> {
+  async getSkippedTaskDatesSet(
+    taskId: number,
+    startMs: number,
+    endMs: number,
+  ): Promise<Set<number>> {
     return await this.databaseService.withConn(async (conn) => {
-      const res = await conn.query(`SELECT start_date FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date <= ?`, [taskId, startMs, endMs]);
+      const res = await conn.query(
+        `SELECT start_date FROM task_skips WHERE task_id = ? AND start_date >= ? AND start_date <= ?`,
+        [taskId, startMs, endMs],
+      );
       return new Set((res.values ?? []).map((r: any) => Number(r.start_date)));
     });
   }
 
   async insertActiveTaskSingle(taskId: number, start: number, end: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
-      await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [taskId, start, end]);
+      await conn.run(`INSERT INTO task_active (task_id, start_date, end_date) VALUES (?, ?, ?)`, [
+        taskId,
+        start,
+        end,
+      ]);
     });
   }
 
@@ -353,13 +396,13 @@ export class TaskRepository {
     taskActiveId: number,
     skippedAt: number,
     reason = 'user_deleted',
-  ): Promise<{ taskId: number; startDate: number }> { 
+  ): Promise<{ taskId: number; startDate: number }> {
     return await this.databaseService.withConn(async (conn) => {
       const res = await conn.query(
         `SELECT task_id, start_date, end_date FROM task_active WHERE id = ?`,
         [taskActiveId],
       );
-      
+
       const values = res.values || [];
       if (!values.length) throw new Error(`task_active with id ${taskActiveId} not found`);
 
@@ -447,10 +490,10 @@ export class TaskRepository {
 
   async postponeTaskActiveById(taskActiveId: number, ms: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
-      await conn.run(
-        `UPDATE task_active SET end_date = end_date + ? WHERE id = ?`, 
-        [ms, taskActiveId]
-      );
+      await conn.run(`UPDATE task_active SET end_date = end_date + ? WHERE id = ?`, [
+        ms,
+        taskActiveId,
+      ]);
     });
   }
 
@@ -469,13 +512,16 @@ export class TaskRepository {
     });
   }
 
-  async completeTaskActiveById(taskActiveId: number, completedAt: number): Promise<{ taskId: number; startDate: number; endDate: number }> {
+  async completeTaskActiveById(
+    taskActiveId: number,
+    completedAt: number,
+  ): Promise<{ taskId: number; startDate: number; endDate: number }> {
     return await this.databaseService.withConn(async (conn) => {
       const res = await conn.query(
         `SELECT task_id, start_date, end_date FROM task_active WHERE id = ?`,
         [taskActiveId],
       );
-      
+
       const values = res.values || [];
       if (!values.length) throw new Error(`task_active with id ${taskActiveId} not found`);
 
@@ -488,7 +534,7 @@ export class TaskRepository {
       const daysLate = Math.max(0, daysBetween(currentEndDate, completedAt));
 
       // LA CORRECCIÓN: Calculamos el end_date original del ciclo matemáticamente
-      const originalCycleEndDate = startDate + DAY_MS - 1; 
+      const originalCycleEndDate = startDate + DAY_MS - 1;
 
       const set = [
         {
@@ -503,7 +549,7 @@ export class TaskRepository {
       ];
 
       await conn.executeSet(set, true);
-      
+
       // Devolvemos el end_date original para que el Cerebro calcule el futuro correctamente
       return { taskId, startDate, endDate: originalCycleEndDate };
     });

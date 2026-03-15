@@ -3,7 +3,7 @@ import { TaskRepository } from '@core/repositories/task.repository';
 import { DAY_MS, daysBetween, getStartOfDayMs, monthsBetween } from '@core/utils/date.util';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TaskRecurrenceService {
   private taskRepository = inject(TaskRepository);
@@ -13,7 +13,7 @@ export class TaskRecurrenceService {
    */
   async executeDailyCronJob(): Promise<void> {
     const todayStr = new Date().toDateString();
-    
+
     // 1. GATEKEEPER 100% BASE DE DATOS (Adiós LocalStorage)
     const lastRun = await this.taskRepository.getLastCronRunDate();
     if (lastRun === todayStr) {
@@ -31,30 +31,32 @@ export class TaskRecurrenceService {
       return;
     }
 
-    const taskIds = tasks.map(t => t.id);
+    const taskIds = tasks.map((t) => t.id);
 
     // Pedimos mapas de estado en paralelo para máxima velocidad
     const [lastCompletions, activeToday, weeklyRecurrences, skippedToday] = await Promise.all([
-      this.taskRepository.getLastCompletionsDueDateMap(taskIds), 
+      this.taskRepository.getLastCompletionsDueDateMap(taskIds),
       this.taskRepository.getActiveTasksTodaySet(taskIds, start, end),
       this.taskRepository.getWeeklyRecurrenceMap(taskIds),
-      this.taskRepository.getSkippedTasksTodaySet(taskIds, start, end)
+      this.taskRepository.getSkippedTasksTodaySet(taskIds, start, end),
     ]);
 
     const todayWeekday = new Date(start).getDay();
 
     // 3. El Cerebro evalúa qué tareas merecen nacer hoy
     const tasksToCreate = tasks
-      .filter(t => !activeToday.has(t.id)) 
-      .filter(t => !skippedToday.has(t.id)) 
-      .filter(t => this.evaluateTaskForToday(
-        t,
-        lastCompletions.get(t.id) ?? null,
-        weeklyRecurrences.get(t.id) ?? [],
-        todayWeekday,
-        start
-      ))
-      .map(t => t.id);
+      .filter((t) => !activeToday.has(t.id))
+      .filter((t) => !skippedToday.has(t.id))
+      .filter((t) =>
+        this.evaluateTaskForToday(
+          t,
+          lastCompletions.get(t.id) ?? null,
+          weeklyRecurrences.get(t.id) ?? [],
+          todayWeekday,
+          start,
+        ),
+      )
+      .map((t) => t.id);
 
     // 4. Ordenamos al repositorio guardar las elegidas
     if (tasksToCreate.length > 0) {
@@ -78,23 +80,37 @@ export class TaskRecurrenceService {
 
     let d = new Date(getStartOfDayMs(afterDateMs) + DAY_MS);
     const startRangeMs = d.getTime();
-    const endRangeMs = startRangeMs + (365 * DAY_MS); 
+    const endRangeMs = startRangeMs + 365 * DAY_MS;
 
-    const activeSet = await this.taskRepository.getActiveTaskDatesSet(taskId, startRangeMs, endRangeMs);
-    const skipsSet = await this.taskRepository.getSkippedTaskDatesSet(taskId, startRangeMs, endRangeMs);
+    const activeSet = await this.taskRepository.getActiveTaskDatesSet(
+      taskId,
+      startRangeMs,
+      endRangeMs,
+    );
+    const skipsSet = await this.taskRepository.getSkippedTaskDatesSet(
+      taskId,
+      startRangeMs,
+      endRangeMs,
+    );
 
     for (let offset = 0; offset < 365; offset++) {
       const todayWeekday = d.getDay();
       const dMs = d.getTime();
 
-      const shouldCreate = this.evaluateTaskForToday(task, lastCompleted, weekdays, todayWeekday, dMs);
+      const shouldCreate = this.evaluateTaskForToday(
+        task,
+        lastCompleted,
+        weekdays,
+        todayWeekday,
+        dMs,
+      );
 
       if (shouldCreate) {
-        if (activeSet.has(dMs)) break; 
-        
+        if (activeSet.has(dMs)) break;
+
         if (skipsSet.has(dMs)) {
           d.setTime(d.getTime() + DAY_MS);
-          continue; 
+          continue;
         }
 
         const end = dMs + DAY_MS - 1;
@@ -114,17 +130,16 @@ export class TaskRecurrenceService {
     lastCompletedDueDateMs: number | null,
     weekdays: number[],
     todayWeekday: number,
-    todayMs: number
+    todayMs: number,
   ): boolean {
-    
     // --- DIARIA ---
-    if (task.frequency === 1) { 
+    if (task.frequency === 1) {
       if (!lastCompletedDueDateMs) return true;
       return daysBetween(lastCompletedDueDateMs, todayMs) >= task.interval;
     }
 
     // --- SEMANAL ---
-    if (task.frequency === 2) { 
+    if (task.frequency === 2) {
       if (weekdays.length > 0 && !weekdays.includes(todayWeekday)) return false;
       if (!lastCompletedDueDateMs) return true;
 
@@ -141,30 +156,34 @@ export class TaskRecurrenceService {
 
       if (calendarWeeksDiff === 0) {
         if (daysBetween(lastCompletedDueDateMs, todayMs) === 0) return false;
-        return true; 
+        return true;
       }
 
       return calendarWeeksDiff >= task.interval;
     }
 
     // --- MENSUAL ---
-    if (task.frequency === 3) { 
-      if (!task.anchorDate) return false; 
-      
+    if (task.frequency === 3) {
+      if (!task.anchorDate) return false;
+
       const currentD = new Date(todayMs);
       const anchorD = new Date(task.anchorDate);
-      
-      const lastDayOfCurrentMonth = new Date(currentD.getFullYear(), currentD.getMonth() + 1, 0).getDate();
+
+      const lastDayOfCurrentMonth = new Date(
+        currentD.getFullYear(),
+        currentD.getMonth() + 1,
+        0,
+      ).getDate();
       const expectedDay = Math.min(anchorD.getDate(), lastDayOfCurrentMonth);
 
       // 1. ¿Toca crearla hoy según el calendario?
       if (currentD.getDate() !== expectedDay) return false;
-      
+
       if (!lastCompletedDueDateMs) return true;
 
       // 2. ¡La Magia! Como lastCompletedDueDateMs es la FECHA LÍMITE del último ciclo que completaste
       const diff = monthsBetween(lastCompletedDueDateMs, todayMs);
-      
+
       return diff >= task.interval;
     }
 

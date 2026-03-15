@@ -91,7 +91,7 @@ export class CollectionTabComponent implements ViewWillEnter {
         item.isShiny, // Si el hueco de la colección es shiny
         depositShiny, // Lo que depositamos realmente
       );
-      
+
       await this.audioService.playPutItemCollection();
       await this.toast.success(`${item.name} añadido a la colección!`);
 

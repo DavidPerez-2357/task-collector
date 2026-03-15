@@ -141,7 +141,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.isSubmitting = true;
     try {
       const selectedCategory = this.categories.find(
-        (c) => c.id === Number(this.selectedCategoryId)
+        (c) => c.id === Number(this.selectedCategoryId),
       )!;
 
       if (this.isEditMode && this.taskToEdit) {
@@ -196,10 +196,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
   private async updateInstance(): Promise<void> {
     if (!this.taskToEdit) return;
-    await this.editTaskService.updateTaskInstance(
-      this.taskToEdit.taskActiveId,
-      this.taskDueDate
-    );
+    await this.editTaskService.updateTaskInstance(this.taskToEdit.taskActiveId, this.taskDueDate);
     await this.toast.success('¡Instancia actualizada!');
   }
 
@@ -207,23 +204,17 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     if (!this.taskToEdit) return;
 
     const dueDateForEdit =
-      !this.isWeekly && this.dueDateExplicitlyChanged
-        ? this.taskDueDate
-        : undefined;
+      !this.isWeekly && this.dueDateExplicitlyChanged ? this.taskDueDate : undefined;
 
-    await this.editTaskService.updateTask(
-      this.taskToEdit.id,
-      this.taskToEdit.taskActiveId,
-      {
-        name: this.taskName,
-        category,
-        frequency: Number(this.taskFrequency),
-        interval: Number(this.taskInterval),
-        effort: Number(this.taskEffort),
-        dueDate: dueDateForEdit,
-        weekdays: this.isWeekly ? this.selectedWeekdays : [],
-      }
-    );
+    await this.editTaskService.updateTask(this.taskToEdit.id, this.taskToEdit.taskActiveId, {
+      name: this.taskName,
+      category,
+      frequency: Number(this.taskFrequency),
+      interval: Number(this.taskInterval),
+      effort: Number(this.taskEffort),
+      dueDate: dueDateForEdit,
+      weekdays: this.isWeekly ? this.selectedWeekdays : [],
+    });
     await this.toast.success('¡Tarea global actualizada!');
   }
 
@@ -236,7 +227,6 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     console.error('Error guardando tarea', error);
     await this.toast.error('Error al guardar la tarea.');
   }
-
 
   getIntervalLabel(): string {
     switch (Number(this.taskFrequency)) {

@@ -93,7 +93,12 @@
             @if (!isWeekly) {
               <div class="input-group">
                 <label>Fecha límite</label>
-                <input type="date" [(ngModel)]="taskDueDate" (change)="onDueDateChange()" class="date-input" />
+                <input
+                  type="date"
+                  [(ngModel)]="taskDueDate"
+                  (change)="onDueDateChange()"
+                  class="date-input"
+                />
               </div>
             } @else {
               <div class="input-group info-text">
