@@ -7,7 +7,6 @@ import { ActionPanelComponent } from '@features/home-tab/components/action-panel
 import { UIService } from '@core/services/ui.service';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { CreateTaskService } from '@core/services/create-task.service';
-import { DevToolsService } from '@core/services/dev-tools.service';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { ItemAcquiredModalComponent } from '@shared/components/item-acquired-modal/item-acquired-modal.component';
@@ -33,7 +32,6 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   private readonly uiService = inject(UIService);
   private readonly taskService = inject(TaskService);
   private readonly createTaskService = inject(CreateTaskService);
-  private readonly devToolsService = inject(DevToolsService);
   private readonly playerStateService = inject(PlayerStateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly itemService = inject(ItemService);
