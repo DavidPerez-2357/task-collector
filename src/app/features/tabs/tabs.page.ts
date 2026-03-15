@@ -2,7 +2,6 @@ import { Component, DestroyRef, EnvironmentInjector, inject, OnInit } from '@ang
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { triangle, ellipse, square } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 import { CreateTaskModalComponent } from '@shared/components/create-task-modal/create-task-modal.component';
 import { UIService } from '@core/services/ui.service';
@@ -25,10 +24,6 @@ export class TabsPage implements OnInit {
   public isCreateModalOpen = false;
   public taskToEdit: TaskActive | null = null;
   public editMode: 'global' | 'instance' = 'global';
-
-  constructor() {
-    addIcons({ triangle, ellipse, square });
-  }
 
   ngOnInit(): void {
     this.editTaskService.editRequested$
