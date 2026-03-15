@@ -1,0 +1,135 @@
+ion-modal {
+  --background: transparent; // Quita el fondo sólido gris/blanco
+}
+
+.modal-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px; // Un poco de margen para que no choque con los bordes del móvil
+}
+
+.modal-content {
+  padding: 16px;
+  color: white;
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: var(--ion-color-primary);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 8px;
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      label {
+        font-weight: normal;
+        font-size: 1.1rem;
+        color: white;
+      }
+
+      input[type="text"], input[type="number"], input[type="date"], select {
+        background: rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        font-family: inherit;
+        font-size: 1.1rem;
+        color: white;
+        outline: none;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        option {
+          background-color: var(--ion-color-dark-brown);
+          color: white;
+        }
+
+        &:focus {
+          border-color: var(--ion-color-primary);
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      input[type="date"] {
+        width: 100%;
+        box-sizing: border-box;
+        color-scheme: dark; // Hace el calendario nativo oscuro
+      }
+/* --- NUEVO: Estilos para las bolitas de los días --- */
+      .weekdays-selector {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-top: 4px;
+
+        .weekday-chip {
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.05);
+          border: 2px solid rgba(0, 0, 0, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 1.1rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          user-select: none;
+
+          &.selected {
+            background: var(--ion-color-primary);
+            color: white;
+            border-color: var(--ion-color-primary-shade);
+            transform: scale(1.1);
+          }
+
+          &.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .info-text span {
+        font-size: 0.85rem;
+        opacity: 0.6;
+        font-style: italic;
+      }
+      .interval-input {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        
+        input {
+          width: 70px;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+}

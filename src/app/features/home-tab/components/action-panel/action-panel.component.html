@@ -43,23 +43,55 @@
           }
 
           <app-button
-            type="danger"
+            type="warning"
             [border]="true"
-            btnClass="action-btn flex center rounded-sm h-full"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
             [disabled]="isBusy"
-            (handleClick)="confirmDeleteOpen = true"
+            (handleClick)="editInstance()"
+            [title]="'Editar esta vez'"
           >
-            <ion-icon name="close-circle-outline"></ion-icon>
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="instance-indicator">1</span>
+            </div>
           </app-button>
 
           <app-button
             type="warning"
             [border]="true"
-            btnClass="action-btn flex center rounded-sm h-full"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
             [disabled]="isBusy"
-            (handleClick)="editTask()"
+            (handleClick)="editGlobal()"
+            [title]="'Editar Tarea Global'"
           >
-            <ion-icon name="create-outline"></ion-icon>
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="global-indicator">
+                <ion-icon name="earth"></ion-icon>
+              </span>
+            </div>
+          </app-button>
+
+          <app-button
+            type="danger"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="confirmDeleteOpen = true"
+            [title]="'Quitar de hoy'"
+          >
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </app-button>
+
+          <app-button
+            type="danger"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="confirmDeleteGlobalOpen = true"
+            [title]="'Eliminar globalmente'"
+          >
+            <ion-icon name="trash-outline"></ion-icon>
           </app-button>
         </div>
       </div>
@@ -81,5 +113,21 @@
     confirmColor="danger"
     (dismissed)="confirmDeleteOpen = false"
     (confirmed)="onDeleteConfirmed($event)"
+  />
+  <app-confirm-modal
+    [isOpen]="confirmDeleteGlobalOpen"
+    title="ELIMINAR TAREA GLOBAL"
+    [message]="
+      selectedTask
+        ? 'Esto eliminará COMPLETAMENTE «' +
+          selectedTask.name +
+          '» y todas sus futuras recurrencias. No se puede deshacer.'
+        : ''
+    "
+    confirmLabel="Eliminar para siempre"
+    cancelLabel="Más tarde"
+    confirmColor="danger"
+    (dismissed)="confirmDeleteGlobalOpen = false"
+    (confirmed)="onDeleteGlobalConfirmed($event)"
   />
 </div>

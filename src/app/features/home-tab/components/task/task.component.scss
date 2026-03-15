@@ -49,8 +49,9 @@ header {
   height: 100px;
   aspect-ratio: 1 / 1;
   border-radius: 100%;
-  background: #2dd55b;
-  border: 0.1rem solid #004212;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   transition: box-shadow 250ms ease;
 }

@@ -2,10 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { TaskRepository } from '@core/repositories/task.repository';
 import { TaskActive } from '@core/models/task.model';
 import { DAY_MS } from '@core/utils/date.util';
+import { TaskRecurrenceService } from '@core/services/task-recurrence.service';
+import { TaskActionService } from '@core/services/task-action.service';
 
 @Injectable()
 export class TaskService {
   private taskRepository = inject(TaskRepository);
+  private taskRecurrenceService = inject(TaskRecurrenceService);
+  private taskActionService = inject(TaskActionService);
 
   async getActiveTasks(): Promise<TaskActive[]> {
     return await this.taskRepository.getActiveTasks();
@@ -20,13 +24,13 @@ export class TaskService {
     const now = new Date();
 
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const endOfToday = startOfToday + DAY_MS;
+    const startOfNextDay = startOfToday + DAY_MS;
 
     const today: TaskActive[] = [];
     const others: TaskActive[] = [];
 
     for (const task of tasks) {
-      if (task.endDate >= startOfToday && task.endDate <= endOfToday) {
+      if (task.endDate >= startOfToday && task.endDate < startOfNextDay) {
         today.push(task);
       } else {
         others.push(task);
@@ -36,12 +40,8 @@ export class TaskService {
     return { today, others };
   }
 
-  async checkIfRecurringTasksWereCreatedToday(): Promise<boolean> {
-    return await this.taskRepository.checkIfRecurringTasksWereCreatedToday();
-  }
-
   async createRecurringTasksForToday(): Promise<void> {
-    return await this.taskRepository.createRecurringTasksForToday();
+    return await this.taskRecurrenceService.executeDailyCronJob();
   }
 
   /**
@@ -70,7 +70,7 @@ export class TaskService {
    * Marca una instancia activa como completada (mueve a historial).
    */
   async completeTaskActiveById(taskActiveId: number, completedAt: number): Promise<void> {
-    return await this.taskRepository.completeTaskActiveById(taskActiveId, completedAt);
+    await this.taskActionService.completeTask(taskActiveId, completedAt);
   }
 
   /**
@@ -81,6 +81,6 @@ export class TaskService {
     skippedAt: number,
     reason = 'user_deleted',
   ): Promise<void> {
-    return await this.taskRepository.skipTaskActiveById(taskActiveId, skippedAt, reason);
+    await this.taskActionService.skipTask(taskActiveId, skippedAt, reason);
   }
 }

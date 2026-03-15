@@ -311,4 +311,21 @@ export class CollectionRepository {
       await conn.executeSet(set, true);
     });
   }
+
+  async isCollectionCompleted(collectionId: number): Promise<boolean> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `
+        SELECT 
+          (SELECT COUNT(*) FROM collection_item WHERE collection_id = ?) as total,
+          (SELECT COUNT(*) FROM player_collection_item WHERE collection_id = ?) as deposited
+      `,
+        [collectionId, collectionId],
+      );
+
+      const row = res.values?.[0];
+      if (!row) return false;
+      return row.total > 0 && row.total === row.deposited;
+    });
+  }
 }

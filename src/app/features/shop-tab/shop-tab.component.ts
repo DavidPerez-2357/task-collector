@@ -8,6 +8,7 @@ import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.
 import { ShopCardComponent } from './components/shop-card/shop-card.component';
 import { ShopService } from './services/shop.service';
 import { ToastService } from '@core/services/toast.service';
+import { AudioService } from '@core/services/audio.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -27,6 +28,7 @@ export class ShopTabComponent implements ViewWillEnter {
   private shopService = inject(ShopService);
   private playerStateService = inject(PlayerStateService);
   private toast = inject(ToastService);
+  private audioService = inject(AudioService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
@@ -76,6 +78,7 @@ export class ShopTabComponent implements ViewWillEnter {
     this.isBuying = true;
     try {
       await this.shopService.buyCollection(collection.id, collection.price);
+      await this.audioService.playBuyCollection();
       this.updateUISuccess(collection);
       await this.toast.success(`¡Colección ${collection.name} adquirida!`);
     } catch (error) {

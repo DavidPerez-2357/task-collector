@@ -43,10 +43,14 @@ export class DevToolsService {
     }
 
     const testCategories = [
-      { name: 'Categoría 1', imageName: 'categoria1.png' },
-      { name: 'Categoría 2', imageName: 'categoria2.png' },
-      { name: 'Categoría 3', imageName: 'categoria3.png' },
-      { name: 'Categoría 4', imageName: 'categoria4.png' },
+      { name: 'Limpieza', imageName: 'fb55.png' },
+      { name: 'Trabajo/Estudios', imageName: 'fb101.png' },
+      { name: 'Compras', imageName: 'fb26.png' },
+      { name: 'Mantenimiento', imageName: 'fb1477.png' },
+      { name: 'Jardín/Mascotas', imageName: 'fb568.png' },
+      { name: 'Cuidado Personal', imageName: 'fb1960.png' },
+      { name: 'Trámites', imageName: 'fb106.png' },
+      { name: 'Cocina', imageName: 'fb447.png' },
     ];
 
     for (const category of testCategories) {

@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { TaskActive } from '@core/models/task.model';
 import { IonIcon } from '@ionic/angular/standalone';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ConfirmModalComponent } from '@shared/components/confirm-modal/confirm-modal.component';
 import { addIcons } from 'ionicons';
+import { EditTaskService } from '@core/services/edit-task.service';
 import {
   checkmarkCircleOutline,
   createOutline,
@@ -16,10 +17,12 @@ import {
   starOutline,
   closeOutline,
   closeCircleOutline,
+  earth,
 } from 'ionicons/icons';
 import { DAY_MS, getStartOfToday } from '@core/utils/date.util';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { ToastService } from '@core/services/toast.service';
+import { AudioService } from '@core/services/audio.service';
 
 @Component({
   selector: 'app-action-panel',
@@ -32,17 +35,21 @@ export class ActionPanelComponent {
   @Input() selectedTask: TaskActive | null = null;
   @Input() isTodayTask = false;
 
+  private editTaskService = inject(EditTaskService);
+
   @Output() didClose = new EventEmitter<void>();
   @Output() acquired = new EventEmitter<TaskActive | null>();
 
   private taskService = inject(TaskService);
   private toast = inject(ToastService);
+  private audioService = inject(AudioService);
 
   // Indicador para deshabilitar botones mientras hay una operación en curso
   isBusy = false;
 
   // Estado para mostrar el modal de confirmación
   confirmDeleteOpen = false;
+  confirmDeleteGlobalOpen = false;
 
   constructor() {
     addIcons({
@@ -56,6 +63,7 @@ export class ActionPanelComponent {
       starOutline,
       closeOutline,
       closeCircleOutline,
+      earth,
     });
   }
 
@@ -63,7 +71,8 @@ export class ActionPanelComponent {
     if (!this.selectedTask) return false;
     const endDate = new Date(this.selectedTask.endDate);
     endDate.setHours(0, 0, 0, 0);
-    return endDate.getTime() >= getStartOfToday() + DAY_MS;
+    // Permitir posponer si la tarea es para hoy o el futuro
+    return endDate.getTime() >= getStartOfToday();
   }
 
   protected closePanel(): void {
@@ -78,6 +87,7 @@ export class ActionPanelComponent {
     try {
       const completedAt = Date.now();
       await this.taskService.completeTaskActiveById(this.selectedTask.taskActiveId, completedAt);
+      await this.audioService.playCompletedTask();
 
       await this.toast.success('Tarea completada');
 
@@ -95,8 +105,16 @@ export class ActionPanelComponent {
     }
   }
 
-  protected editTask(): void {
-    // TODO
+  protected editInstance(): void {
+    if (!this.selectedTask) return;
+    this.editTaskService.requestEdit(this.selectedTask, 'instance');
+    this.closePanel();
+  }
+
+  protected editGlobal(): void {
+    if (!this.selectedTask) return;
+    this.editTaskService.requestEdit(this.selectedTask, 'global');
+    this.closePanel();
   }
 
   // deleteActiveTask implemented below as async
@@ -123,7 +141,7 @@ export class ActionPanelComponent {
     if (!this.selectedTask || this.isBusy) return;
 
     const start = getStartOfToday();
-    const end = start + DAY_MS;
+    const end = start + DAY_MS - 1; // Hoy a las 23:59:59.999
 
     this.isBusy = true;
     try {
@@ -149,6 +167,7 @@ export class ActionPanelComponent {
       // registramos un 'skip' y borramos la instancia en la base de datos.
       const skippedAt = Date.now();
       await this.taskService.skipTaskActiveById(this.selectedTask.taskActiveId, skippedAt);
+      await this.audioService.playRemoveTask();
 
       await this.toast.success('Tarea eliminada');
 
@@ -161,10 +180,34 @@ export class ActionPanelComponent {
     }
   }
 
+  protected async deleteGlobalTask(): Promise<void> {
+    if (!this.selectedTask || this.isBusy) return;
+
+    this.isBusy = true;
+    try {
+      await this.editTaskService.deleteGlobalTask(this.selectedTask.id);
+      await this.audioService.playRemoveTask();
+      await this.toast.success('Tarea eliminada globalmente');
+      this.closePanel();
+    } catch (e) {
+      console.error('Error al eliminar la tarea global:', e);
+      await this.toast.error('Error al eliminar la tarea global');
+    } finally {
+      this.isBusy = false;
+    }
+  }
+
   protected async onDeleteConfirmed(confirmed: boolean): Promise<void> {
     this.confirmDeleteOpen = false;
     if (confirmed) {
       await this.deleteActiveTask();
+    }
+  }
+
+  protected async onDeleteGlobalConfirmed(confirmed: boolean): Promise<void> {
+    this.confirmDeleteGlobalOpen = false;
+    if (confirmed) {
+      await this.deleteGlobalTask();
     }
   }
 }

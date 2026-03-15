@@ -13,7 +13,7 @@ export class DatabaseService {
   private conn?: SQLiteDBConnection;
 
   private readonly dbName = 'task-collector';
-  private readonly dbVersion = 4;
+  private readonly dbVersion = 8;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
   private opening?: Promise<void>;
@@ -79,13 +79,27 @@ export class DatabaseService {
     {
       version: 3,
       sqlAssetPath: 'assets/db/migrations/003_add_task_skips.sql',
-      description: 'Add task_skips table to record user-deleted instances',
+      description: 'Add task_skips table',
     },
     {
       version: 4,
       sqlAssetPath: 'assets/db/migrations/004_add_indexes.sql',
-      description:
-        'Add useful indexes for performance (task_active, task_history, collection_item, sales)',
+      description: 'Add performance indexes',
+    },
+    {
+      version: 6,
+      sqlAssetPath: 'assets/db/migrations/006_add_task_anchor_date.sql',
+      description: 'Add anchor_date for monthly logic',
+    },
+    {
+      version: 7,
+      sqlAssetPath: 'assets/db/migrations/007_add_missing_recurrence_columns.sql',
+      description: 'Add cron and history columns',
+    },
+    {
+      version: 8,
+      sqlAssetPath: 'assets/db/migrations/008_add_categories.sql',
+      description: 'Seed categories and fix schema inconsistencies',
     },
   ];
 
