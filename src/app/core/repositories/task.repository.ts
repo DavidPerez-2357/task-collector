@@ -479,17 +479,20 @@ export class TaskRepository {
 
       const r: any = values[0];
       const taskId = Number(r.task_id);
-      const startDate = Number(r.start_date);
-      const endDate = Number(r.end_date);
+      const startDate = Number(r.start_date); // Ancla del ciclo (00:00:00)
+      const currentEndDate = Number(r.end_date); // Fecha límite actual (puede haber sido pospuesta)
 
-      // Los días de retraso sí se calculan con el endDate pospuesto/editado
-      const daysLate = Math.max(0, daysBetween(endDate, completedAt));
+      // El retraso lo calculamos contra la fecha límite actual (si la pospuso legalmente, no cuenta como retraso)
+      const daysLate = Math.max(0, daysBetween(currentEndDate, completedAt));
+
+      // LA CORRECCIÓN: Calculamos el end_date original del ciclo matemáticamente
+      const originalCycleEndDate = startDate + DAY_MS - 1; 
 
       const set = [
         {
-          // LA MAGIA: Guardamos el startDate como la fecha del ciclo que acabamos de cerrar
+          // Ahora SÍ guardamos un timestamp de 23:59:59 coherente con el nombre de la columna
           statement: `INSERT INTO task_history (task_id, completed_at, end_date, days_late) VALUES (?, ?, ?, ?)`,
-          values: [taskId, completedAt, startDate, daysLate],
+          values: [taskId, completedAt, originalCycleEndDate, daysLate],
         },
         {
           statement: `DELETE FROM task_active WHERE id = ?`,
@@ -499,8 +502,8 @@ export class TaskRepository {
 
       await conn.executeSet(set, true);
       
-      // Devolvemos startDate en ambos campos para que el Cerebro parta del ciclo real
-      return { taskId, startDate, endDate: startDate };
+      // Devolvemos el end_date original para que el Cerebro calcule el futuro correctamente
+      return { taskId, startDate, endDate: originalCycleEndDate };
     });
   }
 }
