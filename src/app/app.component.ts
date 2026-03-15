@@ -3,7 +3,7 @@ import { IonApp, IonRouterOutlet, Platform } from '@ionic/angular/standalone';
 import { DatabaseService } from '@core/services/database.service';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons';
-import { NativeAudio } from '@capacitor-community/native-audio';
+import { AudioService } from '@core/services/audio.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +13,7 @@ import { NativeAudio } from '@capacitor-community/native-audio';
 export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
   private platform = inject(Platform);
+  private audioService = inject(AudioService);
 
   constructor() {
     addIcons({
@@ -24,28 +25,6 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.databaseService.init();
-    await this.platform.ready();
-    await this.initBackgroundMusic();
-  }
-
-  private async initBackgroundMusic() {
-    try {
-      await NativeAudio.preload({
-        assetId: 'bg-music',
-        assetPath: 'main-theme.mp3',
-        audioChannelNum: 1,
-        isUrl: false
-      });
-      await NativeAudio.setVolume({
-        assetId: 'bg-music',
-        volume: 0.3
-      });
-      await NativeAudio.loop({
-        assetId: 'bg-music'
-      });
-
-    } catch (error) {
-      console.error('Error al cargar o reproducir el audio nativo:', error);
-    }
+    await this.audioService.init();
   }
 }

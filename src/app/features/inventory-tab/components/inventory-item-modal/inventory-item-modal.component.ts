@@ -17,6 +17,7 @@ import { CollectionService } from '@features/inventory-tab/services/collection.s
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { ToastService } from '@core/services/toast.service';
+import { AudioService } from '@core/services/audio.service';
 
 interface EligibleCollection {
   id: number;
@@ -43,6 +44,7 @@ export class InventoryItemModalComponent implements OnChanges {
   private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
   private itemService = inject(ItemService);
+  private audioService = inject(AudioService);
 
   step: ModalStep = 'detail';
   eligibleCollections: EligibleCollection[] = [];
@@ -114,6 +116,12 @@ export class InventoryItemModalComponent implements OnChanges {
       this.item.quantity -= 1;
 
       await this.toast.success(`${this.item.name} añadido a la colección ${col.name}!`);
+      await this.audioService.playPutItemCollection();
+
+      const isCompleted = await this.collectionService.checkCompletion(col.id);
+      if (isCompleted) {
+        await this.audioService.playCompleteCollection();
+      }
 
       if (this.item.quantity <= 0) {
         this.isOpen = false;
@@ -139,6 +147,7 @@ export class InventoryItemModalComponent implements OnChanges {
     this.itemService
       .sellItem(this.item.id, this.item.isShiny)
       .then((updatedQuantity: number) => {
+        this.audioService.playSellItem();
         this.item.quantity = updatedQuantity;
 
         if (updatedQuantity <= 0) {

@@ -7,6 +7,7 @@ import { CollectionItemModalComponent } from '@features/collection-tab/component
 import { CollectionService } from '@features/collection-tab/services/collection.service';
 import { Collection, CollectionItem } from '@core/models/collection.model';
 import { ToastService } from '@core/services/toast.service';
+import { AudioService } from '@core/services/audio.service';
 
 @Component({
   selector: 'app-collection-tab',
@@ -20,6 +21,7 @@ export class CollectionTabComponent implements ViewWillEnter {
 
   private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
+  private audioService = inject(AudioService);
 
   collections: Collection[] = [];
 
@@ -89,8 +91,15 @@ export class CollectionTabComponent implements ViewWillEnter {
         item.isShiny, // Si el hueco de la colección es shiny
         depositShiny, // Lo que depositamos realmente
       );
-
+      
+      await this.audioService.playPutItemCollection();
       await this.toast.success(`${item.name} añadido a la colección!`);
+
+      const isCompleted = await this.collectionService.checkCompletion(collectionId);
+      if (isCompleted) {
+        await this.audioService.playCompleteCollection();
+      }
+
       await this.reloadCollection(collectionId);
     } catch (error) {
       console.error('Error depositing item directly:', error);

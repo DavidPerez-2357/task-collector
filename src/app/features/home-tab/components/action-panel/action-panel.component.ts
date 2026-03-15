@@ -21,6 +21,7 @@ import {
 import { DAY_MS, getStartOfToday } from '@core/utils/date.util';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { ToastService } from '@core/services/toast.service';
+import { AudioService } from '@core/services/audio.service';
 
 @Component({
   selector: 'app-action-panel',
@@ -40,6 +41,7 @@ export class ActionPanelComponent {
 
   private taskService = inject(TaskService);
   private toast = inject(ToastService);
+  private audioService = inject(AudioService);
 
   // Indicador para deshabilitar botones mientras hay una operación en curso
   isBusy = false;
@@ -83,6 +85,7 @@ export class ActionPanelComponent {
     try {
       const completedAt = Date.now();
       await this.taskService.completeTaskActiveById(this.selectedTask.taskActiveId, completedAt);
+      await this.audioService.playCompletedTask();
 
       await this.toast.success('Tarea completada');
 
@@ -162,6 +165,7 @@ export class ActionPanelComponent {
       // registramos un 'skip' y borramos la instancia en la base de datos.
       const skippedAt = Date.now();
       await this.taskService.skipTaskActiveById(this.selectedTask.taskActiveId, skippedAt);
+      await this.audioService.playRemoveTask();
 
       await this.toast.success('Tarea eliminada');
 
@@ -180,6 +184,7 @@ export class ActionPanelComponent {
     this.isBusy = true;
     try {
       await this.editTaskService.deleteGlobalTask(this.selectedTask.id);
+      await this.audioService.playRemoveTask();
       await this.toast.success('Tarea eliminada globalmente');
       this.closePanel();
     } catch (e) {

@@ -47,4 +47,8 @@ export class CollectionService {
       depositedIsShiny,
     );
   }
+
+  async checkCompletion(collectionId: number): Promise<boolean> {
+    return this.collectionRepository.isCollectionCompleted(collectionId);
+  }
 }
