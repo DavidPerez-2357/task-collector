@@ -1,8 +1,8 @@
-INSERT INTO category (name, image_name) VALUES ('Limpieza', 'fb55.png');
-INSERT INTO category (name, image_name) VALUES ('Trabajo/Estudios', 'fb101.png');
-INSERT INTO category (name, image_name) VALUES ('Compras', 'fb26.png');
-INSERT INTO category (name, image_name) VALUES ('Mantenimiento', 'fb1477.png');
-INSERT INTO category (name, image_name) VALUES ('Jardín/Mascotas', 'fb568.png');
-INSERT INTO category (name, image_name) VALUES ('Cuidado Personal', 'fb1960.png');
-INSERT INTO category (name, image_name) VALUES ('Trámites', 'fb106.png');
-INSERT INTO category (name, image_name) VALUES ('Cocina', 'fb447.png');
+INSERT INTO category (name, image_name) VALUES ('Limpieza', '/assets/icons/cleaning-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Trabajo/Estudios', '/assets/icons/working-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Compras', '/assets/icons/shopping-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Mantenimiento', '/assets/icons/maintenance-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Jardín/Mascotas', '/assets/icons/garden-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Cuidado Personal', '/assets/icons/personal-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Trámites', '/assets/icons/tasks-cat-icon.png');
+INSERT INTO category (name, image_name) VALUES ('Cocina', '/assets/icons/cooking-cat-icon.png');
