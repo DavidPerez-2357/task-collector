@@ -12,10 +12,10 @@ import { FormsModule } from '@angular/forms';
 import { IonModal, ToastController } from '@ionic/angular/standalone';
 import { BoardComponent } from '../board/board.component';
 import { ButtonComponent } from '../button/button.component';
-import { Task, TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
+import { TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
 import { Category } from '@core/models/category.model';
 import { CategoryService } from '@core/services/category.service';
-import { CreateTaskService, CreateTaskInput } from '@core/services/create-task.service';
+import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 
 @Component({
