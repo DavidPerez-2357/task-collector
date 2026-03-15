@@ -17,6 +17,7 @@ import {
   starOutline,
   closeOutline,
   closeCircleOutline,
+  earth,
 } from 'ionicons/icons';
 import { DAY_MS, getStartOfToday } from '@core/utils/date.util';
 import { TaskService } from '@features/home-tab/services/task.service';
@@ -62,6 +63,7 @@ export class ActionPanelComponent {
       starOutline,
       closeOutline,
       closeCircleOutline,
+      earth,
     });
   }
 

@@ -64,7 +64,12 @@
             (handleClick)="editGlobal()"
             [title]="'Editar Tarea Global'"
           >
-            <ion-icon name="create-outline"></ion-icon>
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="global-indicator">
+                <ion-icon name="earth"></ion-icon>
+              </span>
+            </div>
           </app-button>
 
           <app-button

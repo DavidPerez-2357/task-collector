@@ -134,12 +134,11 @@
   height: 100%;
   font-size: 1.4rem !important;
 
-  .instance-indicator {
+  .instance-indicator,
+  .global-indicator {
     position: absolute;
     bottom: -2px;
     right: -2px;
-    font-size: 0.7rem;
-    font-weight: bold;
     background: var(--ion-color-warning-shade);
     color: var(--ion-color-warning-contrast);
     width: 14px;
@@ -149,5 +148,13 @@
     justify-content: center;
     border-radius: 50%;
     border: 1px solid white;
+    font-size: 0.7rem;
+    font-weight: bold;
+  }
+
+  .global-indicator {
+    ion-icon {
+      font-size: 0.6rem;
+    }
   }
 }
