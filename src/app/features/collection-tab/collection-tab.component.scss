@@ -1,12 +1,16 @@
 ion-content {
-  --background: var(--ion-color-dark-brown);
+  --background: var(--ion-color-dark-brown) url('/assets/backgrounds/collection-bg.png') repeat-y top center / 100% auto;
 }
+
+ion-content::part(scroll) {
+  padding-top: 0 !important;
+}
+
 
 .collection-wall {
   min-height: 100%;
-  background: url('/assets/backgrounds/collection-bg.png') repeat-y top center;
-  background-size: 100% auto;
 }
+
 
 .collections-list {
   display: flex;
