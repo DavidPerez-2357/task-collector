@@ -266,13 +266,15 @@ export class TaskRepository {
     return await this.databaseService.withConn(async (conn) => {
       const placeholders = taskIds.map(() => '?').join(',');
 
-      // Cambiamos a buscar estrictamente el ciclo de hoy (start_date)
+      // EL ARREGLO: Volvemos a la comprobación de solapamiento.
+      // "Si la tarea empezó antes del fin de hoy, y su fecha límite es después del inicio de hoy... 
+      // significa que sigue viva en pantalla, así que NO crees otra nueva".
       const res = await conn.query(
         `SELECT DISTINCT task_id
          FROM task_active
          WHERE task_id IN (${placeholders})
-           AND start_date >= ? AND start_date <= ?`,
-        [...taskIds, start, end],
+           AND start_date <= ? AND end_date >= ?`,
+        [...taskIds, end, start],
       );
 
       const set = new Set<number>();
