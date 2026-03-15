@@ -92,7 +92,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
   async ngOnInit() {
     this.categories = await this.categoryService.getAllCategories();
-    if (this.categories.length > 0) {
+    // Solo ponemos el valor por defecto si no estamos editando y aún no hay selección
+    if (!this.isEditMode && this.categories.length > 0 && this.selectedCategoryId === null) {
       this.selectedCategoryId = this.categories[0]?.id ?? null;
     }
   }
