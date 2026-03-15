@@ -9,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonModal, ToastController } from '@ionic/angular/standalone';
+import { IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '../board/board.component';
 import { ButtonComponent } from '../button/button.component';
 import { TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
@@ -17,6 +17,7 @@ import { Category } from '@core/models/category.model';
 import { CategoryService } from '@core/services/category.service';
 import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-create-task-modal',
@@ -34,7 +35,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
   private editTaskService = inject(EditTaskService);
-  private toastController = inject(ToastController);
+  private toast = inject(ToastService);
 
   categories: Category[] = [];
   frequencies = [
@@ -139,7 +140,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
     // Validación días semana
     if (this.isWeekly && this.selectedWeekdays.length === 0) {
-      await this.showToast('Selecciona al menos un día de la semana.', 'warning');
+      await this.toast.show({ message: 'Selecciona al menos un día de la semana.', color: 'warning' });
       return;
     }
 
@@ -154,7 +155,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
             this.taskToEdit.taskActiveId,
             this.taskDueDate,
           );
-          await this.showToast('¡Instancia actualizada!', 'success');
+          await this.toast.success('¡Instancia actualizada!');
         } else {
           // Edición global: actualiza la definición de la tarea
           const taskId = this.taskToEdit.id;
@@ -176,7 +177,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
             dueDate: dueDateForEdit,
             weekdays: this.isWeekly ? this.selectedWeekdays : [],
           });
-          await this.showToast('¡Tarea global actualizada!', 'success');
+          await this.toast.success('¡Tarea global actualizada!');
         }
       } else {
         // Modo creación
@@ -189,29 +190,19 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
           dueDate: !this.isWeekly ? this.taskDueDate : undefined,
           weekdays: this.isWeekly ? this.selectedWeekdays : [],
         });
-        await this.showToast('¡Tarea creada con éxito!', 'success');
+        await this.toast.success('¡Tarea creada con éxito!');
       }
 
       this.resetForm();
       this.dismissed.emit();
     } catch (error) {
       console.error('Error guardando tarea', error);
-      await this.showToast('Error al guardar la tarea.', 'danger');
+      await this.toast.error('Error al guardar la tarea.');
     } finally {
       this.isSubmitting = false;
     }
   }
 
-  private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'top',
-      icon: color === 'success' ? 'checkmark-circle' : undefined,
-    });
-    await toast.present();
-  }
 
   getIntervalLabel(): string {
     switch (Number(this.taskFrequency)) {
