@@ -30,7 +30,7 @@ export class EditTaskService {
     this.createTaskService.taskCreated$.next();
   }
 
-  async updateTaskInstance(activeTaskId: number, name: string, dueDate?: string): Promise<void> {
+  async updateTaskInstance(activeTaskId: number, dueDate?: string): Promise<void> {
     await this.taskRepository.updateTaskInstance(activeTaskId, dueDate);
     this.createTaskService.taskCreated$.next();
   }
