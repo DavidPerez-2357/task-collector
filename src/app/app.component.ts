@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IonApp, IonRouterOutlet, Platform } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { DatabaseService } from '@core/services/database.service';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons';
@@ -12,7 +12,6 @@ import { AudioService } from '@core/services/audio.service';
 })
 export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
-  private platform = inject(Platform);
   private audioService = inject(AudioService);
 
   constructor() {
