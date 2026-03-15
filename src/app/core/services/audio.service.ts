@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular/standalone';
 import { NativeAudio } from '@capacitor-community/native-audio';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +9,7 @@ import { NativeAudio } from '@capacitor-community/native-audio';
 export class AudioService {
   private platform = inject(Platform);
 
+  // NOTA: Recuerda que los archivos reales en src/assets/sounds/ deben ser convertidos a .mp3
   private readonly SOUNDS = {
     BUY_COLLECTION: { id: 'buy-collection', path: 'assets/sounds/buy-collection.ogg' },
     COMPLETE_COLLECTION: { id: 'complete-collection', path: 'assets/sounds/complete-collection.ogg' },
@@ -23,90 +25,94 @@ export class AudioService {
   async init() {
     if (this.isInitialized) return;
     
-    await this.platform.ready();
-    await this.preloadAll();
-    this.startBgMusic();
-    
-    this.isInitialized = true;
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await this.platform.ready();
+      }
+      await this.preloadAll();
+      this.startBgMusic();
+      this.isInitialized = true;
+    } catch (e) {
+      console.error('Core Audio init error:', e);
+    }
+  }
+
+  // Helper que detecta si estamos en nativo (iOS/Android) y antepone "public/"
+  private getAssetPath(path: string): string {
+    return Capacitor.isNativePlatform() ? `public/${path}` : path;
   }
 
   private async preloadAll() {
-    try {
-      // Preload background music
-      await NativeAudio.preload({
-        assetId: this.SOUNDS.BG_MUSIC.id,
-        assetPath: this.SOUNDS.BG_MUSIC.path,
-        audioChannelNum: 1,
-        isUrl: false,
-      });
+    const soundsToLoad = [
+      { ...this.SOUNDS.BG_MUSIC, channels: 1 },
+      { ...this.SOUNDS.BUY_COLLECTION, channels: 4 },
+      { ...this.SOUNDS.COMPLETE_COLLECTION, channels: 4 },
+      { ...this.SOUNDS.COMPLETED_TASK, channels: 4 },
+      { ...this.SOUNDS.SELL_ITEM, channels: 4 },
+      { ...this.SOUNDS.REMOVE_TASK, channels: 4 },
+      { ...this.SOUNDS.PUT_ITEM_COLLECTION, channels: 4 },
+    ];
 
-      await NativeAudio.setVolume({
-        assetId: this.SOUNDS.BG_MUSIC.id,
-        volume: 0.2,
-      });
-
-      // Preload sound effects
-      const effects = [
-        this.SOUNDS.BUY_COLLECTION,
-        this.SOUNDS.COMPLETE_COLLECTION,
-        this.SOUNDS.COMPLETED_TASK,
-        this.SOUNDS.SELL_ITEM,
-        this.SOUNDS.REMOVE_TASK,
-        this.SOUNDS.PUT_ITEM_COLLECTION,
-      ];
-
-      for (const effect of effects) {
+    for (const s of soundsToLoad) {
+      try {
         await NativeAudio.preload({
-          assetId: effect.id,
-          assetPath: effect.path,
-          audioChannelNum: 4,
+          assetId: s.id,
+          assetPath: this.getAssetPath(s.path), 
+          audioChannelNum: s.channels,
           isUrl: false,
         });
+      } catch (e) {
+        console.warn(`Could not preload ${s.id}:`, e);
       }
-    } catch (e) {
-      console.error('Error preloading sounds:', e);
     }
   }
 
   private async startBgMusic() {
-    try {
-      await NativeAudio.loop({
-        assetId: this.SOUNDS.BG_MUSIC.id,
-      });
-    } catch (e) {
-      console.error('Error starting bg music:', e);
-    }
+    setTimeout(async () => {
+      try {
+        await NativeAudio.loop({
+          assetId: this.SOUNDS.BG_MUSIC.id,
+        });
+
+        await NativeAudio.setVolume({
+          assetId: this.SOUNDS.BG_MUSIC.id,
+          volume: 0.2,
+        });
+      } catch (e) {
+        console.warn('Error starting bg music:', e);
+      }
+    }, 500);
   }
 
-  async playBuyCollection() {
-    await this.play(this.SOUNDS.BUY_COLLECTION.id);
+  playBuyCollection() {
+    this.play(this.SOUNDS.BUY_COLLECTION.id);
   }
 
-  async playCompleteCollection() {
-    await this.play(this.SOUNDS.COMPLETE_COLLECTION.id);
+  playCompleteCollection() {
+    this.play(this.SOUNDS.COMPLETE_COLLECTION.id);
   }
 
-  async playCompletedTask() {
-    await this.play(this.SOUNDS.COMPLETED_TASK.id);
+  playCompletedTask() {
+    this.play(this.SOUNDS.COMPLETED_TASK.id);
   }
 
-  async playSellItem() {
-    await this.play(this.SOUNDS.SELL_ITEM.id);
+  playSellItem() {
+    this.play(this.SOUNDS.SELL_ITEM.id);
   }
 
-  async playRemoveTask() {
-    await this.play(this.SOUNDS.REMOVE_TASK.id);
+  playRemoveTask() {
+    this.play(this.SOUNDS.REMOVE_TASK.id);
   }
 
-  async playPutItemCollection() {
-    await this.play(this.SOUNDS.PUT_ITEM_COLLECTION.id);
+  playPutItemCollection() {
+    this.play(this.SOUNDS.PUT_ITEM_COLLECTION.id);
   }
 
   private async play(id: string) {
     try {
+      // No bloqueamos aunque sea async por si falla en nativo
       await NativeAudio.play({ assetId: id });
     } catch (e) {
-      // Usamos warn para no ensuciar la consola si falla en ambientes sin audio
       console.warn(`Error playing sound ${id}:`, e);
     }
   }

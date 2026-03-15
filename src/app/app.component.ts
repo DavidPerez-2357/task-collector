@@ -4,6 +4,8 @@ import { DatabaseService } from '@core/services/database.service';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons';
 import { AudioService } from '@core/services/audio.service';
+import { StatusBar } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-root',
@@ -25,5 +27,9 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     await this.databaseService.init();
     await this.audioService.init();
+
+    if (Capacitor.isNativePlatform()) {
+      await StatusBar.hide();
+    }
   }
 }
