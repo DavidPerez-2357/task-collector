@@ -1,4 +1,6 @@
-# Task Collector
+![Task collector-banner](./assets/github-banner.png)
+![DevelETSII banner](./assets/develetsii-banner.png)
+
 
 ## Descripción
 
