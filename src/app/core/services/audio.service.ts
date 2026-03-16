@@ -2,12 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular/standalone';
 import { NativeAudio } from '@capacitor-community/native-audio';
 import { Capacitor } from '@capacitor/core';
+import { PreferencesService } from '@core/services/preferences.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AudioService {
   private platform = inject(Platform);
+  private preferencesService = inject(PreferencesService);
 
   // NOTA: Recuerda que los archivos reales en src/assets/sounds/ deben ser convertidos a .mp3
   private readonly SOUNDS = {
@@ -27,24 +29,17 @@ export class AudioService {
   };
 
   private isInitialized = false;
-  private musicMuted = false;
-  private soundsMuted = false;
-
-  private readonly MUSIC_MUTED_KEY = 'audio_music_muted';
-  private readonly SOUNDS_MUTED_KEY = 'audio_sounds_muted';
 
   async init() {
-    this.musicMuted = localStorage.getItem(this.MUSIC_MUTED_KEY) === 'true';
-    this.soundsMuted = localStorage.getItem(this.SOUNDS_MUTED_KEY) === 'true';
-
     if (this.isInitialized) return;
 
     try {
       if (Capacitor.isNativePlatform()) {
         await this.platform.ready();
       }
+      await this.preferencesService.init();
       await this.preloadAll();
-      if (!this.musicMuted) {
+      if (!this.preferencesService.musicMuted()) {
         this.startBgMusic();
       }
       this.isInitialized = true;
@@ -125,7 +120,7 @@ export class AudioService {
   }
 
   private async play(id: string) {
-    if (this.soundsMuted) return;
+    if (this.preferencesService.soundsMuted()) return;
 
     try {
       // No bloqueamos aunque sea async por si falla en nativo
@@ -136,19 +131,18 @@ export class AudioService {
   }
 
   isMusicMuted() {
-    return this.musicMuted;
+    return this.preferencesService.musicMuted();
   }
 
   isSoundsMuted() {
-    return this.soundsMuted;
+    return this.preferencesService.soundsMuted();
   }
 
   async toggleMusic() {
-    this.musicMuted = !this.musicMuted;
-    localStorage.setItem(this.MUSIC_MUTED_KEY, String(this.musicMuted));
+    const isMuted = await this.preferencesService.toggleMusic();
 
     try {
-      if (this.musicMuted) {
+      if (isMuted) {
         await NativeAudio.stop({ assetId: this.SOUNDS.BG_MUSIC.id });
       } else {
         await this.startBgMusic();
@@ -158,8 +152,7 @@ export class AudioService {
     }
   }
 
-  toggleSounds() {
-    this.soundsMuted = !this.soundsMuted;
-    localStorage.setItem(this.SOUNDS_MUTED_KEY, String(this.soundsMuted));
+  async toggleSounds() {
+    this.preferencesService.toggleSounds();
   }
 }
