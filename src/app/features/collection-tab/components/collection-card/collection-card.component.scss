@@ -86,6 +86,7 @@
   &.placeholder {
     background: rgba(255, 255, 255, 0.1);
     border: 1px dashed var(--ion-color-light);
+    opacity: 0.5;
   }
 
   &.deposited {

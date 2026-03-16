@@ -278,8 +278,14 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   private toggleBodyScroll(block: boolean) {
     if (block) {
       document.body.style.overflow = 'hidden';
+      document.body.addEventListener('touchmove', this.preventTouchMove, { passive: false });
     } else {
       document.body.style.overflow = '';
+      document.body.removeEventListener('touchmove', this.preventTouchMove);
     }
+  }
+
+  private preventTouchMove(e: TouchEvent) {
+    e.preventDefault();
   }
 }
