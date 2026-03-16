@@ -66,17 +66,16 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   async loadTasks(): Promise<void> {
-    this.loadingService.show('Cargando tareas...');
-    try {
-      const { today, others } = await this.taskService.getTodayAndOtherTasks();
-      this.todayTasks = today;
-      this.otherTasks = others;
-    } catch (e) {
-      console.error('Error cargando tareas:', e);
-      this.errorService.show('Error cargando tareas');
-    } finally {
-      this.loadingService.hide();
-    }
+    await this.loadingService.runWithLoading(async () => {
+      try {
+        const { today, others } = await this.taskService.getTodayAndOtherTasks();
+        this.todayTasks = today;
+        this.otherTasks = others;
+      } catch (e) {
+        console.error('Error cargando tareas:', e);
+        this.errorService.show('Error cargando tareas');
+      }
+    }, 'Cargando tareas...');
   }
 
   ionViewWillLeave(): void {
@@ -101,13 +100,15 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     }
   }
 
-  actionPanelClosed(): void {
+  actionPanelClosed(changed: boolean = false): void {
     this.uiService.show();
     this.isActionPanelVisible = false;
     this.selectedTask = null;
 
-    // Recargar tareas para reflejar cambios realizados desde el panel de acciones
-    void this.loadTasks();
+    // Solo recargar si el panel indicó que hubo cambios significativos
+    if (changed) {
+      void this.loadTasks();
+    }
   }
 
   // Abre el modal de item conseguido
