@@ -70,6 +70,24 @@ export class ItemRepository {
     });
   }
 
+  async getAllInventoryItems(): Promise<ItemInventory[]> {
+    return await this.databaseService.withConn(async (conn) => {
+      const res = await conn.query(
+        `
+        SELECT
+          ii.item_id, ii.is_shiny, ii.quantity,
+          i.name, i.description, i.rarity, i.image_name, i.sell_price
+        FROM inventory ii
+        JOIN item i ON ii.item_id = i.id
+        ORDER BY ii.id
+      `,
+      );
+      const itemsRaw = res.values || [];
+
+      return itemsRaw.map((row) => this.formatDBRowToInventoryItem(row));
+    });
+  }
+
   async emptyInventory(): Promise<void> {
     await this.databaseService.withConn(async (conn) => {
       await conn.run(`DELETE FROM inventory`);
