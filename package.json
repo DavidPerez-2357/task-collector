@@ -1,8 +1,8 @@
 {
   "name": "task-collector",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "version": "1.0.0",
+  "author": "David Pérez, Pepe Escalera",
+  "homepage": "https://github.com/DavidPerez-2357/task-collector",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
