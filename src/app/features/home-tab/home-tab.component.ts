@@ -12,6 +12,7 @@ import { PlayerStateService } from '@core/services/player-state.service';
 import { ItemAcquiredModalComponent } from '@shared/components/item-acquired-modal/item-acquired-modal.component';
 import { ItemInventory } from '@core/models/item.model';
 import { ItemService } from '@features/home-tab/services/item.service';
+import { LoadingService } from '@core/services/loading.service';
 
 @Component({
   selector: 'app-home-tab',
@@ -34,6 +35,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   private readonly createTaskService = inject(CreateTaskService);
   private readonly playerStateService = inject(PlayerStateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly loadingService = inject(LoadingService);
   private readonly itemService = inject(ItemService);
 
   playerGems = 0;
@@ -41,7 +43,6 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   selectedTask: TaskActive | null = null;
   todayTasks: TaskActive[] = [];
   otherTasks: TaskActive[] = [];
-  loading = false;
   isSelectedTaskToday = false;
 
   constructor() {
@@ -63,7 +64,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   async loadTasks(): Promise<void> {
-    this.loading = true;
+    this.loadingService.show('Cargando tareas...');
     try {
       const { today, others } = await this.taskService.getTodayAndOtherTasks();
       this.todayTasks = today;
@@ -71,7 +72,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     } catch (e) {
       console.error('Error cargando tareas:', e);
     } finally {
-      this.loading = false;
+      this.loadingService.hide();
     }
   }
 

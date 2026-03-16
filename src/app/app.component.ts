@@ -6,15 +6,22 @@ import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons'
 import { AudioService } from '@core/services/audio.service';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+import { LoadingOverlayComponent } from '@shared/components/loading-overlay/loading-overlay.component';
+import { LoadingService } from '@core/services/loading.service';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, LoadingOverlayComponent, AsyncPipe],
 })
 export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
   private audioService = inject(AudioService);
+  private loadingService = inject(LoadingService);
+
+  loading$ = this.loadingService.loading$;
+  message$ = this.loadingService.message$;
 
   constructor() {
     addIcons({
@@ -25,11 +32,17 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await this.databaseService.init();
-    await this.audioService.init();
+    this.loadingService.show('Iniciando base de datos...');
 
-    if (Capacitor.isNativePlatform()) {
-      await StatusBar.hide();
+    try {
+      await this.databaseService.init();
+      await this.audioService.init();
+    } finally {
+      if (Capacitor.isNativePlatform()) {
+        await StatusBar.hide();
+      }
+
+      this.loadingService.hide();
     }
   }
 }

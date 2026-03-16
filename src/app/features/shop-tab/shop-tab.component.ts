@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { IonContent, IonSpinner, ViewWillEnter } from '@ionic/angular/standalone';
+import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
@@ -9,6 +9,7 @@ import { ShopCardComponent } from './components/shop-card/shop-card.component';
 import { ShopService } from './services/shop.service';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { LoadingService } from '@core/services/loading.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -17,7 +18,6 @@ import { AudioService } from '@core/services/audio.service';
   imports: [
     IonContent,
     TitleSignComponent,
-    IonSpinner,
     ShopBuyModalComponent,
     GemCounterComponent,
     ShopCardComponent,
@@ -29,10 +29,10 @@ export class ShopTabComponent implements ViewWillEnter {
   private playerStateService = inject(PlayerStateService);
   private toast = inject(ToastService);
   private audioService = inject(AudioService);
+  private loadingService = inject(LoadingService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
-  isLoading: boolean = true;
   isBuying: boolean = false;
 
   selectedCollection: Collection | null = null;
@@ -47,7 +47,7 @@ export class ShopTabComponent implements ViewWillEnter {
   }
 
   async loadData() {
-    this.isLoading = true;
+    this.loadingService.show('Cargando tienda...');
     try {
       const [collections, coins] = await Promise.all([
         this.shopService.getUnownedCollections(),
@@ -58,7 +58,7 @@ export class ShopTabComponent implements ViewWillEnter {
     } catch (error) {
       console.error('Error al cargar la tienda', error);
     } finally {
-      this.isLoading = false;
+      this.loadingService.hide();
     }
   }
 

@@ -14,6 +14,7 @@ import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { CollectionService } from '@features/inventory-tab/services/collection.service';
+import { LoadingService } from '@core/services/loading.service';
 
 @Component({
   selector: 'app-inventory-tab',
@@ -38,6 +39,7 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   private readonly itemService = inject(ItemService);
   private readonly playerStateService = inject(PlayerStateService);
+  private readonly loadingService = inject(LoadingService);
 
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
@@ -60,7 +62,12 @@ export class InventoryTabComponent implements ViewWillEnter {
     // Poner el scroll al principio
     await this.scrollToTop();
 
-    await this.loadMoreItems(this.actualPage);
+    this.loadingService.show('Cargando inventario...');
+    try {
+      await this.loadMoreItems(this.actualPage);
+    } finally {
+      this.loadingService.hide();
+    }
     this.ensureMinShelves();
   }
 

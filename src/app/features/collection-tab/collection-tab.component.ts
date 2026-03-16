@@ -8,6 +8,7 @@ import { CollectionService } from '@features/collection-tab/services/collection.
 import { Collection, CollectionItem } from '@core/models/collection.model';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { LoadingService } from '@core/services/loading.service';
 
 @Component({
   selector: 'app-collection-tab',
@@ -22,6 +23,7 @@ export class CollectionTabComponent implements ViewWillEnter {
   private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
   private audioService = inject(AudioService);
+  private loadingService = inject(LoadingService);
 
   collections: Collection[] = [];
 
@@ -34,7 +36,12 @@ export class CollectionTabComponent implements ViewWillEnter {
     if (this.content) {
       await this.content.scrollToTop(0);
     }
-    await this.loadCollections();
+    this.loadingService.show('Cargando colecciones...');
+    try {
+      await this.loadCollections();
+    } finally {
+      this.loadingService.hide();
+    }
   }
 
   private async loadCollections() {
@@ -46,6 +53,7 @@ export class CollectionTabComponent implements ViewWillEnter {
   }
 
   private async reloadCollection(collectionId: number) {
+    this.loadingService.show('Actualizando colección...');
     try {
       const updated = await this.collectionService.getCollectionById(collectionId);
       if (updated) {
@@ -56,6 +64,8 @@ export class CollectionTabComponent implements ViewWillEnter {
       }
     } catch (error) {
       console.error('Error reloading collection:', error);
+    } finally {
+      this.loadingService.hide();
     }
   }
 
