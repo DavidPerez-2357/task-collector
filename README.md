@@ -2,7 +2,7 @@
 
 ## Descripción
 
-**Task Collector** es una aplicación móvil y web gamificada de gestión de tareas. Los usuarios crean tareas con frecuencias recurrentes, las completan para ganar monedas (gemas), y usan esas monedas para comprar ítems en la tienda, construir colecciones y gestionar su inventario.
+**Task Collector** es una aplicación móvil y web gamificada de gestión de tareas. Al completar tareas, los usuarios obtienen **ítems** cuya rareza depende del esfuerzo y la recurrencia de la tarea. Estos ítems pueden añadirse a **colecciones** para completarlas o venderse por **gemas**. Con las gemas se pueden comprar nuevas colecciones, y al completar una colección con todos sus ítems el jugador gana la **insignia** correspondiente.
 
 ## Propósito
 
@@ -13,10 +13,11 @@ El proyecto busca resolver el problema de la falta de motivación a la hora de c
 ## Características principales
 
 - ✅ Creación y gestión de tareas con recurrencia (diaria, semanal, mensual, etc.)
-- 🎯 Sistema de recompensas: las tareas completadas otorgan gemas
-- 🛒 Tienda de ítems: compra ítems con las gemas acumuladas
+- 🎁 Sistema de recompensas: las tareas completadas otorgan **ítems** según el esfuerzo y la recurrencia
+- 💎 Los ítems pueden añadirse a colecciones o **venderse por gemas**
+- 🛒 Tienda de colecciones: compra nuevas colecciones con las gemas acumuladas
+- 🏅 Insignias: completa una colección con todos sus ítems para ganar su insignia
 - 📦 Inventario: gestiona los ítems adquiridos
-- 🃏 Colecciones: agrupa y visualiza ítems por categorías
 - ✨ Sistema de rareza y probabilidad de ítems especiales (_shiny_)
 - 🔊 Efectos de sonido integrados mediante `@capacitor-community/native-audio`
 - 💾 Persistencia local mediante SQLite (nativa y web)
@@ -313,31 +314,90 @@ npm run format
 
 ## Contribuidores
 
-| Contribuidor                  | Commits | Perfil                                              |
-| ----------------------------- | ------- | --------------------------------------------------- |
-| David Pérez                   | 1       | [DavidPerez-2357](https://github.com/DavidPerez-2357) |
-| copilot-swe-agent[bot]        | 1       | GitHub Copilot SWE Agent                            |
+| Contribuidor    | Perfil                                                    |
+| --------------- | --------------------------------------------------------- |
+| David Pérez     | [DavidPerez-2357](https://github.com/DavidPerez-2357)     |
+| Pepe Escalera   | [pescalerag](https://github.com/pescalerag)               |
 
 ---
 
-## Roadmap
+## Convenciones de ramas
 
-- [ ] Soporte offline completo (sincronización diferida)
-- [ ] Tests unitarios e2e (configuración de Karma/Jest)
-- [ ] Soporte para plataforma iOS
-- [ ] Publicación en Google Play Store
-- [ ] Notificaciones push para recordar tareas
-- [ ] Sistema de logros y trofeos
-- [ ] Optimización de rendimiento y animaciones
-- [ ] Modo oscuro / temas personalizables
-- [ ] Sincronización en la nube (backup de datos)
+Usa un prefijo que refleje el tipo de trabajo, seguido de un nombre conciso en kebab-case.
+
+| Prefijo       | Uso                                  |
+| ------------- | ------------------------------------ |
+| `feature/`    | Nueva funcionalidad                  |
+| `bugfix/`     | Corrección de errores                |
+| `hotfix/`     | Corrección urgente en producción     |
+| `refactor/`   | Refactorización de código            |
+| `docs/`       | Actualizaciones de documentación     |
+| `test/`       | Tests y mejoras de testing           |
+| `chore/`      | Mantenimiento y tareas generales     |
+
+**Formato:** `<prefijo>/<nombre-conciso>`
+
+**Ejemplos:**
+
+```
+feature/add-shop-items
+bugfix/coin-reset
+hotfix/db-crash-on-startup
+refactor/task-service-optimization
+docs/readme-update
+```
+
+---
+
+## Convenciones de commits
+
+Los mensajes de commit siguen el estilo **[gitmoji](https://gitmoji.dev/)**: un emoji relevante seguido de una descripción corta en imperativo.
+
+**Formato:** `<gitmoji> <Descripción breve en imperativo>`
+
+| Emoji | Uso                                        |
+| ----- | ------------------------------------------ |
+| ✨    | Nueva funcionalidad                        |
+| 🐛    | Corrección de bug                          |
+| 🚑️    | Hotfix crítico                             |
+| ♻️    | Refactorización                            |
+| 🎨    | Mejora de estructura o formateo            |
+| 💄    | Cambios de UI o estilos                    |
+| 🗃️    | Cambios en base de datos                   |
+| 📝    | Documentación                              |
+| 🔧    | Configuración                              |
+| 📦️    | Build o paquetes                           |
+| ✏️    | Corrección de typos                        |
+| 🔥    | Eliminar código o archivos                 |
+| ⬆️    | Actualizar dependencias                    |
+| ⬇️    | Degradar dependencias                      |
+| ➕    | Añadir dependencia                         |
+| ➖    | Eliminar dependencia                       |
+| 🚚    | Mover o renombrar archivos                 |
+| 💥    | Cambios que rompen compatibilidad          |
+| 🥅    | Captura de errores                         |
+| 💫    | Animaciones y transiciones                 |
+| 🦺    | Validación                                 |
+| ✈️    | Soporte offline                            |
+| 🔒️    | Seguridad                                  |
+| 🧑‍💻    | Experiencia de desarrollador               |
+
+**Ejemplos:**
+
+```
+✨ Implement player state repository and service for coin management
+🐛 Fix unique constraint in weekly recurrence
+💄 Implement custom tab bar styling with new background images and icons
+🗃️ Add initial SQL schema
+🔧 Configure Angular schematics to skip test generation
+```
 
 ---
 
 ## Contribución
 
 1. Haz un fork del repositorio.
-2. Crea una rama con el prefijo adecuado:
+2. Crea una rama con el prefijo adecuado (ver [Convenciones de ramas](#convenciones-de-ramas)):
    ```bash
    git checkout -b feature/mi-nueva-funcionalidad
    ```
@@ -350,9 +410,8 @@ npm run format
    ```bash
    npm run format
    ```
-6. Abre un Pull Request describiendo los cambios.
-
-> Los mensajes de commit deben seguir el estilo **gitmoji**: `✨ Descripción breve en imperativo`.
+6. Escribe el mensaje de commit siguiendo las [Convenciones de commits](#convenciones-de-commits).
+7. Abre un Pull Request describiendo los cambios.
 
 ---
 
