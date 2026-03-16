@@ -59,7 +59,7 @@ export class ItemRepository {
           i.name, i.description, i.rarity, i.image_name, i.sell_price
         FROM inventory ii
         JOIN item i ON ii.item_id = i.id
-        ORDER BY i.id
+        ORDER BY ii.id
         LIMIT ? OFFSET ?
       `,
         [limit, offset],
