@@ -29,6 +29,7 @@ export class AudioService {
   };
 
   private isInitialized = false;
+  private bgMusicTimeoutId: any = null;
 
   async init() {
     if (this.isInitialized) return;
@@ -79,7 +80,16 @@ export class AudioService {
   }
 
   private async startBgMusic() {
-    setTimeout(async () => {
+    if (this.bgMusicTimeoutId) {
+      clearTimeout(this.bgMusicTimeoutId);
+    }
+
+    this.bgMusicTimeoutId = setTimeout(async () => {
+      this.bgMusicTimeoutId = null;
+
+      // Guard: Check if music was muted during the timeout
+      if (this.preferencesService.musicMuted()) return;
+
       try {
         await NativeAudio.loop({
           assetId: this.SOUNDS.BG_MUSIC.id,
@@ -143,6 +153,10 @@ export class AudioService {
 
     try {
       if (isMuted) {
+        if (this.bgMusicTimeoutId) {
+          clearTimeout(this.bgMusicTimeoutId);
+          this.bgMusicTimeoutId = null;
+        }
         await NativeAudio.stop({ assetId: this.SOUNDS.BG_MUSIC.id });
       } else {
         await this.startBgMusic();
