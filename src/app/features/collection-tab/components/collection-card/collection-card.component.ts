@@ -2,12 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Collection, CollectionItem } from '@core/models/collection.model';
 
 import { CollectionItemClickEvent } from '../../interfaces/collection.interface';
+import { BoardComponent } from '@shared/components/board/board.component';
 
 @Component({
   selector: 'app-collection-card',
   templateUrl: './collection-card.component.html',
   styleUrls: ['./collection-card.component.scss'],
-  imports: [],
+  imports: [BoardComponent],
 })
 export class CollectionCardComponent {
   @Input({ required: true }) collection!: Collection;

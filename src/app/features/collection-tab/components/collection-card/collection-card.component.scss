@@ -1,143 +1,134 @@
-$slot-size: 52px;
-
 .collection-card {
-  display: flex;
-  flex-direction: row;
-  gap: 1.2rem;
-  align-items: center; // Center vertically overall
-
-  border-image: url('/assets/ui/collectionAndShopFrame.png') 30 30 30 30 fill / 30px 30px 30px 30px;
-  padding: 30px;
-
-  // Remove previous background/border
-  background: transparent;
-  backdrop-filter: none;
-  border-radius: 0;
+  display: grid;
+  flex-direction: column;
+  grid-template-columns: repeat(2, auto);
+  align-content: center;
+  justify-content: center;
+  border-radius: 0.3rem;
+  //border: 5px solid var(--ion-color-secondary);
+  gap: 0.5rem 1rem;
+  align-items: center;
+  width: 100%;
 }
 
-/* Badge */
-.collection-badge {
+.collection-name {
+  color: var(--ion-color-light);
+  grid-column: span 2;
+  text-align: center;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.badge-frame {
   position: relative;
-  flex-shrink: 0;
-  width: 96px; // Más grande
-  height: 96px;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collection-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 
   img {
-    object-fit: contain;
-    width: 100%;
-    height: 100%;
-
-    // Oscurecido por defecto (hasta que se completa la colección)
-    filter: brightness(0.3) grayscale(0.8);
-    transition: filter 0.3s ease;
-  }
-
-  &.is-complete img {
-    // Al completarse, recupera su brillo y color original
-    filter: brightness(1) grayscale(0);
+    width: 60%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
   }
 }
 
-/* Collection info */
-.collection-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end; // Alinear a la derecha
-  gap: 0.8rem;
-  flex: 1;
-  min-width: 0;
+.badge-frame:not(.is-complete) .collection-badge {
+  filter: grayscale(100%) brightness(80%);
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--ion-color-dark);
 }
 
-.collection-name {
-  margin: 0;
-  font-size: 1.25rem; // Título un poco más grande
-  font-weight: 500;
-  color: var(--ion-color-dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: right; // Alinear texto a la derecha
+.badge-frame.is-complete .collection-badge {
+  border: 2px solid var(--ion-color-success);
+  // Efecto satisfactorio para completar la colección
+  animation: badge-glow 5s infinite;
+  transition: background-color 0.3s ease;
 }
 
-/* 6-slot grid */
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(3, $slot-size); // 3 columnas fijas de 52px
-  grid-template-rows: repeat(2, $slot-size); // 2 filas fijas
-  justify-content: space-between; // Reparte el espacio extra uniformemente entre columnas
-  align-content: center;
-  gap: 6px; // Gap vertical y mínimo horizontal
-  width: 100%;
-  max-width: 190px; // Límite más ajustado para que los objetos estén más juntos
+  grid-template-columns: repeat(3, 43px);
+  gap: 0.5rem;
 }
 
-/* Individual slot */
 .grid-slot {
-  position: relative;
-  width: $slot-size;
-  height: $slot-size;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--ion-color-light);
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  height: 43px;
 
-  img {
-    object-fit: contain;
-    width: 100%;
-    height: 100%;
+  &.not-owned {
+    opacity: 0.4;
   }
 
-  /* Item is in the collection DB but not deposited by player yet → dimmed */
-  &.empty-slot {
-    opacity: 0.35;
-    filter: grayscale(50%);
-    cursor: default;
-  }
-
-  /* Player owns the item but it's not deposited yet → Highlighted! */
   &.owned-eligible {
-    filter: drop-shadow(0 0 4px var(--ion-color-success));
-    border: 1px solid var(--ion-color-success);
-    cursor: pointer;
     animation: pulse-glow 2s infinite;
-
-    img {
-      opacity: 0.6;
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
+    background: rgba(var(--ion-color-success-rgb), 0.5);
+    opacity: 0.7;
   }
 
-  /* Item has been deposited → interactive */
-  &.deposited {
-    cursor: pointer;
-
-    &:active {
-      opacity: 0.75;
-      transform: scale(0.95);
-    }
-  }
-
-  /* Empty placeholder (no item defined at all for this slot) */
   &.placeholder {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed rgba(255, 255, 255, 0.15);
-    cursor: default;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px dashed var(--ion-color-light);
+  }
+
+  &.deposited {
+    background: rgba(var(--ion-color-success-rgb), 0.3);
+    border: 2px solid var(--ion-color-success);
   }
 }
 
 @keyframes pulse-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(var(--ion-color-success-rgb), 0.7);
+    transform: scale(1);
+    box-shadow:
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0.9),
+      0 0 8px 4px rgba(var(--ion-color-success-rgb), 0.12);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 6px rgba(var(--ion-color-success-rgb), 0),
+      0 0 18px 8px rgba(var(--ion-color-success-rgb), 0.18);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(var(--ion-color-success-rgb), 0);
+    transform: scale(1.03);
+    box-shadow:
+      0 0 0 10px rgba(var(--ion-color-success-rgb), 0),
+      0 0 24px 12px rgba(var(--ion-color-success-rgb), 0.08);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(var(--ion-color-success-rgb), 0);
+    transform: scale(1);
+    box-shadow:
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0),
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0);
+  }
+}
+
+@keyframes badge-glow {
+  0% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.22);
+  }
+  50% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.12);
+  }
+  100% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.22);
   }
 }

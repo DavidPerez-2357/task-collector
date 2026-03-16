@@ -1,38 +1,51 @@
-<div class="collection-card">
-  <!-- Badge (left) -->
-  <div
-    class="collection-badge"
-    [class.is-complete]="isCompleted"
-    [class.shiny]="allDepositedAreShiny"
-    [style.--mask]="'url(' + badgeImagePath + ')'"
-  >
-    <img [src]="badgeImagePath" [alt]="collection.name + ' badge'" />
-  </div>
-
-  <!-- Info (right) -->
-  <div class="collection-info">
+<app-board width="100%">
+  <div class="collection-card">
     <h3 class="collection-name">{{ collection.name }}</h3>
+    <!-- Badge (left) -->
+    <div class="badge-frame">
+      <div
+        class="collection-badge"
+        [class.is-complete]="isCompleted"
+        [class.shiny]="allDepositedAreShiny"
+      >
+        <img
+          class="badge-image"
+          [src]="collection.badgeImageName"
+          alt="{{ collection.name }} badge"
+        />
+      </div>
+    </div>
 
-    <div class="collection-grid">
-      @for (slot of slots; track $index) {
-        @if (slot) {
-          <!-- Filled slot -->
-          <div
-            class="grid-slot"
-            [class.deposited]="slot.deposited !== undefined"
-            [class.empty-slot]="slot.deposited === undefined && !slot.ownedEligible"
-            [class.owned-eligible]="slot.ownedEligible"
-            [class.shiny]="slot.isShiny || slot.deposited?.isShiny"
-            [style.--mask]="'url(' + itemImagePath(slot) + ')'"
-            (click)="onSlotClicked(slot)"
-          >
-            <img [src]="itemImagePath(slot)" [alt]="slot.name" />
-          </div>
-        } @else {
-          <!-- Empty slot (no item defined for this position) -->
-          <div class="grid-slot placeholder"></div>
+    <!-- Info (right) -->
+    <div class="collection-info">
+      <div class="collection-grid">
+        @for (slot of slots; track $index) {
+          @if (slot) {
+            <!-- Filled slot -->
+            <div
+              class="grid-slot"
+              [class.deposited]="slot.deposited !== undefined"
+              [class.not-owned]="slot.deposited === undefined && !slot.ownedEligible"
+              [class.owned-eligible]="slot.ownedEligible"
+              [class.shiny]="slot.isShiny || slot.deposited?.isShiny"
+              [style.--mask]="'url(' + itemImagePath(slot) + ')'"
+              (click)="onSlotClicked(slot)"
+            >
+              <div class="slot-frame">
+                <div class="item-wrap">
+                  <img class="item-image" [src]="itemImagePath(slot)" alt="{{ slot.name }}" />
+                </div>
+                <div class="slot-border" aria-hidden="true"></div>
+              </div>
+            </div>
+          } @else {
+            <!-- Empty slot (no item defined for this position) -->
+            <div class="grid-slot placeholder">
+              <div class="slot-frame placeholder-frame"></div>
+            </div>
+          }
         }
-      }
+      </div>
     </div>
   </div>
-</div>
+</app-board>
