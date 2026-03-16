@@ -2,12 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular/standalone';
 import { NativeAudio } from '@capacitor-community/native-audio';
 import { Capacitor } from '@capacitor/core';
+import { PreferencesService } from '@core/services/preferences.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AudioService {
   private platform = inject(Platform);
+  private preferencesService = inject(PreferencesService);
 
   // NOTA: Recuerda que los archivos reales en src/assets/sounds/ deben ser convertidos a .mp3
   private readonly SOUNDS = {
@@ -27,6 +29,7 @@ export class AudioService {
   };
 
   private isInitialized = false;
+  private bgMusicTimeoutId: any = null;
 
   async init() {
     if (this.isInitialized) return;
@@ -35,8 +38,11 @@ export class AudioService {
       if (Capacitor.isNativePlatform()) {
         await this.platform.ready();
       }
+      await this.preferencesService.init();
       await this.preloadAll();
-      this.startBgMusic();
+      if (!this.preferencesService.musicMuted()) {
+        this.startBgMusic();
+      }
       this.isInitialized = true;
     } catch (e) {
       console.error('Core Audio init error:', e);
@@ -74,7 +80,16 @@ export class AudioService {
   }
 
   private async startBgMusic() {
-    setTimeout(async () => {
+    if (this.bgMusicTimeoutId) {
+      clearTimeout(this.bgMusicTimeoutId);
+    }
+
+    this.bgMusicTimeoutId = setTimeout(async () => {
+      this.bgMusicTimeoutId = null;
+
+      // Guard: Check if music was muted during the timeout
+      if (this.preferencesService.musicMuted()) return;
+
       try {
         await NativeAudio.loop({
           assetId: this.SOUNDS.BG_MUSIC.id,
@@ -115,11 +130,43 @@ export class AudioService {
   }
 
   private async play(id: string) {
+    if (this.preferencesService.soundsMuted()) return;
+
     try {
       // No bloqueamos aunque sea async por si falla en nativo
       await NativeAudio.play({ assetId: id });
     } catch (e) {
       console.warn(`Error playing sound ${id}:`, e);
     }
+  }
+
+  isMusicMuted() {
+    return this.preferencesService.musicMuted();
+  }
+
+  isSoundsMuted() {
+    return this.preferencesService.soundsMuted();
+  }
+
+  async toggleMusic() {
+    const isMuted = await this.preferencesService.toggleMusic();
+
+    try {
+      if (isMuted) {
+        if (this.bgMusicTimeoutId) {
+          clearTimeout(this.bgMusicTimeoutId);
+          this.bgMusicTimeoutId = null;
+        }
+        await NativeAudio.stop({ assetId: this.SOUNDS.BG_MUSIC.id });
+      } else {
+        await this.startBgMusic();
+      }
+    } catch (e) {
+      console.warn('Error toggling music:', e);
+    }
+  }
+
+  async toggleSounds() {
+    this.preferencesService.toggleSounds();
   }
 }

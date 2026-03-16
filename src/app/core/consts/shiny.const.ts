@@ -1,1 +1,1 @@
-export const SHINY_CHANCE = 1 / 1000;
+export const SHINY_CHANCE = 1 / 200;

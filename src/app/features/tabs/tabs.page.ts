@@ -4,6 +4,7 @@ import { IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { RouterLink } from '@angular/router';
 import { CreateTaskModalComponent } from '@shared/components/create-task-modal/create-task-modal.component';
+import { SettingsModalComponent } from '@shared/components/settings-modal/settings-modal.component';
 import { UIService } from '@core/services/ui.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 import { TaskActive } from '@core/models/task.model';
@@ -12,7 +13,14 @@ import { TaskActive } from '@core/models/task.model';
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
-  imports: [IonTabs, IonTabBar, IonTabButton, RouterLink, CreateTaskModalComponent],
+  imports: [
+    IonTabs,
+    IonTabBar,
+    IonTabButton,
+    RouterLink,
+    CreateTaskModalComponent,
+    SettingsModalComponent,
+  ],
 })
 export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);

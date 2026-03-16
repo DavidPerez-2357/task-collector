@@ -2,7 +2,16 @@ import { Component, inject, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { DatabaseService } from '@core/services/database.service';
 import { addIcons } from 'ionicons';
-import { checkmarkCircle, arrowUndoOutline, closeOutline } from 'ionicons/icons';
+import {
+  checkmarkCircle,
+  arrowUndoOutline,
+  closeOutline,
+  volumeMuteOutline,
+  volumeHighOutline,
+  musicalNotesOutline,
+  exitOutline,
+  settingsOutline,
+} from 'ionicons/icons';
 import { AudioService } from '@core/services/audio.service';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
@@ -34,6 +43,11 @@ export class AppComponent implements OnInit {
       'checkmark-circle': checkmarkCircle,
       'arrow-undo-outline': arrowUndoOutline,
       'close-outline': closeOutline,
+      'volume-mute-outline': volumeMuteOutline,
+      'volume-high-outline': volumeHighOutline,
+      'musical-notes-outline': musicalNotesOutline,
+      'exit-outline': exitOutline,
+      'settings-outline': settingsOutline,
     });
   }
 

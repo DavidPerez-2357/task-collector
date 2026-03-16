@@ -12,7 +12,7 @@
           </h2>
 
           <div class="form-container">
-            <div class="input-group">
+            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
               <label>Nombre de la Tarea</label>
               <input
                 type="text"
@@ -23,7 +23,7 @@
               />
             </div>
 
-            <div class="input-group">
+            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
               <label>Categoría</label>
               <select
                 [(ngModel)]="selectedCategoryId"
@@ -35,7 +35,7 @@
               </select>
             </div>
 
-            <div class="input-group">
+            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
               <label>Frecuencia</label>
               <select
                 [(ngModel)]="taskFrequency"
@@ -65,7 +65,7 @@
               </div>
             }
             @if (taskFrequency !== TaskFrequency.No_repeat) {
-              <div class="input-group">
+              <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
                 <label>Intervalo</label>
                 <div class="interval-input">
                   <span>Repetir cada</span>
@@ -81,7 +81,7 @@
               </div>
             }
 
-            <div class="input-group">
+            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
               <label>Esfuerzo (Determina el coste)</label>
               <select [(ngModel)]="taskEffort" [disabled]="isEditMode && editMode === 'instance'">
                 @for (effort of efforts; track effort.value) {
