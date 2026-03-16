@@ -6,7 +6,7 @@
 
 ## Propósito
 
-El proyecto busca resolver el problema de la falta de motivación a la hora de completar tareas cotidianas. Al incorporar mecánicas de juego —recompensas, colecciones, rareza de ítems y sonidos— convierte la gestión de tareas en una experiencia entretenida y adictiva.
+El proyecto busca resolver el problema de la falta de motivación a la hora de completar tareas cotidianas. Al incorporar mecánicas de juego (recompensas, colecciones, rareza de ítems y sonidos) convierte la gestión de tareas en una experiencia entretenida y adictiva.
 
 ---
 
@@ -130,6 +130,18 @@ Requiere macOS y Xcode instalado.
 
 ---
 
+## Scripts disponibles
+
+| Script          | Comando             | Descripción                                                    |
+| --------------- | ------------------- | -------------------------------------------------------------- |
+| `start`         | `npm run start`     | Inicia el servidor de desarrollo Angular en localhost:4200     |
+| `build`         | `npm run build`     | Genera el build de producción en `www/`                        |
+| `watch`         | `npm run watch`     | Build en modo watch (desarrollo, reconstruye al cambiar)       |
+| `lint`          | `npm run lint`      | Ejecuta ESLint en todo el proyecto                             |
+| `format`        | `npm run format`    | Formatea todos los archivos con Prettier                       |
+
+---
+
 ## Plugins de Capacitor
 
 | Plugin                                | Versión  | Propósito                                             |
@@ -146,31 +158,6 @@ Requiere macOS y Xcode instalado.
 
 ---
 
-## Scripts disponibles
-
-| Script          | Comando             | Descripción                                                    |
-| --------------- | ------------------- | -------------------------------------------------------------- |
-| `start`         | `npm run start`     | Inicia el servidor de desarrollo Angular en localhost:4200     |
-| `build`         | `npm run build`     | Genera el build de producción en `www/`                        |
-| `watch`         | `npm run watch`     | Build en modo watch (desarrollo, reconstruye al cambiar)       |
-| `lint`          | `npm run lint`      | Ejecuta ESLint en todo el proyecto                             |
-| `format`        | `npm run format`    | Formatea todos los archivos con Prettier                       |
-
----
-
-## Variables de entorno
-
-Los archivos de entorno (`src/environments/`) están excluidos del repositorio (`.gitignore`). Si el proyecto requiere configuración específica por entorno, crea los siguientes archivos localmente:
-
-| Archivo                              | Uso                          |
-| ------------------------------------ | ---------------------------- |
-| `src/environments/environment.ts`    | Configuración de desarrollo  |
-| `src/environments/environment.prod.ts` | Configuración de producción |
-
-> Actualmente no se han detectado variables de entorno obligatorias en el código fuente.
-
----
-
 ## Estructura del proyecto
 
 ```
@@ -180,7 +167,7 @@ task-collector/
 │   ├── app/
 │   │   ├── core/                   # Lógica de negocio central
 │   │   │   ├── consts/             # Constantes de configuración (rareza, shiny)
-│   │   │   ├── models/             # Interfaces y tipos de datos (task, item, collection…)
+│   │   │   ├── models/             # Interfaces y tipos de datos (task, item, collection...)
 │   │   │   ├── repositories/       # Acceso a datos mediante SQL
 │   │   │   ├── services/           # Servicios de lógica de negocio
 │   │   │   ├── types/              # Tipos TypeScript compartidos
@@ -197,7 +184,7 @@ task-collector/
 │   │   └── app.routes.ts           # Rutas principales (lazy-load de tabs)
 │   ├── assets/
 │   │   ├── db/
-│   │   │   └── migrations/         # Migraciones SQL numeradas (001_*.sql …)
+│   │   │   └── migrations/         # Migraciones SQL numeradas (001_*.sql ...)
 │   │   ├── fonts/                  # Fuente personalizada (Jersey 20)
 │   │   ├── sounds/                 # Efectos de sonido
 │   │   ├── item-images/            # Imágenes de los ítems
@@ -236,9 +223,9 @@ Las rutas están **lazy-loaded**. La ruta raíz carga `tabs.routes.ts`, que defi
 ### Capas de la arquitectura
 
 ```
-Models → Repositories → Services → Features (Pages)
-                                        ↑
-                                   Shared Components
+Models -> Repositories -> Services -> Features (Pages)
+                                          ^
+                                     Shared Components
 ```
 
 | Capa           | Ubicación              | Responsabilidad                               |
@@ -267,18 +254,6 @@ Se utilizan componentes Ionic estándar (`IonTabs`, `IonModal`, `IonCard`, `IonB
 
 ---
 
-## Testing
-
-> ⚠️ **No hay framework de testing configurado actualmente.** La generación de tests está deshabilitada en `angular.json` (`"skipTests": true`).
-
-Si en el futuro se configura un framework de tests, el comando estándar sería:
-
-```bash
-npm run test
-```
-
----
-
 ## Calidad de código
 
 | Herramienta       | Configuración          | Uso                                              |
@@ -298,26 +273,6 @@ Formatear el código:
 ```bash
 npm run format
 ```
-
----
-
-## Checklist de verificación
-
-- [x] Dependencias instaladas (`npm install`)
-- [x] Proyecto inicia con `npm run start` / `ionic serve`
-- [ ] Variables de entorno configuradas (si aplica)
-- [x] Build generado correctamente (`npm run build`)
-- [x] Sin errores de lint (`npm run lint`)
-- [ ] Aplicación ejecuta en dispositivo Android (`npx cap run android`)
-
----
-
-## Contribuidores
-
-| Contribuidor    | Perfil                                                    |
-| --------------- | --------------------------------------------------------- |
-| David Pérez     | [DavidPerez-2357](https://github.com/DavidPerez-2357)     |
-| Pepe Escalera   | [pescalerag](https://github.com/pescalerag)               |
 
 ---
 
@@ -415,6 +370,15 @@ Los mensajes de commit siguen el estilo **[gitmoji](https://gitmoji.dev/)**: un 
 
 ---
 
+## Contribuidores
+
+| Contribuidor    | Perfil                                                    |
+| --------------- | --------------------------------------------------------- |
+| David Pérez     | [DavidPerez-2357](https://github.com/DavidPerez-2357)     |
+| Pepe Escalera   | [pescalerag](https://github.com/pescalerag)               |
+
+---
+
 ## Licencia
 
-No especificado. Consulta con el autor del repositorio para más información.
+Este proyecto está licenciado bajo la **GNU General Public License v3.0**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
