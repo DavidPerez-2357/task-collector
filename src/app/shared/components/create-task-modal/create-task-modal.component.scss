@@ -36,13 +36,26 @@ ion-modal {
       flex-direction: column;
       gap: 6px;
 
-      label {
-        font-weight: normal;
-        font-size: 1.1rem;
-        color: white;
+      &.disabled {
+        label {
+          opacity: 0.5;
+          font-style: italic;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          &::after {
+            content: "🔒";
+            font-size: 0.8rem;
+            filter: grayscale(1) opacity(0.7);
+          }
+        }
       }
 
-      input[type="text"], input[type="number"], input[type="date"], select {
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      select {
         background: rgba(0, 0, 0, 0.2);
         border: 2px solid rgba(0, 0, 0, 0.1);
         border-radius: 8px;
@@ -51,6 +64,7 @@ ion-modal {
         font-size: 1.1rem;
         color: white;
         outline: none;
+        transition: all 0.2s ease;
 
         &::placeholder {
           color: rgba(255, 255, 255, 0.5);
@@ -61,9 +75,19 @@ ion-modal {
           color: white;
         }
 
-        &:focus {
+        &:focus:not(:disabled) {
           border-color: var(--ion-color-primary);
           background: rgba(0, 0, 0, 0.3);
+        }
+
+        &:disabled {
+          background: rgba(0, 0, 0, 0.45);
+          border-style: dashed;
+          border-color: rgba(255, 255, 255, 0.2);
+          opacity: 0.6;
+          cursor: not-allowed;
+          filter: grayscale(0.5);
+          color: rgba(255, 255, 255, 0.7);
         }
       }
 
@@ -102,7 +126,10 @@ ion-modal {
           }
 
           &.disabled {
-            opacity: 0.45;
+            opacity: 0.35;
+            filter: grayscale(1);
+            border-style: dashed;
+            border-color: rgba(255, 255, 255, 0.4);
             cursor: not-allowed;
           }
         }
