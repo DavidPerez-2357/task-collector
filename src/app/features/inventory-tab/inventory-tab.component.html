@@ -9,15 +9,12 @@
     }
   </div>
 
-  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
-    <ion-infinite-scroll-content />
-  </ion-infinite-scroll>
-
   @if (selectedItem) {
     <app-inventory-item-modal
       [isOpen]="isModalOpen"
       [item]="selectedItem"
       (dismissed)="onModalDismissed()"
+      (removeNow)="onItemRemoveNow($event)"
     />
   }
 </ion-content>
