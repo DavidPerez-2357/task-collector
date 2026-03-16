@@ -57,4 +57,44 @@ export class LoadingService {
   currentMessage(): string | null {
     return this.messageSubject.getValue();
   }
+
+  /**
+   * Ejecuta una promesa mientras muestra el overlay de loading solo si la operación tarda más
+   * que `delayMs`. Esto evita un parpadeo del overlay cuando la operación es muy rápida.
+   */
+  async runWithLoading<T>(
+    work: () => Promise<T>,
+    message?: string,
+    delayMs: number = 150,
+  ): Promise<T> {
+    // Minimum visible time when the overlay is shown to avoid very short flashes
+    const minVisibleMs = 400;
+    let shown = false;
+    let shownAt = 0;
+
+    const timer = setTimeout(() => {
+      shown = true;
+      shownAt = Date.now();
+      this.show(message);
+    }, delayMs);
+
+    let result: T;
+    try {
+      result = await work();
+    } finally {
+      clearTimeout(timer);
+
+      if (shown) {
+        const elapsed = Date.now() - shownAt;
+        const remaining = minVisibleMs - elapsed;
+        if (remaining > 0) {
+          await new Promise((resolve) => setTimeout(resolve, remaining));
+        }
+
+        this.hide();
+      }
+    }
+
+    return result;
+  }
 }

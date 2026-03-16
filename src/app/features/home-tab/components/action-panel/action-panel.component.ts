@@ -38,7 +38,7 @@ export class ActionPanelComponent {
 
   private editTaskService = inject(EditTaskService);
 
-  @Output() didClose = new EventEmitter<void>();
+  @Output() didClose = new EventEmitter<boolean>();
   @Output() acquired = new EventEmitter<TaskActive | null>();
 
   private taskService = inject(TaskService);
@@ -77,9 +77,9 @@ export class ActionPanelComponent {
     return endDate.getTime() >= getStartOfToday();
   }
 
-  protected closePanel(): void {
+  protected closePanel(changed: boolean = false): void {
     this.isOpen = false;
-    this.didClose.emit();
+    this.didClose.emit(changed);
   }
 
   protected async completeTask(): Promise<void> {
@@ -98,7 +98,7 @@ export class ActionPanelComponent {
       // debe implementarse en el padre (HomeTab) o en un servicio dedicado.
       this.acquired.emit(this.selectedTask);
 
-      this.closePanel();
+      this.closePanel(true);
     } catch (e) {
       console.error('Error al completar la tarea:', e);
       this.errorService.show('Error al completar la tarea');
@@ -110,13 +110,13 @@ export class ActionPanelComponent {
   protected editInstance(): void {
     if (!this.selectedTask) return;
     this.editTaskService.requestEdit(this.selectedTask, 'instance');
-    this.closePanel();
+    this.closePanel(false);
   }
 
   protected editGlobal(): void {
     if (!this.selectedTask) return;
     this.editTaskService.requestEdit(this.selectedTask, 'global');
-    this.closePanel();
+    this.closePanel(false);
   }
 
   // deleteActiveTask implemented below as async
@@ -130,7 +130,7 @@ export class ActionPanelComponent {
 
       await this.toast.success('Tarea pospuesta +1 día');
 
-      this.closePanel();
+      this.closePanel(true);
     } catch (e) {
       console.error('Error al posponer la tarea:', e);
       this.errorService.show('Error al posponer la tarea');
@@ -151,7 +151,7 @@ export class ActionPanelComponent {
 
       await this.toast.success('Tarea movida a hoy');
 
-      this.closePanel();
+      this.closePanel(true);
     } catch (e) {
       console.error('Error al mover la tarea a hoy:', e);
       this.errorService.show('Error al mover la tarea a hoy');
@@ -173,7 +173,7 @@ export class ActionPanelComponent {
 
       await this.toast.success('Tarea eliminada');
 
-      this.closePanel();
+      this.closePanel(true);
     } catch (e) {
       console.error('Error al eliminar la tarea activa:', e);
       this.errorService.show('Error al eliminar la tarea');
@@ -190,7 +190,7 @@ export class ActionPanelComponent {
       await this.editTaskService.deleteGlobalTask(this.selectedTask.id);
       await this.audioService.playRemoveTask();
       await this.toast.success('Tarea eliminada globalmente');
-      this.closePanel();
+      this.closePanel(true);
     } catch (e) {
       console.error('Error al eliminar la tarea global:', e);
       this.errorService.show('Error al eliminar la tarea global');

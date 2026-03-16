@@ -1,5 +1,9 @@
 <ion-content [fullscreen]="true">
-  <div class="backdrop-overlay" [class.visible]="selectedTask" (click)="actionPanelClosed()"></div>
+  <div
+    class="backdrop-overlay"
+    [class.visible]="selectedTask"
+    (click)="actionPanelClosed(false)"
+  ></div>
 
   <div class="world-container">
     <app-gem-counter class="gem-counter" [amount]="playerGems" />
@@ -50,7 +54,7 @@
     [isOpen]="isActionPanelVisible"
     [selectedTask]="selectedTask"
     [isTodayTask]="isSelectedTaskToday"
-    (didClose)="actionPanelClosed()"
+    (didClose)="actionPanelClosed($event)"
     (acquired)="handleAcquired($event)"
   />
 

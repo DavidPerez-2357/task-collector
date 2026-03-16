@@ -10,6 +10,10 @@ export class ItemService {
     return await this.itemRepository.getInventoryItemsPaginated(pageSize, (page - 1) * pageSize);
   }
 
+  async getAllInventoryItems() {
+    return await this.itemRepository.getAllInventoryItems();
+  }
+
   async sellItem(itemId: number, isShiny: boolean) {
     // Comprobar si el ítem esta en el inventario
     const item = await this.itemRepository.getInventoryItemByIdAndShiny(itemId, isShiny);

@@ -40,6 +40,8 @@ export class InventoryItemModalComponent implements OnChanges {
   @Input() item!: ItemInventory;
   @Input() isOpen: boolean = false;
   @Output() dismissed = new EventEmitter<void>();
+  // Emitted when the modal is about to remove the underlying item so parent can update UI immediately
+  @Output() removeNow = new EventEmitter<ItemInventory>();
 
   private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
@@ -50,8 +52,11 @@ export class InventoryItemModalComponent implements OnChanges {
   eligibleCollections: EligibleCollection[] = [];
   loadingCollections = false;
   depositing = false;
-  useBtnIsDisabled = false;
   sellBtnIsDisabled = false;
+
+  // Serialize sell requests and avoid race conditions
+  private lastSellRequestId = 0;
+  private sellingInProgress = false;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['isOpen'] && !this.isOpen) {
@@ -124,7 +129,14 @@ export class InventoryItemModalComponent implements OnChanges {
       }
 
       if (this.item.quantity <= 0) {
-        this.isOpen = false;
+        // Tell parent to remove the item right away (update shelves) before running modal dismiss animation
+        try {
+          this.removeNow.emit(this.item);
+        } catch (err) {
+          console.warn('removeNow emit failed', err);
+        }
+        // Close the modal using IonModal.dismiss() so Ionic runs the native animation.
+        await this.safeDismissModal();
       } else {
         await this.openCollectionStep();
       }
@@ -135,30 +147,64 @@ export class InventoryItemModalComponent implements OnChanges {
     }
   }
 
-  sellItem() {
-    if (this.item.isShiny) {
-      // TODO: Mostrar mensaje de confirmación para vender
-    }
+  // Improved sellItem: serialize calls, ignore out-of-order responses, keep button disabled while in flight
+  async sellItem() {
+    if (this.sellingInProgress) return;
 
+    // TODO: Mostrar confirmación si es shiny
+    this.sellingInProgress = true;
     this.sellBtnIsDisabled = true;
+    const requestId = ++this.lastSellRequestId;
 
-    // llamar al servicio para vender el ítem
-    this.itemService
-      .sellItem(this.item.id, this.item.isShiny)
-      .then((updatedQuantity: number) => {
-        this.audioService.playSellItem();
+    try {
+      const updatedQuantity = await this.itemService.sellItem(this.item.id, this.item.isShiny);
+
+      // Only apply the result if this is the latest request
+      if (requestId === this.lastSellRequestId) {
+        await this.audioService.playSellItem();
         this.item.quantity = updatedQuantity;
 
         if (updatedQuantity <= 0) {
-          // Si ya no queda el ítem, cerramos el modal
-          this.isOpen = false;
+          // Tell parent to remove the item immediately from shelves
+          try {
+            this.removeNow.emit(this.item);
+          } catch (err) {
+            console.warn('removeNow emit failed', err);
+          }
+          // Close modal so parent can clean up the shelf; let didDismiss -> onDismiss emit the event.
+          await this.safeDismissModal();
         }
-      })
-      .catch((error: any) => {
-        this.toast.error('Error al vender el objeto');
-      })
-      .finally(() => {
+      }
+    } catch (error: any) {
+      await this.toast.error('Error al vender el objeto');
+    } finally {
+      // Only reset flags if this is the latest request
+      if (requestId === this.lastSellRequestId) {
         this.sellBtnIsDisabled = false;
-      });
+        this.sellingInProgress = false;
+      }
+    }
+  }
+
+  // Helper: dismiss modal via IonModal.dismiss(); if unavailable, emit dismissed after a small timeout
+  private async safeDismissModal() {
+    try {
+      if (this.modal && typeof (this.modal as any).dismiss === 'function') {
+        await (this.modal as any).dismiss();
+        return;
+      }
+    } catch (e) {
+      console.warn('safeDismissModal: modal.dismiss() failed', e);
+    }
+
+    // Fallback: emit dismissed after a short delay so parent can clean up,
+    // but avoid emitting immediately to reduce the chance of UI flicker.
+    setTimeout(() => {
+      try {
+        this.dismissed.emit();
+      } catch (err) {
+        console.error('safeDismissModal fallback emit failed', err);
+      }
+    }, 50);
   }
 }
