@@ -27,8 +27,16 @@ export class AudioService {
   };
 
   private isInitialized = false;
+  private musicMuted = false;
+  private soundsMuted = false;
+
+  private readonly MUSIC_MUTED_KEY = 'audio_music_muted';
+  private readonly SOUNDS_MUTED_KEY = 'audio_sounds_muted';
 
   async init() {
+    this.musicMuted = localStorage.getItem(this.MUSIC_MUTED_KEY) === 'true';
+    this.soundsMuted = localStorage.getItem(this.SOUNDS_MUTED_KEY) === 'true';
+
     if (this.isInitialized) return;
 
     try {
@@ -36,7 +44,9 @@ export class AudioService {
         await this.platform.ready();
       }
       await this.preloadAll();
-      this.startBgMusic();
+      if (!this.musicMuted) {
+        this.startBgMusic();
+      }
       this.isInitialized = true;
     } catch (e) {
       console.error('Core Audio init error:', e);
@@ -115,11 +125,41 @@ export class AudioService {
   }
 
   private async play(id: string) {
+    if (this.soundsMuted) return;
+
     try {
       // No bloqueamos aunque sea async por si falla en nativo
       await NativeAudio.play({ assetId: id });
     } catch (e) {
       console.warn(`Error playing sound ${id}:`, e);
     }
+  }
+
+  isMusicMuted() {
+    return this.musicMuted;
+  }
+
+  isSoundsMuted() {
+    return this.soundsMuted;
+  }
+
+  async toggleMusic() {
+    this.musicMuted = !this.musicMuted;
+    localStorage.setItem(this.MUSIC_MUTED_KEY, String(this.musicMuted));
+
+    try {
+      if (this.musicMuted) {
+        await NativeAudio.stop({ assetId: this.SOUNDS.BG_MUSIC.id });
+      } else {
+        await this.startBgMusic();
+      }
+    } catch (e) {
+      console.warn('Error toggling music:', e);
+    }
+  }
+
+  toggleSounds() {
+    this.soundsMuted = !this.soundsMuted;
+    localStorage.setItem(this.SOUNDS_MUTED_KEY, String(this.soundsMuted));
   }
 }

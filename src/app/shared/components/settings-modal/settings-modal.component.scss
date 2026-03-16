@@ -1,0 +1,94 @@
+ion-modal {
+  --width: fit-content;
+  --min-width: 280px;
+  --height: fit-content;
+}
+
+ion-modal::part(content) {
+  height: fit-content;
+  width: 85dvw;
+  max-width: 400px;
+}
+
+.modal-content {
+  padding: 16px;
+  text-align: center;
+  color: var(--ion-color-dark);
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    color: var(--ion-color-primary);
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+  }
+
+  .settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(var(--ion-color-dark-rgb), 0.4);
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      span {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-setting {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        pointer-events: none; // Permite que el click llegue al div padre
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+
+      &:active {
+        transform: scale(0.98);
+        background: rgba(var(--ion-color-dark-rgb), 0.6);
+      }
+
+      &.logout {
+        margin-top: 8px;
+        background: rgba(var(--ion-color-danger-rgb), 0.2);
+        border-color: rgba(var(--ion-color-danger-rgb), 0.3);
+
+        span {
+          color: #ffcccc; // Un rojo muy claro para que sea legible sobre el fondo oscuro
+        }
+
+        &:active {
+          background: rgba(var(--ion-color-danger-rgb), 0.4);
+        }
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    color: var(--ion-color-medium);
+
+    .btn-modal {
+      min-width: 140px;
+    }
+  }
+}
