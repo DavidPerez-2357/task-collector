@@ -11,11 +11,13 @@ import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
 import { LoadingService } from '@core/services/loading.service';
 import { ErrorService } from '@core/services/error.service';
+import { ItemService } from '@features/inventory-tab/services/item.service';
+
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
   styleUrls: ['shop-tab.component.scss'],
-  providers: [ShopService],
+  providers: [ShopService, ItemService],
   imports: [
     IonContent,
     TitleSignComponent,
@@ -32,10 +34,14 @@ export class ShopTabComponent implements ViewWillEnter {
   private audioService = inject(AudioService);
   private loadingService = inject(LoadingService);
   private errorService = inject(ErrorService);
+  private itemService = inject(ItemService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
   isBuying: boolean = false;
+
+  // Mapa itemId -> cantidad
+  inventoryCounts: Record<number, number> = {};
 
   selectedCollection: Collection | null = null;
   isModalOpen: boolean = false;
@@ -51,12 +57,20 @@ export class ShopTabComponent implements ViewWillEnter {
   async loadData() {
     this.loadingService.show('Cargando tienda...');
     try {
-      const [collections, coins] = await Promise.all([
+      const [collections, coins, inventory] = await Promise.all([
         this.shopService.getUnownedCollections(),
         this.playerStateService.getCoins(),
+        this.itemService.getAllInventoryItems(),
       ]);
       this.unownedCollections = collections;
       this.playerCoins = coins;
+
+      // Construir el mapa de cantidades
+      const map: Record<number, number> = {};
+      for (const it of inventory) {
+        map[it.id] = (map[it.id] ?? 0) + (it.quantity ?? 0);
+      }
+      this.inventoryCounts = map;
     } catch (error) {
       console.error('Error al cargar la tienda', error);
       this.errorService.show('Error al cargar la tienda');
