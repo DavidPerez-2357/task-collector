@@ -21,36 +21,36 @@
 
 .badge-frame {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .collection-badge {
-  width: 80px;
-  height: 80px;
+  width: 95px;
+  height: 95px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 
   img {
-    width: 60%;
-    height: auto;
+    width: 80%;
+    height: 80%;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
-.badge-frame:not(.is-complete) .collection-badge {
+.collection-badge:not(.is-complete) {
   filter: grayscale(100%) brightness(80%);
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--ion-color-dark);
 }
 
-.badge-frame.is-complete .collection-badge {
+.collection-badge.is-complete {
   border: 2px solid var(--ion-color-success);
   // Efecto satisfactorio para completar la colección
   animation: badge-glow 5s infinite;
@@ -59,7 +59,7 @@
 
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(3, 43px);
+  grid-template-columns: repeat(3, 52px);
   gap: 0.5rem;
 }
 
@@ -71,10 +71,10 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 1/1;
-  height: 43px;
+  height: 52px;
 
   &.not-owned {
-    opacity: 0.4;
+    opacity: 0.5;
   }
 
   &.owned-eligible {

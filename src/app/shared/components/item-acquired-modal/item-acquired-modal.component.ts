@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -11,7 +11,7 @@ import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/con
   styleUrls: ['./item-acquired-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent],
 })
-export class ItemAcquiredModalComponent {
+export class ItemAcquiredModalComponent implements OnChanges {
   @ViewChild(IonModal) modal!: IonModal;
 
   @Input() isOpen: boolean = false;
@@ -21,7 +21,17 @@ export class ItemAcquiredModalComponent {
   @Output() dismissed = new EventEmitter<void>();
   @Output() acknowledged = new EventEmitter<void>();
 
+  ngOnChanges(changes: SimpleChanges): void {
+    const isOpenChange = changes['isOpen'];
+    if (isOpenChange) {
+      const { currentValue, firstChange } = isOpenChange;
+      if (firstChange && !currentValue) return;
+      this.toggleBodyScroll(currentValue);
+    }
+  }
+
   onDismiss() {
+    this.toggleBodyScroll(false);
     this.dismissed.emit();
   }
 
@@ -55,5 +65,13 @@ export class ItemAcquiredModalComponent {
   get itemImage(): string {
     if (!this.item) return '';
     return `/assets/item-images/${this.item.imageName}`;
+  }
+
+  private toggleBodyScroll(block: boolean) {
+    if (block) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 }

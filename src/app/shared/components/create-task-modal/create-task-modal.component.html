@@ -64,7 +64,7 @@
                 </div>
               </div>
             }
-            @if (taskFrequency !== TaskFrequency.No_repeat) {
+            @if (!isOneTime) {
               <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
                 <label>Intervalo</label>
                 <div class="interval-input">

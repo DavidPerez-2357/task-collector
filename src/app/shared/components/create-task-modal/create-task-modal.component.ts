@@ -82,6 +82,10 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     return Number(this.taskFrequency) === TaskFrequency.Weekly;
   }
 
+  get isOneTime(): boolean {
+    return Number(this.taskFrequency) === TaskFrequency.No_repeat;
+  }
+
   toggleWeekday(day: number) {
     const index = this.selectedWeekdays.indexOf(day);
     if (index > -1) {
@@ -100,6 +104,14 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    const isOpenChange = changes['isOpen'];
+    if (isOpenChange) {
+      const { currentValue, firstChange } = isOpenChange;
+      if (!(firstChange && !currentValue)) {
+        this.toggleBodyScroll(currentValue);
+      }
+    }
+
     const task = changes['taskToEdit']?.currentValue as TaskActive | null;
     if (task) {
       this.prefillForm(task);
@@ -131,6 +143,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   onDismiss() {
+    this.toggleBodyScroll(false);
     this.resetForm();
     this.dismissed.emit();
   }
@@ -260,5 +273,13 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
+  }
+
+  private toggleBodyScroll(block: boolean) {
+    if (block) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 }
