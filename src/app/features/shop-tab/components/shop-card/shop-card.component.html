@@ -9,6 +9,10 @@
         [style.--mask]="'url(' + itemImagePath(item.imageName) + ')'"
       >
         <img [src]="itemImagePath(item.imageName)" [alt]="item.name" />
+        <!-- Indicator: cantidad en inventario -->
+        @if (getItemCount(item.id) > 0) {
+          <span class="item-badge">{{ getItemCount(item.id) }}</span>
+        }
       </div>
     }
   </div>

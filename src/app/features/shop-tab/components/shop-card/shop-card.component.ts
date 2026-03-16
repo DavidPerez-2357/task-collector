@@ -11,6 +11,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 export class ShopCardComponent {
   @Input({ required: true }) collection!: Collection;
   @Input({ required: true }) playerCoins!: number;
+  @Input() inventoryCounts: Record<number, number> = {};
 
   @Output() buyClicked = new EventEmitter<Collection>();
 
@@ -21,4 +22,10 @@ export class ShopCardComponent {
   onBuyClick() {
     this.buyClicked.emit(this.collection);
   }
+
+  getItemCount(itemId: number): number {
+    return this.inventoryCounts[itemId] ?? 0;
+  }
+
+  private readonly __getItemCountRef = this.getItemCount;
 }

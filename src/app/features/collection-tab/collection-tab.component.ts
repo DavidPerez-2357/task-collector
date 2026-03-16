@@ -73,6 +73,23 @@ export class CollectionTabComponent implements ViewWillEnter {
     }
   }
 
+  // Actualiza SOLO la colección indicada en memoria sin mostrar el loading global.
+  private async updateCollectionInPlace(collectionId: number) {
+    try {
+      const updated = await this.collectionService.getCollectionById(collectionId);
+      if (!updated) return;
+      const index = this.collections.findIndex((c) => c.id === collectionId);
+      if (index !== -1) {
+        // Reemplazamos la colección en el array para que Angular detecte el cambio
+        this.collections[index] = updated;
+      }
+    } catch (error) {
+      console.error('Error updating collection in place:', error);
+      // Mostrar error pero sin usar loading global
+      this.errorService.show('Error actualizando la colección');
+    }
+  }
+
   async onItemClicked(event: CollectionItemClickEvent) {
     switch (event.action) {
       case 'return':
@@ -114,7 +131,8 @@ export class CollectionTabComponent implements ViewWillEnter {
         await this.audioService.playCompleteCollection();
       }
 
-      await this.reloadCollection(collectionId);
+      // Actualizar solo la colección modificada sin mostrar el loading global
+      await this.updateCollectionInPlace(collectionId);
     } catch (error) {
       console.error('Error depositing item directly:', error);
       this.errorService.show('Error al añadir el objeto a la colección');
