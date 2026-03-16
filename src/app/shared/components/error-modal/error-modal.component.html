@@ -1,0 +1,18 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template>
+    <app-board width="">
+      <div class="modal-content">
+        <h2>{{ title }}</h2>
+        @if (displayMessage) {
+          <p class="message">{{ displayMessage }}</p>
+        }
+
+        <div class="modal-actions">
+          <app-button type="medium" [fill]="false" (handleClick)="onAcknowledge()">{{
+            okLabel
+          }}</app-button>
+        </div>
+      </div>
+    </app-board>
+  </ng-template>
+</ion-modal>

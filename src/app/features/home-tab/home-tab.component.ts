@@ -12,6 +12,8 @@ import { PlayerStateService } from '@core/services/player-state.service';
 import { ItemAcquiredModalComponent } from '@shared/components/item-acquired-modal/item-acquired-modal.component';
 import { ItemInventory } from '@core/models/item.model';
 import { ItemService } from '@features/home-tab/services/item.service';
+import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 
 @Component({
   selector: 'app-home-tab',
@@ -34,6 +36,8 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   private readonly createTaskService = inject(CreateTaskService);
   private readonly playerStateService = inject(PlayerStateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly loadingService = inject(LoadingService);
+  private readonly errorService = inject(ErrorService);
   private readonly itemService = inject(ItemService);
 
   playerGems = 0;
@@ -41,7 +45,6 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   selectedTask: TaskActive | null = null;
   todayTasks: TaskActive[] = [];
   otherTasks: TaskActive[] = [];
-  loading = false;
   isSelectedTaskToday = false;
 
   constructor() {
@@ -63,15 +66,16 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   async loadTasks(): Promise<void> {
-    this.loading = true;
+    this.loadingService.show('Cargando tareas...');
     try {
       const { today, others } = await this.taskService.getTodayAndOtherTasks();
       this.todayTasks = today;
       this.otherTasks = others;
     } catch (e) {
       console.error('Error cargando tareas:', e);
+      this.errorService.show('Error cargando tareas');
     } finally {
-      this.loading = false;
+      this.loadingService.hide();
     }
   }
 
@@ -133,6 +137,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
       this.showItemAcquired(item, 1);
     } catch (e) {
       console.error('Error al otorgar item por completar tarea:', e);
+      this.errorService.show('Error al otorgar item por completar tarea');
     }
   }
 }

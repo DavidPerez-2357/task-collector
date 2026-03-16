@@ -3,6 +3,7 @@ import { IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemInventory } from '@core/models/item.model';
+import { rarityBackgroundColors, rarityNames, rarityTextColors } from '@core/consts/rarity.const';
 
 @Component({
   selector: 'app-item-acquired-modal',
@@ -31,6 +32,24 @@ export class ItemAcquiredModalComponent {
       // ignore
     }
     this.acknowledged.emit();
+  }
+
+  get rarityName(): string {
+    if (!this.item) return 'Desconocida';
+
+    return rarityNames[this.item.rarity] || 'Desconocida';
+  }
+
+  get rarityBackgroundColor(): string {
+    if (!this.item) return '#fff';
+
+    return rarityBackgroundColors[this.item.rarity];
+  }
+
+  get rarityTextColor(): string {
+    if (!this.item) return '#000';
+
+    return rarityTextColors[this.item.rarity];
   }
 
   get itemImage(): string {

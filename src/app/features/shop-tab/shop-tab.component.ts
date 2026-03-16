@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { IonContent, IonSpinner, ViewWillEnter } from '@ionic/angular/standalone';
+import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
 import { TitleSignComponent } from '@shared/components/title-sign/title-sign.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { Collection } from '@core/models/collection.model';
@@ -9,6 +9,8 @@ import { ShopCardComponent } from './components/shop-card/shop-card.component';
 import { ShopService } from './services/shop.service';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -17,7 +19,6 @@ import { AudioService } from '@core/services/audio.service';
   imports: [
     IonContent,
     TitleSignComponent,
-    IonSpinner,
     ShopBuyModalComponent,
     GemCounterComponent,
     ShopCardComponent,
@@ -29,10 +30,11 @@ export class ShopTabComponent implements ViewWillEnter {
   private playerStateService = inject(PlayerStateService);
   private toast = inject(ToastService);
   private audioService = inject(AudioService);
+  private loadingService = inject(LoadingService);
+  private errorService = inject(ErrorService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
-  isLoading: boolean = true;
   isBuying: boolean = false;
 
   selectedCollection: Collection | null = null;
@@ -47,7 +49,7 @@ export class ShopTabComponent implements ViewWillEnter {
   }
 
   async loadData() {
-    this.isLoading = true;
+    this.loadingService.show('Cargando tienda...');
     try {
       const [collections, coins] = await Promise.all([
         this.shopService.getUnownedCollections(),
@@ -57,8 +59,9 @@ export class ShopTabComponent implements ViewWillEnter {
       this.playerCoins = coins;
     } catch (error) {
       console.error('Error al cargar la tienda', error);
+      this.errorService.show('Error al cargar la tienda');
     } finally {
-      this.isLoading = false;
+      this.loadingService.hide();
     }
   }
 
@@ -83,6 +86,7 @@ export class ShopTabComponent implements ViewWillEnter {
       await this.toast.success(`¡Colección ${collection.name} adquirida!`);
     } catch (error) {
       console.error('Error al comprar la colección', error);
+      this.errorService.show('Error al comprar la colección');
     } finally {
       this.isBuying = false;
     }
@@ -92,18 +96,5 @@ export class ShopTabComponent implements ViewWillEnter {
     this.unownedCollections = this.unownedCollections.filter((c) => c.id !== collection.id);
     this.playerCoins -= collection.price;
     this.isModalOpen = false;
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
-    // Mantener método por compatibilidad, delega al ToastService
-    if (color === 'success') {
-      await this.toast.success(message);
-    } else {
-      await this.toast.error(message);
-    }
-  }
-
-  itemImagePath(imageName: string): string {
-    return `/assets/item-images/${imageName}`;
   }
 }

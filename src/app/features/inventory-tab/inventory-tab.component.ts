@@ -14,6 +14,8 @@ import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.component';
 import { PlayerStateService } from '@core/services/player-state.service';
 import { CollectionService } from '@features/inventory-tab/services/collection.service';
+import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 
 @Component({
   selector: 'app-inventory-tab',
@@ -38,6 +40,8 @@ export class InventoryTabComponent implements ViewWillEnter {
 
   private readonly itemService = inject(ItemService);
   private readonly playerStateService = inject(PlayerStateService);
+  private readonly loadingService = inject(LoadingService);
+  private readonly errorService = inject(ErrorService);
 
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
@@ -60,7 +64,12 @@ export class InventoryTabComponent implements ViewWillEnter {
     // Poner el scroll al principio
     await this.scrollToTop();
 
-    await this.loadMoreItems(this.actualPage);
+    this.loadingService.show('Cargando inventario...');
+    try {
+      await this.loadMoreItems(this.actualPage);
+    } finally {
+      this.loadingService.hide();
+    }
     this.ensureMinShelves();
   }
 
@@ -77,7 +86,7 @@ export class InventoryTabComponent implements ViewWillEnter {
       this.pushPageItemsToShelves(page);
     } catch (error) {
       console.error('Error loading items:', error);
-      // TODO: Mostrar un mensaje de error al usuario
+      this.errorService.show('Error cargando inventario');
     }
   }
 

@@ -3,19 +3,31 @@ ion-tab-bar {
   border: none;
   /* Aumentamos la altura de la caja entera para que quepan los 28px de borde arriba y abajo, y que no se corte por el límite típico de Ionic (56px) */
   height: 95px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-ion-tab-button {
+ion-tab-button::part(native) {
   --background: transparent;
   /* Habilitamos el estilo de borde para que el border-image tenga "lienzo" donde pintarse */
   border-style: solid;
   border-color: transparent;
   padding: 0px;
+  //width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-tab-button.tab-selected {
+  border-color: transparent;
+  filter: brightness(0.8);
 }
 
 ion-tab-button[tab='home'] {
   /* La tab izquierda sí debe tener borde por la izquierda (asumimos 31px al igual que la derecha) */
   border-image: url('/assets/ui/tabs-bg-left.png') 28 31 28 31 fill / 28px 31px 28px 31px;
+  padding-left: 15px;
 }
 
 ion-tab-button[tab='collection'] {
@@ -24,6 +36,7 @@ ion-tab-button[tab='collection'] {
 
 ion-tab-button[tab='inventory'] {
   border-image: url('/assets/ui/tabs-bg-right.png') 28 31 28 0 fill / 28px 31px 28px 0px;
+  padding-right: 15px;
 }
 
 ion-tab-button img {

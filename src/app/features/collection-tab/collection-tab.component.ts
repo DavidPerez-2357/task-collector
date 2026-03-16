@@ -8,6 +8,8 @@ import { CollectionService } from '@features/collection-tab/services/collection.
 import { Collection, CollectionItem } from '@core/models/collection.model';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 
 @Component({
   selector: 'app-collection-tab',
@@ -22,6 +24,8 @@ export class CollectionTabComponent implements ViewWillEnter {
   private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
   private audioService = inject(AudioService);
+  private loadingService = inject(LoadingService);
+  private errorService = inject(ErrorService);
 
   collections: Collection[] = [];
 
@@ -34,7 +38,12 @@ export class CollectionTabComponent implements ViewWillEnter {
     if (this.content) {
       await this.content.scrollToTop(0);
     }
-    await this.loadCollections();
+    this.loadingService.show('Cargando colecciones...');
+    try {
+      await this.loadCollections();
+    } finally {
+      this.loadingService.hide();
+    }
   }
 
   private async loadCollections() {
@@ -42,10 +51,12 @@ export class CollectionTabComponent implements ViewWillEnter {
       this.collections = await this.collectionService.getOwnedCollections();
     } catch (error) {
       console.error('Error loading collections:', error);
+      this.errorService.show('Error cargando colecciones');
     }
   }
 
   private async reloadCollection(collectionId: number) {
+    this.loadingService.show('Actualizando colección...');
     try {
       const updated = await this.collectionService.getCollectionById(collectionId);
       if (updated) {
@@ -56,6 +67,9 @@ export class CollectionTabComponent implements ViewWillEnter {
       }
     } catch (error) {
       console.error('Error reloading collection:', error);
+      this.errorService.show('Error actualizando la colección');
+    } finally {
+      this.loadingService.hide();
     }
   }
 
@@ -103,7 +117,7 @@ export class CollectionTabComponent implements ViewWillEnter {
       await this.reloadCollection(collectionId);
     } catch (error) {
       console.error('Error depositing item directly:', error);
-      await this.toast.error('Error al añadir el objeto a la colección');
+      this.errorService.show('Error al añadir el objeto a la colección');
     }
   }
 
