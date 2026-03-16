@@ -1,6 +1,6 @@
 <ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
-  @if (item) {
-    <ng-template class="ion-no-padding">
+  <ng-template class="ion-no-padding">
+    @if (item) {
       <app-board width="">
         <div class="item-details acquired">
           <main>
@@ -27,6 +27,6 @@
           </main>
         </div>
       </app-board>
-    </ng-template>
-  }
+    }
+  </ng-template>
 </ion-modal>
