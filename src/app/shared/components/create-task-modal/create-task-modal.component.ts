@@ -104,8 +104,12 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isOpen']) {
-      this.toggleBodyScroll(changes['isOpen'].currentValue);
+    const isOpenChange = changes['isOpen'];
+    if (isOpenChange) {
+      const { currentValue, firstChange } = isOpenChange;
+      if (!(firstChange && !currentValue)) {
+        this.toggleBodyScroll(currentValue);
+      }
     }
 
     const task = changes['taskToEdit']?.currentValue as TaskActive | null;

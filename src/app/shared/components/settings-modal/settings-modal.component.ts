@@ -20,8 +20,11 @@ export class SettingsModalComponent implements OnChanges {
   @Output() dismissed = new EventEmitter<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isOpen']) {
-      this.toggleBodyScroll(changes['isOpen'].currentValue);
+    const isOpenChange = changes['isOpen'];
+    if (isOpenChange) {
+      const { currentValue, firstChange } = isOpenChange;
+      if (firstChange && !currentValue) return;
+      this.toggleBodyScroll(currentValue);
     }
   }
 
