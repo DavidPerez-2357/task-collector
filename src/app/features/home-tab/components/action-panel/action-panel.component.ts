@@ -23,6 +23,7 @@ import { DAY_MS, getStartOfToday } from '@core/utils/date.util';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { ErrorService } from '@core/services/error.service';
 
 @Component({
   selector: 'app-action-panel',
@@ -42,6 +43,7 @@ export class ActionPanelComponent {
 
   private taskService = inject(TaskService);
   private toast = inject(ToastService);
+  private errorService = inject(ErrorService);
   private audioService = inject(AudioService);
 
   // Indicador para deshabilitar botones mientras hay una operación en curso
@@ -99,7 +101,7 @@ export class ActionPanelComponent {
       this.closePanel();
     } catch (e) {
       console.error('Error al completar la tarea:', e);
-      await this.toast.error('Error al completar la tarea');
+      this.errorService.show('Error al completar la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -131,7 +133,7 @@ export class ActionPanelComponent {
       this.closePanel();
     } catch (e) {
       console.error('Error al posponer la tarea:', e);
-      await this.toast.error('Error al posponer la tarea');
+      this.errorService.show('Error al posponer la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -152,7 +154,7 @@ export class ActionPanelComponent {
       this.closePanel();
     } catch (e) {
       console.error('Error al mover la tarea a hoy:', e);
-      await this.toast.error('Error al mover la tarea a hoy');
+      this.errorService.show('Error al mover la tarea a hoy');
     } finally {
       this.isBusy = false;
     }
@@ -174,7 +176,7 @@ export class ActionPanelComponent {
       this.closePanel();
     } catch (e) {
       console.error('Error al eliminar la tarea activa:', e);
-      await this.toast.error('Error al eliminar la tarea');
+      this.errorService.show('Error al eliminar la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -191,7 +193,7 @@ export class ActionPanelComponent {
       this.closePanel();
     } catch (e) {
       console.error('Error al eliminar la tarea global:', e);
-      await this.toast.error('Error al eliminar la tarea global');
+      this.errorService.show('Error al eliminar la tarea global');
     } finally {
       this.isBusy = false;
     }

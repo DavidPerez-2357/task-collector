@@ -9,19 +9,25 @@ import { Capacitor } from '@capacitor/core';
 import { LoadingOverlayComponent } from '@shared/components/loading-overlay/loading-overlay.component';
 import { LoadingService } from '@core/services/loading.service';
 import { AsyncPipe } from '@angular/common';
+import { ErrorService } from '@core/services/error.service';
+import { ErrorModalComponent } from '@shared/components/error-modal/error-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, LoadingOverlayComponent, AsyncPipe],
+  imports: [IonApp, IonRouterOutlet, LoadingOverlayComponent, AsyncPipe, ErrorModalComponent],
 })
 export class AppComponent implements OnInit {
   private databaseService = inject(DatabaseService);
   private audioService = inject(AudioService);
   private loadingService = inject(LoadingService);
+  private errorService = inject(ErrorService);
 
   loading$ = this.loadingService.loading$;
   message$ = this.loadingService.message$;
+  error$ = this.errorService.error$;
+  errorOpen$ = this.errorService.error$.pipe(map((m) => !!m));
 
   constructor() {
     addIcons({
@@ -29,6 +35,10 @@ export class AppComponent implements OnInit {
       'arrow-undo-outline': arrowUndoOutline,
       'close-outline': closeOutline,
     });
+  }
+
+  clearError() {
+    this.errorService.clear();
   }
 
   async ngOnInit() {

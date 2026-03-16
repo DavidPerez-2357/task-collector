@@ -96,7 +96,7 @@ export class InventoryItemModalComponent implements OnChanges {
         this.item.isShiny,
       );
     } catch (e) {
-      console.error('Error loading eligible collections:', e);
+      await this.toast.error('Error cargando colecciones elegibles');
     } finally {
       this.loadingCollections = false;
     }
@@ -129,7 +129,6 @@ export class InventoryItemModalComponent implements OnChanges {
         await this.openCollectionStep();
       }
     } catch (e) {
-      console.error('Error depositing item:', e);
       await this.toast.error('Error al añadir el objeto a la colección');
     } finally {
       this.depositing = false;
@@ -156,7 +155,7 @@ export class InventoryItemModalComponent implements OnChanges {
         }
       })
       .catch((error: any) => {
-        // TODO: Manejar errores, como mostrar un mensaje de error al usuario
+        this.toast.error('Error al vender el objeto');
       })
       .finally(() => {
         this.sellBtnIsDisabled = false;

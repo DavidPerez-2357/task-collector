@@ -15,6 +15,7 @@ import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.
 import { PlayerStateService } from '@core/services/player-state.service';
 import { CollectionService } from '@features/inventory-tab/services/collection.service';
 import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 
 @Component({
   selector: 'app-inventory-tab',
@@ -40,6 +41,7 @@ export class InventoryTabComponent implements ViewWillEnter {
   private readonly itemService = inject(ItemService);
   private readonly playerStateService = inject(PlayerStateService);
   private readonly loadingService = inject(LoadingService);
+  private readonly errorService = inject(ErrorService);
 
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
@@ -84,7 +86,7 @@ export class InventoryTabComponent implements ViewWillEnter {
       this.pushPageItemsToShelves(page);
     } catch (error) {
       console.error('Error loading items:', error);
-      // TODO: Mostrar un mensaje de error al usuario
+      this.errorService.show('Error cargando inventario');
     }
   }
 

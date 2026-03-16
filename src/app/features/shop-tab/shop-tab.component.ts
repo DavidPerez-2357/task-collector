@@ -10,6 +10,7 @@ import { ShopService } from './services/shop.service';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
 import { LoadingService } from '@core/services/loading.service';
+import { ErrorService } from '@core/services/error.service';
 @Component({
   selector: 'app-shop-tab',
   templateUrl: 'shop-tab.component.html',
@@ -30,6 +31,7 @@ export class ShopTabComponent implements ViewWillEnter {
   private toast = inject(ToastService);
   private audioService = inject(AudioService);
   private loadingService = inject(LoadingService);
+  private errorService = inject(ErrorService);
 
   unownedCollections: Collection[] = [];
   playerCoins: number = 0;
@@ -57,6 +59,7 @@ export class ShopTabComponent implements ViewWillEnter {
       this.playerCoins = coins;
     } catch (error) {
       console.error('Error al cargar la tienda', error);
+      this.errorService.show('Error al cargar la tienda');
     } finally {
       this.loadingService.hide();
     }
@@ -83,6 +86,7 @@ export class ShopTabComponent implements ViewWillEnter {
       await this.toast.success(`¡Colección ${collection.name} adquirida!`);
     } catch (error) {
       console.error('Error al comprar la colección', error);
+      this.errorService.show('Error al comprar la colección');
     } finally {
       this.isBuying = false;
     }
@@ -92,18 +96,5 @@ export class ShopTabComponent implements ViewWillEnter {
     this.unownedCollections = this.unownedCollections.filter((c) => c.id !== collection.id);
     this.playerCoins -= collection.price;
     this.isModalOpen = false;
-  }
-
-  private async showToast(message: string, color: 'success' | 'danger', icon?: string) {
-    // Mantener método por compatibilidad, delega al ToastService
-    if (color === 'success') {
-      await this.toast.success(message);
-    } else {
-      await this.toast.error(message);
-    }
-  }
-
-  itemImagePath(imageName: string): string {
-    return `/assets/item-images/${imageName}`;
   }
 }
