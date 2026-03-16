@@ -7,21 +7,19 @@
         <div class="settings-list">
           <div class="setting-item" (click)="toggleMusic()">
             <span>Música</span>
-            <app-button
-              [type]="isMusicMuted() ? 'medium' : 'primary'"
-              btnClass="btn-setting"
-            >
-              <ion-icon [name]="isMusicMuted() ? 'volume-mute-outline' : 'musical-notes-outline'"></ion-icon>
+            <app-button [type]="isMusicMuted() ? 'medium' : 'primary'" btnClass="btn-setting">
+              <ion-icon
+                [name]="isMusicMuted() ? 'volume-mute-outline' : 'musical-notes-outline'"
+              ></ion-icon>
             </app-button>
           </div>
 
           <div class="setting-item" (click)="toggleSounds()">
             <span>Efectos</span>
-            <app-button
-              [type]="isSoundsMuted() ? 'medium' : 'primary'"
-              btnClass="btn-setting"
-            >
-              <ion-icon [name]="isSoundsMuted() ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            <app-button [type]="isSoundsMuted() ? 'medium' : 'primary'" btnClass="btn-setting">
+              <ion-icon
+                [name]="isSoundsMuted() ? 'volume-mute-outline' : 'volume-high-outline'"
+              ></ion-icon>
             </app-button>
           </div>
 
@@ -34,7 +32,9 @@
         </div>
 
         <div class="modal-actions">
-          <app-button type="medium" [fill]="false" (handleClick)="closeModal()" btnClass="btn-modal">Cerrar</app-button>
+          <app-button type="medium" [fill]="false" (handleClick)="closeModal()" btnClass="btn-modal"
+            >Cerrar</app-button
+          >
         </div>
       </div>
     </app-board>
