@@ -1,0 +1,68 @@
+<ion-content [fullscreen]="true">
+  <div
+    class="backdrop-overlay"
+    [class.visible]="selectedTask"
+    (click)="actionPanelClosed(false)"
+  ></div>
+
+  <div class="world-container">
+    <app-gem-counter class="gem-counter" [amount]="playerGems" />
+    <div class="store-bg">
+      <img src="/assets/ui/inside-store-top.png" alt="" aria-hidden="true" />
+      <div class="inside-store-task-container">
+        @for (task of todayTasks; track task.taskActiveId) {
+          <div class="inside-store-row">
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+            <app-task
+              [task]="task"
+              class="task"
+              [class.selected]="selectedTask?.taskActiveId === task.taskActiveId"
+              [attr.id]="'task-' + task.taskActiveId"
+              (handleTaskClick)="handleTaskClick(task, true)"
+              [isSelected]="selectedTask?.taskActiveId === task.taskActiveId"
+            />
+          </div>
+        }
+
+        @if (todayTasks.length === 0) {
+          <div class="inside-store-row">
+            <img src="/assets/ui/inside-store-middle.png" alt="" aria-hidden="true" />
+          </div>
+        }
+      </div>
+      <img src="/assets/ui/inside-store-bottom.png" alt="" aria-hidden="true" />
+    </div>
+
+    <div class="street-area ion-padding">
+      @for (task of otherTasks; track task.taskActiveId) {
+        <div class="street-row">
+          <app-task
+            [task]="task"
+            class="task"
+            [class.selected]="selectedTask?.taskActiveId === task.taskActiveId"
+            [attr.id]="'task-' + task.taskActiveId"
+            (handleTaskClick)="handleTaskClick(task, false)"
+            [isSelected]="selectedTask?.taskActiveId === task.taskActiveId"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <app-action-panel
+    [isOpen]="isActionPanelVisible"
+    [selectedTask]="selectedTask"
+    [isTodayTask]="isSelectedTaskToday"
+    (didClose)="actionPanelClosed($event)"
+    (acquired)="handleAcquired($event)"
+  />
+
+  <app-item-acquired-modal
+    [isOpen]="isItemAcquiredModalOpen"
+    [item]="acquiredItem"
+    [amount]="acquiredAmount"
+    (dismissed)="isItemAcquiredModalOpen = false"
+    (acknowledged)="onAcquiredAcknowledged()"
+  />
+</ion-content>

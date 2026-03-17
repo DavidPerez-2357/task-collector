@@ -1,0 +1,77 @@
+.shop-card {
+  background: transparent;
+  border-image: url('/assets/ui/collectionAndShopFrame.png') 30 30 30 30 fill / 30px 30px 30px 30px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .collection-name {
+    margin: 0;
+    color: var(--ion-color-dark);
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .collection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+
+    .grid-slot {
+      width: 44px;
+      height: 44px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 1;
+      }
+
+      .item-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        min-width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        color: var(--ion-color-dark);
+        background: rgba(255, 215, 0, 0.95); // dorado semi-opaco
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        z-index: 50;
+      }
+    }
+  }
+
+  .shop-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .gem-icon-button {
+      width: 25px;
+      height: 25px;
+      object-fit: contain;
+    }
+  }
+}

@@ -12,8 +12,8 @@ export class DatabaseService {
   private sqlite = new SQLiteConnection(CapacitorSQLite);
   private conn?: SQLiteDBConnection;
 
-  private readonly dbName = 'trip-check';
-  private readonly dbVersion = 1;
+  private readonly dbName = 'task-collector';
+  private readonly dbVersion = 8;
   private readonly isWeb = Capacitor.getPlatform() === 'web';
 
   private opening?: Promise<void>;
@@ -71,6 +71,36 @@ export class DatabaseService {
       sqlAssetPath: 'assets/db/migrations/001_init.sql',
       description: 'Init schema',
     },
+    {
+      version: 2,
+      sqlAssetPath: 'assets/db/migrations/002_seed_data.sql',
+      description: 'Seed initial data',
+    },
+    {
+      version: 3,
+      sqlAssetPath: 'assets/db/migrations/003_add_task_skips.sql',
+      description: 'Add task_skips table',
+    },
+    {
+      version: 4,
+      sqlAssetPath: 'assets/db/migrations/004_add_indexes.sql',
+      description: 'Add performance indexes',
+    },
+    {
+      version: 6,
+      sqlAssetPath: 'assets/db/migrations/006_add_task_anchor_date.sql',
+      description: 'Add anchor_date for monthly logic',
+    },
+    {
+      version: 7,
+      sqlAssetPath: 'assets/db/migrations/007_add_missing_recurrence_columns.sql',
+      description: 'Add cron and history columns',
+    },
+    {
+      version: 8,
+      sqlAssetPath: 'assets/db/migrations/008_add_categories.sql',
+      description: 'Seed categories and fix schema inconsistencies',
+    },
   ];
 
   async init(): Promise<void> {
@@ -81,6 +111,7 @@ export class DatabaseService {
       await this.ensureMeta();
       await this.applyMigrations();
       if (this.isWeb) this.wrapForAutoPersist();
+      console.log('Database initialized');
     })();
 
     try {
@@ -103,13 +134,24 @@ export class DatabaseService {
     }
   }
 
+  async initSqliteWebBridge() {
+    if (Capacitor.getPlatform() !== 'web') return; // Solo necesario en web
+
+    const { defineCustomElements } = await import('jeep-sqlite/loader');
+    defineCustomElements(window);
+    await customElements.whenDefined('jeep-sqlite');
+
+    if (!document.querySelector('jeep-sqlite')) {
+      const jeep = document.createElement('jeep-sqlite');
+      document.body.appendChild(jeep);
+    }
+
+    await CapacitorSQLite.initWebStore();
+  }
+
   private async openInternal(): Promise<void> {
     if (this.isWeb) {
-      await customElements.whenDefined('jeep-sqlite').catch(() => void 0);
-      const jeepEl = document.querySelector('jeep-sqlite') as any;
-      if (jeepEl?.componentOnReady) await jeepEl.componentOnReady().catch(() => void 0);
-
-      await CapacitorSQLite.initWebStore().catch(() => void 0);
+      await this.initSqliteWebBridge();
     }
 
     await this.sqlite.checkConnectionsConsistency().catch(() => void 0);
@@ -127,6 +169,8 @@ export class DatabaseService {
       );
     }
 
+    const checkIfExists = await this.sqlite.isConnection(this.dbName, false);
+
     await this.conn.open();
     await this.conn.execute('PRAGMA foreign_keys = ON;');
   }
@@ -139,6 +183,12 @@ export class DatabaseService {
   async withConn<T>(fn: (conn: SQLiteDBConnection) => Promise<T>): Promise<T> {
     await this.init();
     return fn(this.getConn());
+  }
+
+  async getLastInsertId(conn?: SQLiteDBConnection): Promise<number> {
+    const res = await (conn ?? this.getConn()).query(`SELECT last_insert_rowid() AS id;`);
+    const id = res.values?.[0]?.id;
+    return typeof id === 'number' ? id : Number(id);
   }
 
   //region Database Migrations
@@ -274,9 +324,9 @@ export class DatabaseService {
     if (!this.isWeb) return;
 
     try {
-      await CapacitorSQLite.saveToStore({ database: this.dbName });
+      await this.sqlite.saveToStore(this.dbName);
     } catch (e) {
-      console.warn('[DB] saveToStore error:', e);
+      console.warn('[WS] saveToStore error:', e);
     }
   }
   //endregion

@@ -1,4 +1,4 @@
-import { category } from '@core/models/category.model';
+import { Category } from '@core/models/category.model';
 
 export enum TaskFrequency {
   No_repeat = 0,
@@ -19,18 +19,24 @@ export interface Task {
   id: number;
   name: string;
   frequency: TaskFrequency;
+  interval: number;
   effort: TaskEffort;
-  category: category;
-  resetOnCycle: boolean;
-  deleted: boolean;
+  category: Category;
+  anchorDate?: number; // timestamp
+}
+
+export interface WeeklyTask extends Task {
+  daysOfWeek: number[]; // 0 = Sunday, 1 = Monday
 }
 
 export interface TaskActive extends Task {
-  startDate: Date;
-  endDate: Date;
+  taskActiveId: number; // id de la fila en task_active
+  startDate: number; // timestamp
+  endDate: number;
+  weekdays?: number[]; // Días de la semana marcados (para recargas al editar semanas)
 }
 
 export interface TaskHistory extends Task {
-  completionDate: Date;
+  completionDate: number; // timestamp
   daysLate: number;
 }

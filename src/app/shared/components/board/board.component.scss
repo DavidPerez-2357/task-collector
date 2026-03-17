@@ -1,0 +1,14 @@
+.board {
+  color: var(--ion-color-light);
+
+  border-style: solid;
+  border-width: var(--border-size-px);
+
+  /* Cortes de la imagen (slice) */
+  border-image-slice: var(--border-size) var(--border-size) var(--border-size) var(--border-size)
+    fill;
+
+  /* Tamaño del borde */
+  border-image-width: var(--border-size-px) var(--border-size-px) var(--border-size-px)
+    var(--border-size-px);
+}

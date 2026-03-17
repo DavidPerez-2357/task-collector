@@ -1,0 +1,133 @@
+<div class="action-panel-container" [class.closed]="!isOpen">
+  <app-board class="action-panel-board" width="100%" height="100%">
+    <button class="close-btn" (click)="closePanel(false)">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+
+    <div class="panel-content">
+      <div class="actions-grid">
+        <app-button
+          type="success"
+          [border]="true"
+          btnClass="flex h-full center column rounded-sm text-lg gap-1"
+          [disabled]="isBusy"
+          (handleClick)="completeTask()"
+        >
+          <ion-icon name="checkmark-circle-outline" size="30"></ion-icon>
+          <span>Completar</span>
+        </app-button>
+
+        <div class="other-buttons">
+          @if (!isTodayTask) {
+            <app-button
+              type="primary"
+              [border]="true"
+              btnClass="action-btn flex center rounded-sm h-full"
+              [disabled]="isBusy"
+              (handleClick)="doToday()"
+            >
+              <ion-icon name="sunny-outline"></ion-icon>
+              <span>Hacer hoy</span>
+            </app-button>
+          } @else {
+            <app-button
+              type="secondary"
+              [border]="true"
+              btnClass="action-btn flex center rounded-sm h-full"
+              [disabled]="isBusy || !canPostpone"
+              (handleClick)="postponeTask()"
+            >
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+              <span>+1 día</span>
+            </app-button>
+          }
+
+          <app-button
+            type="warning"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="editInstance()"
+            [title]="'Editar esta vez'"
+          >
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="instance-indicator">1</span>
+            </div>
+          </app-button>
+
+          <app-button
+            type="warning"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="editGlobal()"
+            [title]="'Editar Tarea Global'"
+          >
+            <div class="flex center relative">
+              <ion-icon name="create-outline"></ion-icon>
+              <span class="global-indicator">
+                <ion-icon name="earth"></ion-icon>
+              </span>
+            </div>
+          </app-button>
+
+          <app-button
+            type="danger"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="confirmDeleteOpen = true"
+            [title]="'Quitar de hoy'"
+          >
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </app-button>
+
+          <app-button
+            type="danger"
+            [border]="true"
+            btnClass="action-btn-small flex center rounded-sm h-full w-full"
+            [disabled]="isBusy"
+            (handleClick)="confirmDeleteGlobalOpen = true"
+            [title]="'Eliminar globalmente'"
+          >
+            <ion-icon name="trash-outline"></ion-icon>
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </app-board>
+
+  <app-confirm-modal
+    [isOpen]="confirmDeleteOpen"
+    title="Cancelar tarea"
+    [message]="
+      selectedTask
+        ? 'Al cancelar «' +
+          selectedTask.name +
+          '» se quitará de tu lista de tareas. Solo se elimina esta instancia, no la tarea en sí.'
+        : ''
+    "
+    confirmLabel="Quitar"
+    cancelLabel="Cancelar"
+    confirmColor="danger"
+    (dismissed)="confirmDeleteOpen = false"
+    (confirmed)="onDeleteConfirmed($event)"
+  />
+  <app-confirm-modal
+    [isOpen]="confirmDeleteGlobalOpen"
+    title="ELIMINAR TAREA GLOBAL"
+    [message]="
+      selectedTask
+        ? 'Esto eliminará COMPLETAMENTE «' +
+          selectedTask.name +
+          '» y todas sus futuras recurrencias. No se puede deshacer.'
+        : ''
+    "
+    confirmLabel="Eliminar para siempre"
+    cancelLabel="Más tarde"
+    confirmColor="danger"
+    (dismissed)="confirmDeleteGlobalOpen = false"
+    (confirmed)="onDeleteGlobalConfirmed($event)"
+  />
+</div>

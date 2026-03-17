@@ -1,0 +1,135 @@
+.collection-card {
+  display: grid;
+  flex-direction: column;
+  grid-template-columns: repeat(2, auto);
+  align-content: center;
+  justify-content: center;
+  border-radius: 0.3rem;
+  //border: 5px solid var(--ion-color-secondary);
+  gap: 0.5rem 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.collection-name {
+  color: var(--ion-color-light);
+  grid-column: span 2;
+  text-align: center;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.badge-frame {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collection-badge {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    object-fit: contain;
+  }
+}
+
+.collection-badge:not(.is-complete) {
+  filter: grayscale(100%) brightness(80%);
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--ion-color-dark);
+}
+
+.collection-badge.is-complete {
+  border: 2px solid var(--ion-color-success);
+  // Efecto satisfactorio para completar la colección
+  animation: badge-glow 5s infinite;
+  transition: background-color 0.3s ease;
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  gap: 0.5rem;
+}
+
+.grid-slot {
+  border: 1px solid var(--ion-color-light);
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  height: 52px;
+
+  &.not-owned {
+    opacity: 0.5;
+  }
+
+  &.owned-eligible {
+    animation: pulse-glow 2s infinite;
+    background: rgba(var(--ion-color-success-rgb), 0.5);
+    opacity: 0.7;
+  }
+
+  &.placeholder {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px dashed var(--ion-color-light);
+    opacity: 0.5;
+  }
+
+  &.deposited {
+    background: rgba(var(--ion-color-success-rgb), 0.3);
+    border: 2px solid var(--ion-color-success);
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0.9),
+      0 0 8px 4px rgba(var(--ion-color-success-rgb), 0.12);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 6px rgba(var(--ion-color-success-rgb), 0),
+      0 0 18px 8px rgba(var(--ion-color-success-rgb), 0.18);
+  }
+  70% {
+    transform: scale(1.03);
+    box-shadow:
+      0 0 0 10px rgba(var(--ion-color-success-rgb), 0),
+      0 0 24px 12px rgba(var(--ion-color-success-rgb), 0.08);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0),
+      0 0 0 0 rgba(var(--ion-color-success-rgb), 0);
+  }
+}
+
+@keyframes badge-glow {
+  0% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.22);
+  }
+  50% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.12);
+  }
+  100% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.22);
+  }
+}

@@ -1,1 +1,88 @@
+ion-tab-bar {
+  --background: transparent;
+  border: none;
+  /* Aumentamos la altura de la caja entera para que quepan los 28px de borde arriba y abajo, y que no se corte por el límite típico de Ionic (56px) */
+  height: 95px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
 
+ion-tab-button::part(native) {
+  --background: transparent;
+  /* Habilitamos el estilo de borde para que el border-image tenga "lienzo" donde pintarse */
+  border-style: solid;
+  border-color: transparent;
+  padding: 0px;
+  //width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-tab-button.tab-selected {
+  border-color: transparent;
+  filter: brightness(0.8);
+}
+
+ion-tab-button[tab='home'] {
+  /* La tab izquierda sí debe tener borde por la izquierda (asumimos 31px al igual que la derecha) */
+  border-image: url('/assets/ui/tabs-bg-left.png') 28 31 28 31 fill / 28px 31px 28px 31px;
+  padding-left: 15px;
+}
+
+ion-tab-button[tab='collection'] {
+  border-image: url('/assets/ui/tabs-bg-mid.png') 28 31 28 0 fill / 28px 31px 28px 0px;
+}
+
+ion-tab-button[tab='inventory'] {
+  border-image: url('/assets/ui/tabs-bg-right.png') 28 31 28 0 fill / 28px 31px 28px 0px;
+  padding-right: 15px;
+}
+
+ion-tab-button img {
+  max-width: 50px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Botones flotantes de config y tienda, anclados arriba-derecha de la barra */
+.corner-buttons {
+  position: fixed;
+  bottom: calc(95px); /* Altura de la tab bar */
+  right: 0;
+  display: flex;
+  padding: 0.2rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.corner-btn-group {
+  display: flex;
+  z-index: 100;
+  gap: 0.2rem;
+}
+
+.corner-btn {
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+}
+
+.corner-btn--create {
+  background-image: url('/assets/ui/create-task-btn.png');
+  width: 169px;
+  height: 61px;
+}
+
+.corner-btn--config {
+  background-image: url('/assets/icons/config-icon.png');
+}
+
+.corner-btn--shop {
+  background-image: url('/assets/icons/shop-icon.png');
+}
+
+.corner-btn:active,
+.corner-btn--create:active {
+  filter: brightness(0.8);
+}

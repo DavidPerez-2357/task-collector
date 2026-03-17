@@ -1,2 +1,117 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+@font-face {
+  font-family: 'Jersey 20';
+  src: url('/assets/fonts/Jersey_20/Jersey20-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ion-color-primary: #ba8657;
+  --ion-color-primary-rgb: 186, 134, 87;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #a4764d;
+  --ion-color-primary-tint: #c19268;
+
+  --ion-color-secondary: #f2d29f;
+  --ion-color-secondary-rgb: 242, 210, 159;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #d5b98c;
+  --ion-color-secondary-tint: #f3d7a9;
+
+  --ion-color-tertiary: #7d4530;
+  --ion-color-tertiary-rgb: 125, 69, 48;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #6e3d2a;
+  --ion-color-tertiary-tint: #8a5845;
+
+  --ion-color-success: #2dd55b;
+  --ion-color-success-rgb: 45, 213, 91;
+  --ion-color-success-contrast: #000000;
+  --ion-color-success-contrast-rgb: 0, 0, 0;
+  --ion-color-success-shade: #28bb50;
+  --ion-color-success-tint: #42d96b;
+
+  --ion-color-warning: #ffa200;
+  --ion-color-warning-rgb: 255, 162, 0;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e08f00;
+  --ion-color-warning-tint: #ffab1a;
+
+  --ion-color-danger: #ff2e3f;
+  --ion-color-danger-rgb: 255, 46, 63;
+  --ion-color-danger-contrast: #000000;
+  --ion-color-danger-contrast-rgb: 0, 0, 0;
+  --ion-color-danger-shade: #e02837;
+  --ion-color-danger-tint: #ff4352;
+
+  --ion-color-light: #f6f8fc;
+  --ion-color-light-rgb: 246, 248, 252;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d8dade;
+  --ion-color-light-tint: #f7f9fc;
+
+  --ion-color-medium: #8d8d8d;
+  --ion-color-medium-rgb: 141, 141, 141;
+  --ion-color-medium-contrast: #000000;
+  --ion-color-medium-contrast-rgb: 0, 0, 0;
+  --ion-color-medium-shade: #7c7c7c;
+  --ion-color-medium-tint: #989898;
+
+  --ion-color-dark: #2f2f2f;
+  --ion-color-dark-rgb: 47, 47, 47;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #292929;
+  --ion-color-dark-tint: #444444;
+
+  --ion-color-gem: #21ff64;
+  --ion-color-gem-rgb: 33, 255, 100;
+  --ion-color-gem-contrast: #000000;
+  --ion-color-gem-contrast-rgb: 0, 0, 0;
+  --ion-color-gem-shade: #404040;
+  --ion-color-gem-tint: #37ff74;
+
+  --ion-color-gold: #a27824;
+  --ion-color-gold-rgb: 162, 120, 36;
+  --ion-color-gold-contrast: #000000;
+  --ion-color-gold-contrast-rgb: 0, 0, 0;
+  --ion-color-gold-shade: #8f6a20;
+  --ion-color-gold-tint: #ab863a;
+
+  --ion-color-dark-brown: #482b25;
+  --ion-color-dark-brown-rgb: 72, 43, 37;
+  --ion-color-dark-brown-contrast: #ffffff;
+  --ion-color-dark-brown-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-brown-shade: #3f2621;
+  --ion-color-dark-brown-tint: #5a403b;
+
+  --ion-background-color: var(--ion-color-dark);
+  --ion-tab-bar-background: var(--ion-color-dark-brown);
+  --ion-tab-bar-color: var(--ion-color-light);
+
+  --ion-toolbar-color: var(--ion-color-light);
+
+  --ion-text-color: var(--ion-color-light);
+
+  --ion-item-background: var(--ion-color-dark-brown);
+  --ion-item-color: var(--ion-color-light);
+
+  --ion-font-family: 'Jersey 20', system-ui, sans-serif;
+
+  /* Rarity colors */
+  --rarity-common-bg: #9ff7ff;
+  --rarity-rare-bg: #95fb9d;
+  --rarity-epic-bg: #ddadff;
+  --rarity-legendary-bg: #ffdc31;
+
+  --rarity-common-text: #00454a;
+  --rarity-rare-text: #004d1a;
+  --rarity-epic-text: #4b0073;
+  --rarity-legendary-text: #663d00;
+}

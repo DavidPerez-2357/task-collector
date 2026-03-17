@@ -1,0 +1,47 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
+  <ng-template class="ion-no-padding">
+    @if (item) {
+      <app-board width="">
+        <div class="item-details acquired">
+          <main>
+            <header>
+              <h2 class="title">Recompensa por completar</h2>
+              <div
+                class="item-image-container"
+                [class.shiny]="item.isShiny"
+                [style.--mask]="'url(' + itemImage + ')'"
+              >
+                <img [src]="itemImage" [alt]="item.name + ' image'" />
+              </div>
+
+              <h2 class="item-name">
+                {{ item.name }} <span class="amount">x{{ amount }}</span>
+              </h2>
+
+              <div class="item-stats">
+                <div
+                  class="item-rarity"
+                  [style.background]="rarityBackgroundColor"
+                  [style.color]="rarityTextColor"
+                >
+                  {{ rarityName }}
+                </div>
+                @if (item.isShiny) {
+                  <div class="shiny">Shiny</div>
+                }
+              </div>
+            </header>
+
+            <p class="item-description">{{ item.description }}</p>
+
+            <div class="item-actions">
+              <app-button btnClass="ok-button" type="gem" (handleClick)="closeModal()"
+                >¡Genial!</app-button
+              >
+            </div>
+          </main>
+        </div>
+      </app-board>
+    }
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,119 @@
+ion-content {
+  --background: transparent;
+}
+
+ion-content::part(scroll) {
+  padding: 0 !important;
+}
+
+.gem-counter {
+  position: absolute;
+  top: 1.1rem;
+  right: 1rem;
+  z-index: 150;
+}
+
+// ============================================
+// OVERLAY BACKDROP
+// ============================================
+.backdrop-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 100;
+  pointer-events: none;
+  transition: background-color 300ms ease-out;
+
+  &.visible {
+    background-color: rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+  }
+}
+
+// ============================================
+// WORLD CONTAINER
+// ============================================
+.world-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+// ============================================
+// STORE SECTION
+// ============================================
+.store-bg > img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.inside-store-task-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.inside-store-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .task {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    transition: z-index 0s 300ms; // Delay z-index reset
+
+    &.selected {
+      z-index: 200;
+      transition: z-index 0s 0s; // Immediate z-index change
+    }
+  }
+
+  &:nth-child(even) .task {
+    left: 50px;
+  }
+
+  &:nth-child(odd) .task {
+    right: 50px;
+  }
+}
+
+// ============================================
+// STREET SECTION
+// ============================================
+.street-area {
+  flex: 1;
+  width: 100%;
+  min-height: 600px;
+  background: url('/assets/backgrounds/street-bg.png') repeat-y;
+  background-size: 100% auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0 !important;
+  padding-bottom: 300px; // Espacio para el action panel
+}
+
+.street-row {
+  display: flex;
+  width: 100%;
+  position: relative;
+
+  .task {
+    z-index: 1;
+    transition: z-index 0s 300ms;
+
+    &.selected {
+      z-index: 200;
+      transition: z-index 0s 0s;
+    }
+  }
+
+  &:nth-child(even) {
+    justify-content: flex-start;
+  }
+
+  &:nth-child(odd) {
+    justify-content: flex-end;
+  }
+}

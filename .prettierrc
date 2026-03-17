@@ -5,7 +5,15 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "arrowParens": "always",
-  "endOfLine": "lf",
+  "endOfLine": "auto",
   "bracketSpacing": true,
-  "useTabs": false
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }
