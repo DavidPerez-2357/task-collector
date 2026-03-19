@@ -11,7 +11,7 @@ import { GemCounterComponent } from '@shared/components/gem-counter/gem-counter.
 import { PlayerStateService } from '@core/services/player-state.service';
 import { ItemAcquiredModalComponent } from '@shared/components/item-acquired-modal/item-acquired-modal.component';
 import { ItemInventory } from '@core/models/item.model';
-import { ItemService } from '@features/home-tab/services/item.service';
+import { TaskRewardService } from '@core/services/task-reward.service';
 import { LoadingService } from '@core/services/loading.service';
 import { ErrorService } from '@core/services/error.service';
 
@@ -19,7 +19,7 @@ import { ErrorService } from '@core/services/error.service';
   selector: 'app-home-tab',
   templateUrl: 'home-tab.component.html',
   styleUrls: ['home-tab.component.scss'],
-  providers: [TaskService, ItemService],
+  providers: [TaskService],
   imports: [
     IonContent,
     TaskComponent,
@@ -38,7 +38,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   private readonly destroyRef = inject(DestroyRef);
   private readonly loadingService = inject(LoadingService);
   private readonly errorService = inject(ErrorService);
-  private readonly itemService = inject(ItemService);
+  private readonly taskRewardService = inject(TaskRewardService);
 
   playerGems = 0;
   isActionPanelVisible = false;
@@ -128,10 +128,8 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   async handleAcquired(task: TaskActive | null) {
     if (!task) return;
 
-    // Delegamos al ItemService para determinar la reward (rareza/shiny), añadirla al inventario
-    // y devolver la fila de inventario resultante.
     try {
-      const item = await this.itemService.grantItemForCompletedTask(task);
+      const item = await this.taskRewardService.grantItemForCompletedTask(task);
       if (!item) return;
 
       // Mostrar modal con el item obtenido
