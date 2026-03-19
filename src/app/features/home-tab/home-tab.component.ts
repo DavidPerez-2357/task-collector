@@ -58,6 +58,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   isItemAcquiredModalOpen = false;
   acquiredItem: ItemInventory | null = null;
   acquiredAmount = 1;
+  acquiredCoins = 0;
 
   async ionViewWillEnter(): Promise<void> {
     await this.taskService.createRecurringTasksForToday();
@@ -112,9 +113,10 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   // Abre el modal de item conseguido
-  showItemAcquired(item: ItemInventory, amount: number = 1) {
+  showItemAcquired(item: ItemInventory | null, coinsEarned: number, amount: number = 1) {
     this.acquiredItem = item;
     this.acquiredAmount = amount;
+    this.acquiredCoins = coinsEarned;
     this.isItemAcquiredModalOpen = true;
   }
 
@@ -122,6 +124,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     this.isItemAcquiredModalOpen = false;
     this.acquiredItem = null;
     this.acquiredAmount = 1;
+    this.acquiredCoins = 0;
   }
 
   // Handler cuando ActionPanel emite que se ha adquirido un item al completar la tarea
@@ -129,14 +132,19 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
     if (!task) return;
 
     try {
-      const item = await this.taskRewardService.grantItemForCompletedTask(task);
-      if (!item) return;
+      const { item, coinsEarned } = await this.taskRewardService.grantRewardForCompletedTask(task);
 
-      // Mostrar modal con el item obtenido
-      this.showItemAcquired(item, 1);
+      // Actualizar el contador de gemas con el saldo real tras el ingreso de monedas
+      if (coinsEarned > 0) {
+        this.playerGems = await this.playerStateService.getCoins();
+      }
+
+      if (!item && coinsEarned <= 0) return;
+
+      this.showItemAcquired(item, coinsEarned, 1);
     } catch (e) {
-      console.error('Error al otorgar item por completar tarea:', e);
-      this.errorService.show('Error al otorgar item por completar tarea');
+      console.error('Error al otorgar recompensa por completar tarea:', e);
+      this.errorService.show('Error al otorgar recompensa por completar tarea');
     }
   }
 }

@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, Output, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -17,6 +25,7 @@ export class ItemAcquiredModalComponent implements OnChanges {
   @Input() isOpen: boolean = false;
   @Input() item: ItemInventory | null = null;
   @Input() amount: number = 1;
+  @Input() coinsEarned: number = 0;
 
   @Output() dismissed = new EventEmitter<void>();
   @Output() acknowledged = new EventEmitter<void>();

@@ -1,38 +1,50 @@
 <ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()" class="ion-no-padding">
   <ng-template class="ion-no-padding">
-    @if (item) {
+    @if (item || coinsEarned > 0) {
       <app-board width="">
         <div class="item-details acquired">
           <main>
             <header>
               <h2 class="title">Recompensa por completar</h2>
-              <div
-                class="item-image-container"
-                [class.shiny]="item.isShiny"
-                [style.--mask]="'url(' + itemImage + ')'"
-              >
-                <img [src]="itemImage" [alt]="item.name + ' image'" />
-              </div>
 
-              <h2 class="item-name">
-                {{ item.name }} <span class="amount">x{{ amount }}</span>
-              </h2>
-
-              <div class="item-stats">
+              @if (item) {
                 <div
-                  class="item-rarity"
-                  [style.background]="rarityBackgroundColor"
-                  [style.color]="rarityTextColor"
+                  class="item-image-container"
+                  [class.shiny]="item.isShiny"
+                  [style.--mask]="'url(' + itemImage + ')'"
                 >
-                  {{ rarityName }}
+                  <img [src]="itemImage" [alt]="item.name + ' image'" />
                 </div>
-                @if (item.isShiny) {
-                  <div class="shiny">Shiny</div>
-                }
-              </div>
+
+                <h2 class="item-name">
+                  {{ item.name }} <span class="amount">x{{ amount }}</span>
+                </h2>
+
+                <div class="item-stats">
+                  <div
+                    class="item-rarity"
+                    [style.background]="rarityBackgroundColor"
+                    [style.color]="rarityTextColor"
+                  >
+                    {{ rarityName }}
+                  </div>
+                  @if (item.isShiny) {
+                    <div class="shiny">Shiny</div>
+                  }
+                </div>
+              }
+
+              @if (coinsEarned > 0) {
+                <div class="coins-reward">
+                  <img src="/assets/icons/gems-icon.png" alt="Gemas" class="gem-icon" />
+                  <span class="coins-amount">+{{ coinsEarned }}</span>
+                </div>
+              }
             </header>
 
-            <p class="item-description">{{ item.description }}</p>
+            @if (item) {
+              <p class="item-description">{{ item.description }}</p>
+            }
 
             <div class="item-actions">
               <app-button btnClass="ok-button" type="gem" (handleClick)="closeModal()"
