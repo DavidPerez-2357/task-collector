@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { addIcons } from 'ionicons';
 import {
-  // Used in AppComponent and SettingsModalComponent
   checkmarkCircle,
   arrowUndoOutline,
   closeOutline,
@@ -10,7 +9,6 @@ import {
   musicalNotesOutline,
   exitOutline,
   settingsOutline,
-  // Used in ActionPanelComponent
   checkmarkCircleOutline,
   createOutline,
   trashOutline,
