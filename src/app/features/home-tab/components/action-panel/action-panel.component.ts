@@ -100,8 +100,7 @@ export class ActionPanelComponent {
 
       this.closePanel(true);
     } catch (e) {
-      console.error('Error al completar la tarea:', e);
-      this.errorService.show('Error al completar la tarea');
+      this.errorService.handle(e, 'Error al completar la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -132,8 +131,7 @@ export class ActionPanelComponent {
 
       this.closePanel(true);
     } catch (e) {
-      console.error('Error al posponer la tarea:', e);
-      this.errorService.show('Error al posponer la tarea');
+      this.errorService.handle(e, 'Error al posponer la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -153,8 +151,7 @@ export class ActionPanelComponent {
 
       this.closePanel(true);
     } catch (e) {
-      console.error('Error al mover la tarea a hoy:', e);
-      this.errorService.show('Error al mover la tarea a hoy');
+      this.errorService.handle(e, 'Error al mover la tarea a hoy');
     } finally {
       this.isBusy = false;
     }
@@ -175,8 +172,7 @@ export class ActionPanelComponent {
 
       this.closePanel(true);
     } catch (e) {
-      console.error('Error al eliminar la tarea activa:', e);
-      this.errorService.show('Error al eliminar la tarea');
+      this.errorService.handle(e, 'Error al eliminar la tarea');
     } finally {
       this.isBusy = false;
     }
@@ -192,8 +188,7 @@ export class ActionPanelComponent {
       await this.toast.success('Tarea eliminada globalmente');
       this.closePanel(true);
     } catch (e) {
-      console.error('Error al eliminar la tarea global:', e);
-      this.errorService.show('Error al eliminar la tarea global');
+      this.errorService.handle(e, 'Error al eliminar la tarea global');
     } finally {
       this.isBusy = false;
     }

@@ -55,27 +55,25 @@ export class ShopTabComponent implements ViewWillEnter {
   }
 
   async loadData() {
-    this.loadingService.show('Cargando tienda...');
     try {
-      const [collections, coins, inventory] = await Promise.all([
-        this.shopService.getUnownedCollections(),
-        this.playerStateService.getCoins(),
-        this.itemService.getAllInventoryItems(),
-      ]);
-      this.unownedCollections = collections;
-      this.playerCoins = coins;
+      await this.loadingService.runWithLoading(async () => {
+        const [collections, coins, inventory] = await Promise.all([
+          this.shopService.getUnownedCollections(),
+          this.playerStateService.getCoins(),
+          this.itemService.getAllInventoryItems(),
+        ]);
+        this.unownedCollections = collections;
+        this.playerCoins = coins;
 
-      // Construir el mapa de cantidades
-      const map: Record<number, number> = {};
-      for (const it of inventory) {
-        map[it.id] = (map[it.id] ?? 0) + (it.quantity ?? 0);
-      }
-      this.inventoryCounts = map;
+        // Construir el mapa de cantidades
+        const map: Record<number, number> = {};
+        for (const it of inventory) {
+          map[it.id] = (map[it.id] ?? 0) + (it.quantity ?? 0);
+        }
+        this.inventoryCounts = map;
+      }, 'Cargando tienda...');
     } catch (error) {
-      console.error('Error al cargar la tienda', error);
-      this.errorService.show('Error al cargar la tienda');
-    } finally {
-      this.loadingService.hide();
+      this.errorService.handle(error, 'Error al cargar la tienda');
     }
   }
 
@@ -99,8 +97,7 @@ export class ShopTabComponent implements ViewWillEnter {
       this.updateUISuccess(collection);
       await this.toast.success(`¡Colección ${collection.name} adquirida!`);
     } catch (error) {
-      console.error('Error al comprar la colección', error);
-      this.errorService.show('Error al comprar la colección');
+      this.errorService.handle(error, 'Error al comprar la colección');
     } finally {
       this.isBuying = false;
     }

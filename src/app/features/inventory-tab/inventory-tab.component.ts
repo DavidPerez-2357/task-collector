@@ -56,8 +56,7 @@ export class InventoryTabComponent implements ViewWillEnter {
       this.allItems = await this.itemService.getAllInventoryItems();
       this.buildShelvesFromAllItems();
     } catch (error) {
-      console.error('Error loading items:', error);
-      this.errorService.show('Error cargando inventario');
+      this.errorService.handle(error, 'Error cargando inventario');
     } finally {
       this.loadingService.hide();
     }
