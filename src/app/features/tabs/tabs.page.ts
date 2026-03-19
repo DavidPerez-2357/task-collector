@@ -1,7 +1,6 @@
 import { Component, DestroyRef, EnvironmentInjector, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
 import { RouterLink } from '@angular/router';
 import { CreateTaskModalComponent } from '@shared/components/create-task-modal/create-task-modal.component';
 import { SettingsModalComponent } from '@shared/components/settings-modal/settings-modal.component';
