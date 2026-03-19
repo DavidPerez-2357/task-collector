@@ -94,25 +94,6 @@ main {
   gap: 1.1rem;
 }
 
-.coins-reward {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-
-  .gem-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-  }
-
-  .coins-amount {
-    font-size: 1.3rem;
-    color: var(--ion-color-secondary);
-    font-weight: bold;
-  }
-}
-
 header {
   display: flex;
   flex-direction: column;

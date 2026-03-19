@@ -25,7 +25,6 @@ export class ItemAcquiredModalComponent implements OnChanges {
   @Input() isOpen: boolean = false;
   @Input() item: ItemInventory | null = null;
   @Input() amount: number = 1;
-  @Input() coinsEarned: number = 0;
 
   @Output() dismissed = new EventEmitter<void>();
   @Output() acknowledged = new EventEmitter<void>();
