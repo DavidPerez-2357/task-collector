@@ -155,6 +155,21 @@ Follow this strict layering when adding code:
   - `@environments/*` → `src/environments/*`
   - `@assets/*` → `src/assets/*`
 
+### Language
+
+- **Code is written in English**: all identifiers (variables, functions, classes, files, selectors, etc.) must use English.
+- **Comments are written in Spanish**: inline comments, block comments, and JSDoc must be in Spanish.
+
+```typescript
+// ✅ Correcto
+// Calcula el total de monedas ganadas en el ciclo actual
+const totalCoins = earnedCoins + bonusCoins;
+
+// ❌ Incorrecto — comentario en inglés
+// Calculate total coins earned in the current cycle
+const totalCoins = earnedCoins + bonusCoins;
+```
+
 ### Formatting
 
 - **Prettier** is the formatter (auto-runs on save via VSCode settings).
@@ -246,6 +261,26 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 ```
 
 Keep messages **short and concise** — describe _what_ was done, not _how_.
+
+## Pull Request Titles
+
+Pull Request titles on GitHub follow the **same gitmoji convention** as commit messages: start with the relevant emoji, followed by a short imperative description in English.
+
+### Format
+
+```
+<gitmoji> <Short imperative description>
+```
+
+### Examples
+
+```
+⚡ Optimize image loading
+✨ Add shop item purchase flow
+🐛 Fix coin reset on weekly tasks
+♻️ Refactor task repository queries
+💄 Update tab bar icons and colors
+```
 
 ## Branch Naming
 
