@@ -34,7 +34,7 @@
               type="secondary"
               [border]="true"
               btnClass="action-btn flex center rounded-sm h-full"
-              [disabled]="isBusy || !canPostpone"
+              [disabled]="guard.isBusy || !canPostpone"
               (handleClick)="postponeTask()"
             >
               <ion-icon name="arrow-forward-outline"></ion-icon>
