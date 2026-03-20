@@ -10,6 +10,7 @@ import {
   getNextWeekdayMs,
   parseDueDateToEndOfDay,
 } from '@core/utils/date.util';
+import { SOFT_DELETE_SET, sqlNotDeleted } from '@core/utils/soft-delete.util';
 
 @Injectable({
   providedIn: 'root',
@@ -196,11 +197,17 @@ export class TaskRepository {
   }
 
   /**
-   * Elimina la tarea global (plantilla) y opcionalmente su instancia activa.
+   * Soft-deletes the global task template and hard-deletes its active instance(s).
+   *
+   * Convention:
+   *  - `task` rows use soft delete (deleted = 1) so that history and foreign-key
+   *    references remain intact.
+   *  - `task_active` rows are hard-deleted because they are transient scheduling
+   *    records with no long-term audit value.
    */
   async deleteGlobalTask(taskId: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
-      await conn.run(`UPDATE task SET deleted = 1 WHERE id = ?`, [taskId]);
+      await conn.run(`UPDATE task SET ${SOFT_DELETE_SET} WHERE id = ?`, [taskId]);
       await conn.run(`DELETE FROM task_active WHERE task_id = ?`, [taskId]);
     });
   }
@@ -220,7 +227,7 @@ export class TaskRepository {
         JOIN task t ON ta.task_id = t.id
         JOIN category c ON t.category_id = c.id
         LEFT JOIN weekly_recurrence wr ON t.id = wr.task_id
-        WHERE t.deleted = 0
+        WHERE ${sqlNotDeleted('t')}
         GROUP BY ta.id
         ORDER BY ta.end_date
       `,
@@ -254,7 +261,7 @@ export class TaskRepository {
   > {
     return await this.databaseService.withConn(async (conn) => {
       const res = await conn.query(
-        `SELECT id, frequency, interval, anchor_date FROM task WHERE frequency != 0 AND deleted = 0`,
+        `SELECT id, frequency, interval, anchor_date FROM task WHERE frequency != 0 AND ${sqlNotDeleted()}`,
         [],
       );
 
