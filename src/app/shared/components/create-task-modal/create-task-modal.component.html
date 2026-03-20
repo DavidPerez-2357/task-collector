@@ -1,62 +1,57 @@
-<ion-modal [isOpen]="isOpen" (didDismiss)="onDismiss()">
+<ion-modal [isOpen]="isOpen()" (didDismiss)="onDismiss()">
   <ng-template>
     <div class="modal-wrapper">
       <app-board width="medium">
         <div class="modal-content">
           <h2>
-            @if (isEditMode) {
-              {{ editMode === 'global' ? 'Editar Tarea Global' : 'Editar esta vez' }}
+            @if (isEditMode()) {
+              {{ editMode() === 'global' ? 'Editar Tarea Global' : 'Editar esta vez' }}
             } @else {
               Nueva Tarea
             }
           </h2>
 
-          <div class="form-container">
-            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
+          <div class="form-container" [formGroup]="form">
+            <div class="input-group" [class.disabled]="isEditMode() && editMode() === 'instance'">
               <label>Nombre de la Tarea</label>
               <input
                 type="text"
-                [(ngModel)]="taskName"
+                formControlName="name"
                 placeholder="Ej. Estudiar inglés"
                 maxlength="40"
-                [disabled]="isEditMode && editMode === 'instance'"
               />
             </div>
 
-            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
+            <div class="input-group" [class.disabled]="isEditMode() && editMode() === 'instance'">
               <label>Categoría</label>
-              <select
-                [(ngModel)]="selectedCategoryId"
-                [disabled]="isEditMode && editMode === 'instance'"
-              >
-                @for (category of categories; track category.id) {
+              <select formControlName="categoryId">
+                @for (category of categories(); track category.id) {
                   <option [value]="category.id">{{ category.name }}</option>
                 }
               </select>
             </div>
 
-            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
+            <div class="input-group" [class.disabled]="isEditMode() && editMode() === 'instance'">
               <label>Frecuencia</label>
-              <select
-                [(ngModel)]="taskFrequency"
-                [disabled]="isEditMode && editMode === 'instance'"
-              >
+              <select formControlName="frequency">
                 @for (freq of frequencies; track freq.value) {
                   <option [value]="freq.value">{{ freq.label }}</option>
                 }
               </select>
             </div>
 
-            @if (isWeekly) {
+            @if (isWeekly()) {
               <div class="input-group">
                 <label>Días de la semana</label>
                 <div class="weekdays-selector">
                   @for (day of weekdaysList; track day.value) {
                     <div
                       class="weekday-chip"
-                      [class.selected]="selectedWeekdays.includes(day.value)"
-                      [class.disabled]="isEditMode && editMode === 'instance'"
-                      (click)="!(isEditMode && editMode === 'instance') && toggleWeekday(day.value)"
+                      [class.selected]="selectedWeekdays().includes(day.value)"
+                      [class.disabled]="isEditMode() && editMode() === 'instance'"
+                      (click)="
+                        !(isEditMode() && editMode() === 'instance') && toggleWeekday(day.value)
+                      "
                     >
                       {{ day.label }}
                     </div>
@@ -64,38 +59,32 @@
                 </div>
               </div>
             }
-            @if (!isOneTime) {
-              <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
+            @if (!isOneTime()) {
+              <div class="input-group" [class.disabled]="isEditMode() && editMode() === 'instance'">
                 <label>Intervalo</label>
                 <div class="interval-input">
                   <span>Repetir cada</span>
-                  <input
-                    type="number"
-                    [(ngModel)]="taskInterval"
-                    min="1"
-                    max="365"
-                    [disabled]="isEditMode && editMode === 'instance'"
-                  />
-                  <span>{{ getIntervalLabel() }}</span>
+                  <input type="number" formControlName="interval" min="1" max="365" />
+                  <span>{{ intervalLabel() }}</span>
                 </div>
               </div>
             }
 
-            <div class="input-group" [class.disabled]="isEditMode && editMode === 'instance'">
+            <div class="input-group" [class.disabled]="isEditMode() && editMode() === 'instance'">
               <label>Esfuerzo (Determina el coste)</label>
-              <select [(ngModel)]="taskEffort" [disabled]="isEditMode && editMode === 'instance'">
+              <select formControlName="effort">
                 @for (effort of efforts; track effort.value) {
                   <option [value]="effort.value">{{ effort.label }}</option>
                 }
               </select>
             </div>
 
-            @if (!isWeekly) {
+            @if (!isWeekly()) {
               <div class="input-group">
                 <label>Fecha límite</label>
                 <input
                   type="date"
-                  [(ngModel)]="taskDueDate"
+                  formControlName="dueDate"
                   (change)="onDueDateChange()"
                   class="date-input"
                 />
@@ -113,17 +102,13 @@
               type="medium"
               [fill]="false"
               (handleClick)="onDismiss()"
-              [disabled]="isSubmitting"
+              [disabled]="isSubmitting()"
             >
               Cancelar
             </app-button>
 
-            <app-button
-              type="gem"
-              (handleClick)="onSubmit()"
-              [disabled]="isSubmitting || !taskName.trim() || selectedCategoryId === null"
-            >
-              {{ isEditMode ? 'Guardar' : 'Crear' }}
+            <app-button type="gem" (handleClick)="onSubmit()" [disabled]="isSubmitDisabled()">
+              {{ isEditMode() ? 'Guardar' : 'Crear' }}
             </app-button>
           </div>
         </div>
