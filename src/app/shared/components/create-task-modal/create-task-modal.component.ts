@@ -24,8 +24,6 @@ export class CreateTaskModalComponent implements OnInit {
   editMode = input<'global' | 'instance'>('global');
   dismissed = output<void>();
 
-  readonly TaskFrequency = TaskFrequency;
-
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
@@ -185,10 +183,19 @@ export class CreateTaskModalComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
+    // Primero validamos formulario acorde al modo (instance vs global/create)
     if (!(await this.validateForm())) return;
 
     this.isSubmitting.set(true);
     try {
+      // Si estamos editando solo la instancia, no necesitamos resolver la categoría
+      if (this.isEditMode() && this.editMode() === 'instance') {
+        await this.updateInstance();
+        this.completeSubmission();
+        return;
+      }
+
+      // Para crear o editar globalmente necesitamos la categoría seleccionada
       const categoryId = Number(this.form.getRawValue().categoryId);
       const selectedCategory = this.categories().find((c) => c.id === categoryId);
       if (!selectedCategory) {
@@ -212,17 +219,43 @@ export class CreateTaskModalComponent implements OnInit {
     }
   }
 
-  private async validateForm(): Promise<boolean> {
-    const v = this.form.getRawValue();
-    if (!v.name?.trim() || v.categoryId === null) return false;
+  private async showWarning(message: string): Promise<void> {
+    await this.toast.show({
+      message,
+      color: 'warning',
+    });
+  }
 
-    if (this.isWeekly() && this.selectedWeekdays().length === 0) {
-      await this.toast.show({
-        message: 'Selecciona al menos un día de la semana.',
-        color: 'warning',
-      });
+  private async validateForm(): Promise<boolean> {
+    const isInstanceEdit = this.isEditMode() && this.editMode() === 'instance';
+
+    const v = this.form.getRawValue();
+    const frequency = Number(v.frequency);
+    const isWeekly = frequency === TaskFrequency.Weekly;
+
+    // Instance-only edits: only validate rules that affect the instance
+    if (isInstanceEdit) {
+      if (isWeekly && this.selectedWeekdays().length === 0) {
+        await this.showWarning('Selecciona al menos un día de la semana.');
+        return false;
+      }
+      return true;
+    }
+
+    // Create / global-edit: name and category are required
+    const namePresent = !!v.name?.trim();
+    const categoryPresent = v.categoryId !== null && v.categoryId !== undefined;
+    if (!namePresent || !categoryPresent) {
+      await this.showWarning('Rellena el nombre y selecciona una categoría.');
       return false;
     }
+
+    // For weekly frequency, ensure at least one weekday selected
+    if (isWeekly && this.selectedWeekdays().length === 0) {
+      await this.showWarning('Selecciona al menos un día de la semana.');
+      return false;
+    }
+
     return true;
   }
 
