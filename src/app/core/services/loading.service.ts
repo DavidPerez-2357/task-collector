@@ -114,9 +114,22 @@ export class LoadingService {
    * Execute an async operation while showing the global loading overlay.
    *
    * The overlay is shown only after `delayMs` milliseconds (default 150 ms)
-   * to avoid a visual flash for very fast operations.  When the overlay
+   * to avoid a visual flash for very fast operations. When the overlay
    * does appear it stays visible for at least `minVisibleMs` (400 ms) to
    * prevent an abrupt flicker.
+   *
+   * This helper is optimised for top-level operations. It uses a delayed
+   * internal `show()` call, so it does **not** extend the lifetime of an
+   * already-visible global overlay. If `runWithLoading()` is called while
+   * another operation is controlling the overlay (via `show()`/`hide()` or
+   * a different `runWithLoading()`), that other operation may still hide
+   * the overlay before this `work` completes, which can cause a brief
+   * hide/show flicker.
+   *
+   * If you need strictly nested, reference-counted behaviour (i.e. the
+   * overlay must remain visible until *all* operations finish), prefer
+   * manual `show()` / `hide()` around your async work instead of composing
+   * several `runWithLoading()` calls.
    *
    * Errors thrown by `work` are **not caught** – they propagate to the
    * caller so that each call-site can apply its own error-handling strategy
