@@ -40,6 +40,9 @@ export class CreateTaskModalComponent implements OnInit {
   /** True solo si el usuario tocó el campo de fecha manualmente en esta sesión de edición. */
   dueDateExplicitlyChanged = signal(false);
 
+  // Flag para evitar desbloquear el scroll al iniciar el componente
+  private openedOnce = false;
+
   // Static options
   readonly frequencies = [
     { value: TaskFrequency.No_repeat, label: 'Una sola vez' },
@@ -117,7 +120,13 @@ export class CreateTaskModalComponent implements OnInit {
 
     // React to isOpen input signal: lock/unlock body scroll
     effect(() => {
-      this.toggleBodyScroll(this.isOpen());
+      const open = this.isOpen();
+      // Skip the initial false emission so we don't unlock body scroll if other modals set it
+      if (!this.openedOnce) {
+        this.openedOnce = true;
+        if (!open) return;
+      }
+      this.toggleBodyScroll(open);
     });
 
     // React to editMode signal: disable/enable form controls for instance-only editing
