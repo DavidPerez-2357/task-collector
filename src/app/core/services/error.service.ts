@@ -3,30 +3,30 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { AppError, AppErrorKind } from '@core/types/error.types';
 
 /**
- * Global error bus for the application.
+ * Bus global de errores de la aplicación.
  *
- * ## Usage
+ * ## Uso
  *
- * ### User-facing error (validation / business logic)
+ * ### Error visible para el usuario (validación / lógica de negocio)
  * ```ts
  * this.errorService.showUser('No tienes gemas suficientes.');
  * ```
  *
- * ### Technical / unexpected error (DB failure, network, etc.)
+ * ### Error técnico / inesperado (fallo de BD, red, etc.)
  * ```ts
  * } catch (e) {
  *   this.errorService.handle(e, 'Error al cargar la tienda.');
  * }
  * ```
- * `handle()` logs the original exception to the console and shows a
- * user-friendly fallback message in the error modal.
+ * `handle()` registra la excepción original en consola y muestra un
+ * mensaje de fallback amigable en el modal de error.
  *
- * ### Resetting the error state
+ * ### Limpiar el estado de error
  * ```ts
  * this.errorService.clear();
  * ```
  *
- * ### Subscribing in a component
+ * ### Suscribirse en un componente
  * ```ts
  * error$ = this.errorService.error$;          // Observable<AppError | null>
  * errorOpen$ = this.errorService.error$.pipe(map((e) => !!e));
@@ -38,26 +38,26 @@ import { AppError, AppErrorKind } from '@core/types/error.types';
 export class ErrorService {
   private errorSubject = new BehaviorSubject<AppError | null>(null);
 
-  /** Emits the current {@link AppError} or `null` when there is no active error. */
+  /** Emite el {@link AppError} actual o `null` cuando no hay ningún error activo. */
   readonly error$: Observable<AppError | null> = this.errorSubject.asObservable();
 
   constructor() {}
 
   /**
-   * Show a user-facing error message (e.g. validation or business-logic failures).
-   * The message is displayed as-is in the error modal.
+   * Muestra un mensaje de error visible para el usuario (p. ej. validaciones o fallos de lógica de negocio).
+   * El mensaje se muestra tal cual en el modal de error.
    */
   showUser(message: string): void {
     this.errorSubject.next({ kind: 'user', message });
   }
 
   /**
-   * Handle an unexpected technical error.
-   * Logs the original exception to the console and shows `fallbackMessage`
-   * in the error modal with `kind: 'technical'`.
+   * Gestiona un error técnico inesperado.
+   * Registra la excepción original en consola y muestra `fallbackMessage`
+   * en el modal de error con `kind: 'technical'`.
    *
-   * @param error          – The caught exception (logged to console).
-   * @param fallbackMessage – A user-friendly message to display in the UI.
+   * @param error          – La excepción capturada (se registra en consola).
+   * @param fallbackMessage – Mensaje amigable para mostrar en la UI.
    */
   handle(error: unknown, fallbackMessage: string): void {
     console.error(fallbackMessage, error);
@@ -65,30 +65,30 @@ export class ErrorService {
   }
 
   /**
-   * @deprecated Use {@link showUser} for user-facing errors or
-   *             {@link handle} for unexpected technical errors.
-   *             Kept for backward compatibility – maps to {@link showUser}.
+   * @deprecated Usar {@link showUser} para errores visibles al usuario o
+   *             {@link handle} para errores técnicos inesperados.
+   *             Mantenido por compatibilidad hacia atrás – delega en {@link showUser}.
    */
   show(message: string): void {
     this.showUser(message);
   }
 
-  /** Clear the current error state. */
+  /** Limpia el estado de error actual. */
   clear(): void {
     this.errorSubject.next(null);
   }
 
-  /** Returns `true` if an error is currently active. */
+  /** Devuelve `true` si hay un error activo en este momento. */
   isError(): boolean {
     return this.errorSubject.getValue() !== null;
   }
 
-  /** Returns the kind of the current error, or `null` if none. */
+  /** Devuelve el tipo del error actual, o `null` si no hay ninguno. */
   currentKind(): AppErrorKind | null {
     return this.errorSubject.getValue()?.kind ?? null;
   }
 
-  /** Returns the current error message, or `null` if none. */
+  /** Devuelve el mensaje de error actual, o `null` si no hay ninguno. */
   currentMessage(): string | null {
     return this.errorSubject.getValue()?.message ?? null;
   }

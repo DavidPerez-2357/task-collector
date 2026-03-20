@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
- * Global loading overlay service.
+ * Servicio global del overlay de carga.
  *
- * ## Loading strategy
+ * ## Estrategia de loading
  *
- * ### Global loading (app-wide overlay)
- * Use for operations that block the entire UI (e.g. DB initialisation,
- * tab data fetch on first load).  The overlay is shown over the whole screen.
+ * ### Loading global (overlay a nivel de aplicación)
+ * Usar para operaciones que bloquean toda la UI (p. ej. inicialización de BD,
+ * carga de datos de una pestaña en el primer acceso). El overlay cubre toda la pantalla.
  *
- * **Preferred pattern – single call:**
+ * **Patrón recomendado – llamada única:**
  * ```ts
  * await this.loadingService.runWithLoading(
  *   () => this.myService.fetchData(),
@@ -18,7 +18,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
  * );
  * ```
  *
- * **Alternative – manual show / hide (use only when `runWithLoading` is insufficient):**
+ * **Alternativa – show / hide manual (usar solo cuando `runWithLoading` no sea suficiente):**
  * ```ts
  * this.loadingService.show('Cargando...');
  * try {
@@ -28,10 +28,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
  * }
  * ```
  *
- * ### Local loading (single view / component)
- * For operations that should only indicate loading within a specific view
- * (e.g. refreshing a single card), manage a component-local boolean or
- * Angular signal instead of using this service:
+ * ### Loading local (vista / componente individual)
+ * Para operaciones que solo deben indicar carga dentro de una vista concreta
+ * (p. ej. refrescar una tarjeta), gestionar un booleano local del componente
+ * o una señal de Angular en lugar de usar este servicio:
  * ```ts
  * isLoading = signal(false);
  *
@@ -44,32 +44,32 @@ import { BehaviorSubject, Observable } from 'rxjs';
  *   }
  * }
  * ```
- * Bind it to a spinner or skeleton in the template without touching the global overlay.
+ * Enlazarlo a un spinner o skeleton en la plantilla sin tocar el overlay global.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class LoadingService {
-  // Counter to handle nested show/hide calls
+  // Contador para gestionar llamadas anidadas a show/hide
   private loadingCounter = 0;
 
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private messageSubject = new BehaviorSubject<string | null>(null);
 
-  /** Emits `true` while the global loading overlay is visible. */
+  /** Emite `true` mientras el overlay de carga global es visible. */
   readonly loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
-  /** Emits the current loading message (or `null` when idle). */
+  /** Emite el mensaje de carga actual (o `null` cuando está inactivo). */
   readonly message$: Observable<string | null> = this.messageSubject.asObservable();
 
   constructor() {}
 
   /**
-   * Show the global loading overlay.
-   * Supports nested calls – the overlay stays visible until each `show()`
-   * has a matching `hide()`.
+   * Muestra el overlay de carga global.
+   * Admite llamadas anidadas: el overlay permanece visible hasta que cada `show()`
+   * tenga su correspondiente `hide()`.
    *
-   * @param message – Optional label to display in the overlay.
+   * @param message – Etiqueta opcional a mostrar en el overlay.
    */
   show(message?: string): void {
     this.loadingCounter += 1;
@@ -80,13 +80,13 @@ export class LoadingService {
   }
 
   /**
-   * Hide the global loading overlay.
-   * The overlay is only dismissed once the internal counter reaches zero,
-   * allowing safe nesting of `show()` / `hide()` calls.
+   * Oculta el overlay de carga global.
+   * El overlay solo se cierra cuando el contador interno llega a cero,
+   * lo que permite anidar de forma segura las llamadas a `show()` / `hide()`.
    */
   hide(): void {
     if (this.loadingCounter <= 0) {
-      // Guard against unbalanced hide() calls
+      // Protección frente a llamadas a hide() sin su show() correspondiente
       this.loadingCounter = 0;
       this.loadingSubject.next(false);
       this.messageSubject.next(null);
@@ -100,42 +100,41 @@ export class LoadingService {
     }
   }
 
-  /** Synchronous helper – returns `true` while the overlay is visible. */
+  /** Ayudante síncrono – devuelve `true` mientras el overlay es visible. */
   isLoading(): boolean {
     return this.loadingSubject.getValue();
   }
 
-  /** Synchronous helper – returns the current loading message. */
+  /** Ayudante síncrono – devuelve el mensaje de carga actual. */
   currentMessage(): string | null {
     return this.messageSubject.getValue();
   }
 
   /**
-   * Execute an async operation while showing the global loading overlay.
+   * Ejecuta una operación asíncrona mostrando el overlay de carga global.
    *
-   * The overlay is shown only after `delayMs` milliseconds (default 150 ms)
-   * to avoid a visual flash for very fast operations. When the overlay
-   * does appear it stays visible for at least `minVisibleMs` (400 ms) to
-   * prevent an abrupt flicker.
+   * El overlay se muestra solo después de `delayMs` milisegundos (por defecto 150 ms)
+   * para evitar un parpadeo visual en operaciones muy rápidas. Cuando el overlay
+   * llega a mostrarse, permanece visible al menos `minVisibleMs` (400 ms) para
+   * evitar un cierre brusco.
    *
-   * This helper is optimised for top-level operations. It uses a delayed
-   * internal `show()` call, so it does **not** extend the lifetime of an
-   * already-visible global overlay. If `runWithLoading()` is called while
-   * another operation is controlling the overlay (via `show()`/`hide()` or
-   * a different `runWithLoading()`), that other operation may still hide
-   * the overlay before this `work` completes, which can cause a brief
-   * hide/show flicker.
+   * Este método está optimizado para operaciones de nivel superior. Utiliza una
+   * llamada interna retardada a `show()`, por lo que **no** extiende el tiempo de vida
+   * de un overlay global ya visible. Si se llama a `runWithLoading()` mientras otra
+   * operación controla el overlay (vía `show()`/`hide()` o un `runWithLoading()` distinto),
+   * esa otra operación puede cerrar el overlay antes de que este `work` termine,
+   * lo que puede provocar un breve parpadeo de cierre/apertura.
    *
-   * If you need strictly nested, reference-counted behaviour (i.e. the
-   * overlay must remain visible until *all* operations finish), prefer
-   * manual `show()` / `hide()` around your async work instead of composing
-   * several `runWithLoading()` calls.
+   * Si se necesita un comportamiento estrictamente anidado con contador de referencias
+   * (es decir, el overlay debe permanecer visible hasta que *todas* las operaciones
+   * terminen), es preferible usar `show()` / `hide()` manual alrededor del trabajo
+   * asíncrono en lugar de componer varios `runWithLoading()`.
    *
-   * Errors thrown by `work` are **not caught** – they propagate to the
-   * caller so that each call-site can apply its own error-handling strategy
-   * (e.g. `errorService.handle()`).
+   * Los errores lanzados por `work` **no se capturan** – se propagan al llamante
+   * para que cada punto de uso aplique su propia estrategia de gestión de errores
+   * (p. ej. `errorService.handle()`).
    *
-   * ### Typical usage
+   * ### Uso típico
    * ```ts
    * try {
    *   await this.loadingService.runWithLoading(
@@ -147,16 +146,16 @@ export class LoadingService {
    * }
    * ```
    *
-   * @param work     – Async work to perform.
-   * @param message  – Optional overlay label.
-   * @param delayMs  – Milliseconds to wait before showing the overlay (default 150).
+   * @param work     – Trabajo asíncrono a realizar.
+   * @param message  – Etiqueta opcional del overlay.
+   * @param delayMs  – Milisegundos a esperar antes de mostrar el overlay (por defecto 150).
    */
   async runWithLoading<T>(
     work: () => Promise<T>,
     message?: string,
     delayMs: number = 150,
   ): Promise<T> {
-    // Minimum visible time when the overlay is shown to avoid very short flashes
+    // Tiempo mínimo de visibilidad cuando el overlay se muestra para evitar parpadeos muy cortos
     const minVisibleMs = 400;
     let shown = false;
     let shownAt = 0;

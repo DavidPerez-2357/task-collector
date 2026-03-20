@@ -1,17 +1,17 @@
 /**
- * Distinguishes between user-facing errors and internal technical errors.
+ * Distingue entre errores visibles para el usuario y errores técnicos internos.
  *
- * - `'user'`      – A business-logic or validation error that the user can act on
- *                   (e.g. "No tienes gemas suficientes").  Show the exact message.
- * - `'technical'` – An unexpected internal error (DB failure, network, etc.).
- *                   The original exception is logged to the console; the user
- *                   sees a generic, non-technical fallback message.
+ * - `'user'`      – Error de lógica de negocio o validación sobre el que el usuario puede actuar
+ *                   (p. ej. "No tienes gemas suficientes"). Se muestra el mensaje exacto.
+ * - `'technical'` – Error interno inesperado (fallo de BD, red, etc.).
+ *                   La excepción original se registra en consola; el usuario
+ *                   ve un mensaje de fallback genérico y no técnico.
  */
 export type AppErrorKind = 'user' | 'technical';
 
-/** Structured error object emitted by {@link ErrorService}. */
+/** Objeto de error estructurado emitido por {@link ErrorService}. */
 export interface AppError {
   kind: AppErrorKind;
-  /** Human-readable message to display in the UI. */
+  /** Mensaje legible para mostrar en la UI. */
   message: string;
 }

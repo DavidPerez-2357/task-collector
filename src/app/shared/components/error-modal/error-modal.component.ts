@@ -16,13 +16,13 @@ export class ErrorModalComponent {
   @Input({ transform: booleanAttribute }) isOpen: boolean = false;
 
   /**
-   * Structured error to display.  Pass the value emitted by
-   * `ErrorService.error$`.  When provided it takes precedence over
-   * the legacy `message` input.
+   * Error estructurado a mostrar. Pasar el valor emitido por
+   * `ErrorService.error$`. Cuando se proporciona, tiene precedencia sobre
+   * el input `message` heredado.
    */
   @Input() error: AppError | null = null;
 
-  /** @deprecated Pass an {@link AppError} via the `error` input instead. */
+  /** @deprecated Pasar un {@link AppError} mediante el input `error` en su lugar. */
   @Input() message: string | null = null;
 
   @Input() title: string = 'Error';
@@ -45,14 +45,14 @@ export class ErrorModalComponent {
     this.modal.dismiss();
   }
 
-  /** Resolved message to display; prefers `error.message` over legacy `message`. */
+  /** Mensaje resuelto a mostrar; prioriza `error.message` sobre el `message` heredado. */
   get displayMessage(): string {
     const msg = this.error?.message ?? this.message;
     if (msg === null || msg === undefined) return '';
     return msg;
   }
 
-  /** CSS class applied to the modal root based on the error kind. */
+  /** Clase CSS aplicada en la raíz del modal según el tipo de error. */
   get errorKindClass(): string {
     return this.error?.kind === 'technical' ? 'error-technical' : 'error-user';
   }
