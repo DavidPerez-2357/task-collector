@@ -48,7 +48,7 @@ Always consult `package.json` and use features appropriate to the versions in us
 | TypeScript     | ~5.9    | Strict mode, template literal types, `satisfies` operator, `using` keyword for resource management                  |
 | RxJS           | ~7.8    | Pipeable operators, `takeUntilDestroyed`, avoid deprecated patterns (e.g., `toPromise()`)                           |
 | Ionic          | ^8      | Current component APIs; avoid deprecated Ionic 4/5 patterns                                                         |
-| Capacitor      | 8       | Current plugin APIs; always handle the web fallback                                                                  |
+| Capacitor      | ^8      | Current plugin APIs; always handle the web fallback                                                                  |
 | ESLint         | ^9      | Using legacy `.eslintrc.json` config; ESLint 9 supports flat config but this project hasn’t migrated yet—Copilot should not suggest adding `eslint.config.*` by default |
 
 ### Performance & Security
