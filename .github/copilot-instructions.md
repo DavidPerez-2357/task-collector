@@ -65,7 +65,7 @@ Keep the following in mind when writing or reviewing code.
 
 #### Security
 
-- **No secrets in source code**: Never commit API keys, tokens, credentials, or other sensitive values. Use environment files (git-ignored) or platform-secure storage (`@capacitor/preferences`).
+- **No secrets in source code**: Never commit API keys, tokens, credentials, or other sensitive values. Store them in git-ignored environment files and, on devices, use platform-secure storage (OS keychain/keystore or a secure storage plugin) for secrets. Use `@capacitor/preferences` only for non-secret configuration data.
 - **SQL injection prevention**: Always use parameterised queries (pass values as an array) in SQLite operations — never concatenate user input directly into SQL strings.
 - **Input validation**: Validate and sanitise all user-provided input before processing or persisting it.
 - **Dependency hygiene**: When adding or updating packages, verify there are no known vulnerabilities before committing.
