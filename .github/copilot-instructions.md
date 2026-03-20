@@ -26,6 +26,50 @@ npm run lint         # Run ESLint + Prettier checks
 npm run format       # Auto-format all files with Prettier
 ```
 
+## Code Quality Standards
+
+### Senior Developer Mindset
+
+When generating or reviewing code for this project, apply the standards of a senior developer:
+
+- **Clean code**: Keep functions and classes small, focused, and easy to understand. Favour readability over cleverness.
+- **Well-structured**: Follow the project's [layered architecture](#layered-architecture). Place every piece of code in the correct layer.
+- **Descriptive naming**: Use clear, self-documenting names for variables, functions, classes, and files. Avoid abbreviations unless widely understood (e.g., `id`, `url`, `db`).
+- **Comments**: Add comments only when they explain _why_ something is done, not _what_ it does. Complex logic, non-obvious decisions, or workarounds warrant a brief explanation.
+- **Framework conventions**: Follow Angular, Ionic, TypeScript, and RxJS idioms as they apply to the versions used in this project.
+
+### Version Awareness
+
+Always consult `package.json` and use features appropriate to the versions in use. Do not suggest patterns, APIs, or workarounds that are deprecated or superseded by the versions listed below.
+
+| Package        | Version | Key modern features to use                                                                                           |
+| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| Angular        | ^20     | Signals (`signal`, `computed`, `effect`), standalone components, `inject()`, built-in control flow (`@if`, `@for`)  |
+| TypeScript     | ~5.9    | Strict mode, template literal types, `satisfies` operator, `using` keyword for resource management                  |
+| RxJS           | ~7.8    | Pipeable operators, `takeUntilDestroyed`, avoid deprecated patterns (e.g., `toPromise()`)                           |
+| Ionic          | ^8      | Current component APIs; avoid deprecated Ionic 4/5 patterns                                                         |
+| Capacitor      | 8       | Current plugin APIs; always handle the web fallback                                                                  |
+| ESLint         | ^9      | Flat config format (`eslint.config.*`)                                                                               |
+
+### Performance & Security
+
+Keep the following in mind when writing or reviewing code.
+
+#### Performance
+
+- **Avoid memory leaks**: Unsubscribe from Observables using `takeUntilDestroyed`, the `async` pipe, or explicit cleanup in `ngOnDestroy`. Release all resources when components are destroyed.
+- **Change detection**: Prefer Signals and `OnPush` change detection to minimise unnecessary re-renders.
+- **Lazy loading**: Keep feature modules and routes lazy-loaded. Do not import heavy dependencies eagerly.
+- **Efficient DB access**: Serialise DB operations with `withLock`; batch writes with `executeSet` where possible; avoid redundant queries.
+- **Scalability**: Design services and repositories so that adding new data or features does not require rewriting existing logic.
+
+#### Security
+
+- **No secrets in source code**: Never commit API keys, tokens, credentials, or other sensitive values. Use environment files (git-ignored) or platform-secure storage (`@capacitor/preferences`).
+- **SQL injection prevention**: Always use parameterised queries (pass values as an array) in SQLite operations — never concatenate user input directly into SQL strings.
+- **Input validation**: Validate and sanitise all user-provided input before processing or persisting it.
+- **Dependency hygiene**: When adding or updating packages, verify there are no known vulnerabilities before committing.
+
 ## Project Structure
 
 ```
