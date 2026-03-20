@@ -197,13 +197,13 @@ export class TaskRepository {
   }
 
   /**
-   * Soft-deletes the global task template and hard-deletes its active instance(s).
+   * Elimina lógicamente la plantilla global de tarea y elimina físicamente sus instancias activas.
    *
-   * Convention:
-   *  - `task` rows use soft delete (deleted = 1) so that history and foreign-key
-   *    references remain intact.
-   *  - `task_active` rows are hard-deleted because they are transient scheduling
-   *    records with no long-term audit value.
+   * Convención:
+   *  - Las filas de `task` usan borrado lógico (deleted = 1) para que el historial y las
+   *    referencias de claves foráneas se mantengan intactas.
+   *  - Las filas de `task_active` se eliminan físicamente porque son registros de
+   *    programación transitorios sin valor de auditoría a largo plazo.
    */
   async deleteGlobalTask(taskId: number): Promise<void> {
     return await this.databaseService.withConn(async (conn) => {
