@@ -1,36 +1,36 @@
 /**
- * Soft-delete / hard-delete convention
- * =====================================
- * Only the `task` table supports logical (soft) deletion via the `deleted` column
- * (INTEGER NOT NULL DEFAULT 0).
+ * Convención de soft-delete / hard-delete
+ * =======================================
+ * Solo la tabla `task` soporta eliminación lógica (soft delete) mediante la columna
+ * `deleted` (INTEGER NOT NULL DEFAULT 0).
  *
- * Convention:
- *  - Soft delete  → `UPDATE task SET deleted = 1 WHERE id = ?`
- *  - Active query → always add `WHERE <alias>.deleted = 0` (or `AND deleted = 0`)
- *  - Hard delete  → used for transient/child rows (task_active, weekly_recurrence,
- *                   inventory, junction tables). These rows have no business value
- *                   once removed and do not need an audit trail.
+ * Convención:
+ *  - Soft delete    → `UPDATE task SET deleted = 1 WHERE id = ?`
+ *  - Consulta activa → siempre añadir `WHERE <alias>.deleted = 0` (o `AND deleted = 0`)
+ *  - Hard delete    → se usa para filas transitorias/hijas (task_active, weekly_recurrence,
+ *                      inventory, tablas de unión). Estas filas no tienen valor de negocio
+ *                      una vez eliminadas y no necesitan un historial de auditoría.
  *
- * Use the helpers below instead of inlining literal SQL fragments so that any
- * future rename of the column only needs to change this one file.
+ * Usa los helpers de abajo en lugar de incrustar fragmentos SQL literales para que
+ * cualquier futuro renombrado de la columna solo requiera cambiar este archivo.
  */
 
-/** The name of the soft-delete flag column on the `task` table. */
+/** Nombre de la columna de marca de soft-delete en la tabla `task`. */
 export const SOFT_DELETE_COLUMN = 'deleted';
 
 /**
- * SQL fragment for the SET clause when soft-deleting a task.
- * Usage: `UPDATE task SET ${SOFT_DELETE_SET} WHERE id = ?`
+ * Fragmento SQL para la cláusula SET al hacer soft-delete de una tarea.
+ * Uso: `UPDATE task SET ${SOFT_DELETE_SET} WHERE id = ?`
  */
 export const SOFT_DELETE_SET = `${SOFT_DELETE_COLUMN} = 1`;
 
 /**
- * Returns a SQL filter fragment that excludes soft-deleted task rows.
+ * Devuelve un fragmento SQL de filtro que excluye filas soft-deleted de la tabla `task`.
  *
- * @param tableAlias - Optional alias for the `task` table (e.g. `'t'`).
+ * @param tableAlias - Alias opcional para la tabla `task` (por ejemplo `'t'`).
  *
- * Usage without alias: `WHERE ${sqlNotDeleted()}`
- * Usage with alias:    `WHERE ${sqlNotDeleted('t')}`
+ * Uso sin alias: `WHERE ${sqlNotDeleted()}`
+ * Uso con alias: `WHERE ${sqlNotDeleted('t')}`
  */
 export function sqlNotDeleted(tableAlias?: string): string {
   const col = tableAlias ? `${tableAlias}.${SOFT_DELETE_COLUMN}` : SOFT_DELETE_COLUMN;
