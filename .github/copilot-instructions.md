@@ -60,7 +60,7 @@ Keep the following in mind when writing or reviewing code.
 - **Avoid memory leaks**: Unsubscribe from Observables using `takeUntilDestroyed`, the `async` pipe, or explicit cleanup in `ngOnDestroy`. Release all resources when components are destroyed.
 - **Change detection**: Prefer Signals and `OnPush` change detection to minimise unnecessary re-renders.
 - **Lazy loading**: Keep feature routes and standalone components lazy-loaded via Angular routing (e.g., `loadChildren`, `loadComponent`). Avoid eagerly importing heavy dependencies.
-- **Efficient DB access**: Serialise DB operations with `withLock`; batch writes with `executeSet` where possible; avoid redundant queries.
+- **Efficient DB access**: Always go through `DatabaseService` public methods that are wrapped with its internal lock and web auto-persist; if you need batched writes, use a `DatabaseService` helper that safely wraps `executeSet` (rather than calling it directly) so locking and persistence guarantees are preserved; avoid redundant queries.
 - **Scalability**: Design services and repositories so that adding new data or features does not require rewriting existing logic.
 
 #### Security
