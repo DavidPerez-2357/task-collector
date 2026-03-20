@@ -37,7 +37,7 @@
             <app-button
               btnClass="sell-button"
               type="gem"
-              [disabled]="sellBtnIsDisabled"
+              [disabled]="sellGuard.isBusy"
               (handleClick)="sellItem()"
             >
               Vender uno (+{{ sellPrice }} gemas)
@@ -55,7 +55,7 @@
             >?
           </p>
 
-          @if (loadingCollections) {
+          @if (collectionsGuard.isBusy) {
             <div class="loading-row">
               <ion-spinner name="crescent" />
             </div>
@@ -64,7 +64,11 @@
           } @else {
             <div class="collections-list">
               @for (col of eligibleCollections; track col.id) {
-                <button class="collection-row" [disabled]="depositing" (click)="depositInto(col)">
+                <button
+                  class="collection-row"
+                  [disabled]="depositGuard.isBusy"
+                  (click)="depositInto(col)"
+                >
                   <img
                     [src]="
                       col.badgeImageName
