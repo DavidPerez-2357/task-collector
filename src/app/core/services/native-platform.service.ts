@@ -14,7 +14,13 @@ export class NativePlatformService {
 
   async hideStatusBar(): Promise<void> {
     if (this.isNativePlatform()) {
-      await StatusBar.hide();
+      try {
+        await StatusBar.hide();
+      } catch (error) {
+        // Se registra el error para evitar que una falla del plugin bloquee el arranque
+        // eslint-disable-next-line no-console
+        console.error('[NativePlatformService] Failed to hide status bar', error);
+      }
     }
   }
 }
