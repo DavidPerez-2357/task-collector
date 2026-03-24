@@ -3,7 +3,12 @@
     <app-board width="">
       <div class="modal-content">
         <header>
-          <ion-icon [name]="errorKindIcon" class="error-icon"></ion-icon>
+          <ion-icon
+            [name]="errorKindIcon"
+            class="error-icon"
+            aria-hidden="true"
+            focusable="false"
+          ></ion-icon>
           <h2>{{ title }}</h2>
         </header>
 
