@@ -4,21 +4,7 @@ import { TaskActive } from '@core/models/task.model';
 import { IonIcon } from '@ionic/angular/standalone';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ConfirmModalComponent } from '@shared/components/confirm-modal/confirm-modal.component';
-import { addIcons } from 'ionicons';
 import { EditTaskService } from '@core/services/edit-task.service';
-import {
-  checkmarkCircleOutline,
-  createOutline,
-  trashOutline,
-  calendarOutline,
-  sunnyOutline,
-  arrowForwardOutline,
-  repeatOutline,
-  starOutline,
-  closeOutline,
-  closeCircleOutline,
-  earth,
-} from 'ionicons/icons';
 import { DAY_MS, getStartOfToday } from '@core/utils/date.util';
 import { TaskService } from '@features/home-tab/services/task.service';
 import { ToastService } from '@core/services/toast.service';
@@ -52,22 +38,6 @@ export class ActionPanelComponent {
   // Estado para mostrar el modal de confirmación
   confirmDeleteOpen = false;
   confirmDeleteGlobalOpen = false;
-
-  constructor() {
-    addIcons({
-      checkmarkCircleOutline,
-      createOutline,
-      trashOutline,
-      calendarOutline,
-      sunnyOutline,
-      arrowForwardOutline,
-      repeatOutline,
-      starOutline,
-      closeOutline,
-      closeCircleOutline,
-      earth,
-    });
-  }
 
   get canPostpone(): boolean {
     if (!this.selectedTask) return false;
