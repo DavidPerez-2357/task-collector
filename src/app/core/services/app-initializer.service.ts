@@ -26,6 +26,7 @@ export class AppInitializerService {
       } catch (e) {
         console.error('Error al inicializar la aplicación:', e);
         this.errorService.show('Error al inicializar la aplicación');
+        throw e;
       }
     }, 'Iniciando base de datos...');
 
