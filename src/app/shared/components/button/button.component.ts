@@ -19,7 +19,7 @@ import { NgStyle } from '@angular/common';
  *   - `type`      — color del botón según `AppColors` (por defecto: 'primary').
  *   - `fill`      — si es true, el fondo es sólido; si es false, es transparente con texto coloreado.
  *   - `border`    — si es true, añade un borde del color del tipo.
- *   - `disabled`  — deshabilita el botón visualmente (no previene clics del DOM; usar [disabled] en el padre).
+ *   - `disabled`  — deshabilita el botón nativo: aplica estado visual y evita clics del DOM (solo seguirán siendo posibles clics disparados de forma programática o manejadores personalizados externos).
  *   - `btnClass`  — clase CSS extra que se aplica al botón nativo.
  *
  * Outputs:
