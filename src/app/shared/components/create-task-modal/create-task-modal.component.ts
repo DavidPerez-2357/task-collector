@@ -389,8 +389,14 @@ export class CreateTaskModalComponent implements OnInit {
     if (!task) return;
 
     const v = this.form.getRawValue();
+    // Si la frecuencia cambió de semanal a no-semanal, la instancia activa necesita una fecha
+    // concreta aunque el usuario no haya tocado el campo de fecha explícitamente.
+    const frequencyChangedFromWeekly =
+      Number(task.frequency) === TaskFrequency.Weekly && !this.isWeekly();
     const dueDateForEdit =
-      !this.isWeekly() && this.dueDateExplicitlyChanged() ? v.dueDate! : undefined;
+      !this.isWeekly() && (this.dueDateExplicitlyChanged() || frequencyChangedFromWeekly)
+        ? v.dueDate!
+        : undefined;
 
     await this.editTaskService.updateTask(task.id, task.taskActiveId, {
       name: v.name!,
