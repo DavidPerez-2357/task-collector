@@ -1,17 +1,23 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ItemRepository } from '@core/repositories/item.repository';
 import { TaskActive } from '@core/models/task.model';
+import { ItemInventory } from '@core/models/item.model';
 import { getRewardRarityForTask } from '@core/utils/reward.util';
 import { rollForShiny } from '@core/utils/shiny.util';
-import { ItemInventory } from '@core/models/item.model';
 
-@Injectable()
-export class ItemService {
-  private itemRepository = inject(ItemRepository);
+@Injectable({
+  providedIn: 'root',
+})
+export class TaskRewardService {
+  private readonly itemRepository = inject(ItemRepository);
 
   /**
-   * Otorga un item al completar una tarea (servicio local para HomeTab).
-   * Usa reward util y shiny util. Delega selección real a repository.
+   * Otorga un ítem al completar una tarea.
+   * Determina la rareza según esfuerzo/frecuencia de la tarea, aplica la probabilidad
+   * de shiny, añade el ítem al inventario y devuelve la fila resultante.
+   * Devuelve null si no existe ningún ítem con esa rareza en el catálogo.
+   *
+   * Se puede inyectar `rng` para obtener comportamiento determinista en pruebas.
    */
   async grantItemForCompletedTask(
     task: TaskActive,

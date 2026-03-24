@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, Output, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
