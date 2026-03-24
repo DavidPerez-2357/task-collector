@@ -118,7 +118,6 @@ export class ActionPanelComponent {
 
         this.closePanel(true);
       } catch (e) {
-        console.error('Error al mover la tarea a hoy:', e);
         this.errorService.handle(e, 'Error al mover la tarea a hoy');
       }
     });

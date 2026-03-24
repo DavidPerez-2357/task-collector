@@ -52,9 +52,8 @@ export class ErrorModalComponent {
     return msg;
   }
 
-  /** Icono a mostrar según el tipo de error; 'bug' para errores técnicos, 'error-user' para errores de usuario. */
+  /** Nombre del ionicon a mostrar según el tipo de error; usa `close-circle-outline` para errores técnicos y `warning-outline` para errores de usuario. */
   get errorKindIcon(): string {
-    console.log('Error recibido en modal:', this.error?.kind);
     return this.error?.kind === 'technical' ? 'close-circle-outline' : 'warning-outline';
   }
 }

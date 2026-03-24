@@ -118,17 +118,16 @@ export class LoadingService {
    * llega a mostrarse, permanece visible al menos `minVisibleMs` (400 ms) para
    * evitar un cierre brusco.
    *
-   * Este método está optimizado para operaciones de nivel superior. Utiliza una
-   * llamada interna retardada a `show()`, por lo que **no** extiende el tiempo de vida
-   * de un overlay global ya visible. Si se llama a `runWithLoading()` mientras otra
-   * operación controla el overlay (vía `show()`/`hide()` o un `runWithLoading()` distinto),
-   * esa otra operación puede cerrar el overlay antes de que este `work` termine,
-   * lo que puede provocar un breve parpadeo de cierre/apertura.
+   * Utiliza una llamada interna retardada a `show()`, que incrementa el contador global del overlay.
+   * Si se llama a `runWithLoading()` mientras otra operación controla el overlay
+   * (vía `show()`/`hide()` o un `runWithLoading()` distinto), el tiempo total que
+   * permanece visible será el resultado combinado de todas las operaciones activas,
+   * pudiendo mantenerse abierto más tiempo para evitar parpadeos de cierre/apertura.
    *
-   * Si se necesita un comportamiento estrictamente anidado con contador de referencias
-   * (es decir, el overlay debe permanecer visible hasta que *todas* las operaciones
-   * terminen), es preferible usar `show()` / `hide()` manual alrededor del trabajo
-   * asíncrono en lugar de componer varios `runWithLoading()`.
+   * Si se necesita un comportamiento estrictamente controlado (por ejemplo, que una
+   * operación concreta no extienda el overlay más allá de su propio trabajo), es
+   * preferible usar `show()` / `hide()` manual alrededor del trabajo asíncrono en
+   * lugar de componer varios `runWithLoading()` en paralelo.
    *
    * Los errores lanzados por `work` **no se capturan** – se propagan al llamante
    * para que cada punto de uso aplique su propia estrategia de gestión de errores
