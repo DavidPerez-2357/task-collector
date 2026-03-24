@@ -1,5 +1,5 @@
 import { booleanAttribute, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { IonModal } from '@ionic/angular/standalone';
+import { IonIcon, IonModal } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { AppError } from '@core/types/error.types';
@@ -8,7 +8,7 @@ import { AppError } from '@core/types/error.types';
   selector: 'app-error-modal',
   templateUrl: './error-modal.component.html',
   styleUrls: ['./error-modal.component.scss'],
-  imports: [IonModal, BoardComponent, ButtonComponent],
+  imports: [IonModal, BoardComponent, ButtonComponent, IonIcon],
 })
 export class ErrorModalComponent {
   @ViewChild(IonModal) modal!: IonModal;
@@ -26,7 +26,7 @@ export class ErrorModalComponent {
   @Input() message: string | null = null;
 
   @Input() title: string = 'Error';
-  @Input() okLabel: string = 'OK';
+  @Input() okLabel: string = 'Cerrar';
   @Input() okColor: 'primary' | 'danger' | 'success' | 'warning' = 'danger';
 
   @Output() dismissed = new EventEmitter<void>();
@@ -52,8 +52,9 @@ export class ErrorModalComponent {
     return msg;
   }
 
-  /** Clase CSS aplicada en la raíz del modal según el tipo de error. */
-  get errorKindClass(): string {
-    return this.error?.kind === 'technical' ? 'error-technical' : 'error-user';
+  /** Icono a mostrar según el tipo de error; 'bug' para errores técnicos, 'error-user' para errores de usuario. */
+  get errorKindIcon(): string {
+    console.log('Error recibido en modal:', this.error?.kind);
+    return this.error?.kind === 'technical' ? 'close-circle-outline' : 'warning-outline';
   }
 }

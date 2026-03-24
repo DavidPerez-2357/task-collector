@@ -2,7 +2,11 @@
   <ng-template>
     <app-board width="">
       <div class="modal-content">
-        <h2>{{ title }}</h2>
+        <header>
+          <ion-icon [name]="errorKindIcon" class="error-icon"></ion-icon>
+          <h2>{{ title }}</h2>
+        </header>
+
         @if (displayMessage) {
           <p class="message">{{ displayMessage }}</p>
         }
