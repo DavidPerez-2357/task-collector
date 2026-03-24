@@ -19,17 +19,16 @@ export class AppInitializerService {
   private nativePlatformService = inject(NativePlatformService);
 
   async initialize(): Promise<void> {
-    this.loadingService.show('Iniciando base de datos...');
+    await this.loadingService.runWithLoading(async () => {
+      try {
+        await this.databaseService.init();
+        await this.audioService.init();
+      } catch (e) {
+        console.error('Error al inicializar la aplicación:', e);
+        this.errorService.show('Error al inicializar la aplicación');
+      }
+    }, 'Iniciando base de datos...');
 
-    try {
-      await this.databaseService.init();
-      await this.audioService.init();
-    } catch (e) {
-      console.error('Error al inicializar la aplicación:', e);
-      this.errorService.show('Error al inicializar la aplicación');
-    } finally {
-      await this.nativePlatformService.hideStatusBar();
-      this.loadingService.hide();
-    }
+    await this.nativePlatformService.hideStatusBar();
   }
 }
