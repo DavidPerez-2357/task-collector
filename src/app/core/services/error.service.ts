@@ -64,15 +64,6 @@ export class ErrorService {
     this.errorSubject.next({ kind: 'technical', message: fallbackMessage });
   }
 
-  /**
-   * @deprecated Usar {@link showUser} para errores visibles al usuario o
-   *             {@link handle} para errores técnicos inesperados.
-   *             Mantenido por compatibilidad hacia atrás – delega en {@link showUser}.
-   */
-  show(message: string): void {
-    this.showUser(message);
-  }
-
   /** Limpia el estado de error actual. */
   clear(): void {
     this.errorSubject.next(null);
