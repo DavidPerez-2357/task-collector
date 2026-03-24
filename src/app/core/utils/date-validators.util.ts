@@ -4,6 +4,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
  * Devuelve un ValidatorFn que rechaza fechas anteriores a hoy.
  * El formato esperado del valor del control es "YYYY-MM-DD".
  * Produce el error { pastDate: true } cuando la validación falla.
+ * Produce el error { invalidDate: true } si el formato del valor es inválido.
  */
 export function notInPast(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -14,7 +15,7 @@ export function notInPast(): ValidatorFn {
     today.setHours(0, 0, 0, 0);
 
     const selected = parseDateString(value);
-    if (!selected) return null; // Formato inválido: no es competencia de este validator
+    if (!selected) return { invalidDate: true };
 
     return selected < today ? { pastDate: true } : null;
   };
@@ -24,6 +25,7 @@ export function notInPast(): ValidatorFn {
  * Devuelve un ValidatorFn que rechaza fechas más de N años en el futuro respecto a hoy.
  * El formato esperado del valor del control es "YYYY-MM-DD".
  * Produce el error { tooFarInFuture: { maxYears: number } } cuando la validación falla.
+ * Produce el error { invalidDate: true } si el formato del valor es inválido.
  * @param years Número máximo de años permitidos en el futuro.
  */
 export function notTooFarInFuture(years: number): ValidatorFn {
@@ -36,7 +38,7 @@ export function notTooFarInFuture(years: number): ValidatorFn {
     maxDate.setHours(23, 59, 59, 999);
 
     const selected = parseDateString(value);
-    if (!selected) return null;
+    if (!selected) return { invalidDate: true };
 
     return selected > maxDate ? { tooFarInFuture: { maxYears: years } } : null;
   };

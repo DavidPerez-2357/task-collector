@@ -2,6 +2,7 @@ import { Component, OnInit, computed, effect, inject, input, output, signal } fr
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonModal } from '@ionic/angular/standalone';
+import { map } from 'rxjs';
 import { BoardComponent } from '../board/board.component';
 import { ButtonComponent } from '../button/button.component';
 import { TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
@@ -83,8 +84,12 @@ export class CreateTaskModalComponent implements OnInit {
     dueDate: [this.getTodayString()],
   });
 
-  // Bridge form.valueChanges observable → signal for computed derivations
-  private formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
+  // Bridge form.valueChanges observable → signal for computed derivations.
+  // Se usa getRawValue() para incluir también los controles deshabilitados (frequency, etc.),
+  // evitando que computed como isWeekly() o intervalLabel() queden inconsistentes en modo instancia.
+  private formValue = toSignal(this.form.valueChanges.pipe(map(() => this.form.getRawValue())), {
+    initialValue: this.form.getRawValue(),
+  });
 
   // Computed signals derived from inputs and form state
   isEditMode = computed(() => this.taskToEdit() !== null);
@@ -109,10 +114,20 @@ export class CreateTaskModalComponent implements OnInit {
 
   isSubmitDisabled = computed(() => {
     if (this.isSubmitting()) return true;
-    // In instance-edit mode only the due date is editable; name/category are disabled
-    if (this.isEditMode() && this.editMode() === 'instance') return false;
+
     const v = this.formValue();
-    return !v.name?.trim() || v.categoryId === null;
+
+    // En modo edición de instancia solo se edita la fecha límite; validamos ese control
+    if (this.isEditMode() && this.editMode() === 'instance') {
+      const dueDateControl = this.form.get('dueDate');
+      const hasDueDateValue = !!v.dueDate;
+      const hasDueDateErrors = !!dueDateControl && dueDateControl.invalid;
+      return !hasDueDateValue || hasDueDateErrors;
+    }
+
+    // En creación/edición normal validamos nombre, categoría y el estado general del formulario
+    const hasMissingBasicData = !v.name?.trim() || v.categoryId === null;
+    return hasMissingBasicData || this.form.invalid;
   });
 
   /** Fecha mínima seleccionable: hoy (sólo aplicable al crear, no al editar). */
@@ -267,12 +282,32 @@ export class CreateTaskModalComponent implements OnInit {
     const frequency = Number(v.frequency);
     const isWeekly = frequency === TaskFrequency.Weekly;
 
-    // Instance-only edits: only validate rules that affect the instance
+    // Instance-only edits: validate dueDate and weekday selection
     if (isInstanceEdit) {
+      if (!isWeekly) {
+        const dueDateControl = this.form.get('dueDate');
+        if (!dueDateControl?.value) {
+          await this.showWarning('Selecciona una fecha límite.');
+          return false;
+        }
+        const dueDateErrors = dueDateControl.errors;
+        if (dueDateErrors?.['invalidDate']) {
+          await this.showWarning('La fecha límite no es válida.');
+          return false;
+        }
+        if (dueDateErrors?.['tooFarInFuture']) {
+          await this.showWarning(
+            `La fecha límite no puede ser más de ${MAX_YEARS_IN_FUTURE} años en el futuro.`,
+          );
+          return false;
+        }
+      }
+
       if (isWeekly && this.selectedWeekdays().length === 0) {
         await this.showWarning('Selecciona al menos un día de la semana.');
         return false;
       }
+
       return true;
     }
 
@@ -293,6 +328,10 @@ export class CreateTaskModalComponent implements OnInit {
     // Validate the due date (only applicable when not weekly)
     if (!isWeekly) {
       const dueDateErrors = this.form.get('dueDate')?.errors;
+      if (dueDateErrors?.['invalidDate']) {
+        await this.showWarning('La fecha límite no es válida.');
+        return false;
+      }
       if (dueDateErrors?.['pastDate']) {
         await this.showWarning('La fecha límite no puede ser anterior a hoy.');
         return false;
