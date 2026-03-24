@@ -330,7 +330,12 @@ export class CreateTaskModalComponent implements OnInit {
 
     // Validate the due date (only applicable when not weekly)
     if (!isWeekly) {
-      const dueDateErrors = this.form.get('dueDate')?.errors;
+      const dueDateControl = this.form.get('dueDate');
+      if (!dueDateControl?.value) {
+        await this.showWarning('Selecciona una fecha límite.');
+        return false;
+      }
+      const dueDateErrors = dueDateControl.errors;
       if (dueDateErrors?.['invalidDate']) {
         await this.showWarning('La fecha límite no es válida.');
         return false;
