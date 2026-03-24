@@ -79,7 +79,7 @@ export class CreateTaskModalComponent implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(40)]],
     categoryId: [null as number | null, Validators.required],
     frequency: [TaskFrequency.Daily as TaskFrequency],
-    interval: [1, [Validators.min(1), Validators.max(365)]],
+    interval: [1, [Validators.required, Validators.min(1), Validators.max(365)]],
     effort: [TaskEffort.Medium as TaskEffort],
     dueDate: [this.getTodayString()],
   });
