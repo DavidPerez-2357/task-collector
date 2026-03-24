@@ -5,6 +5,7 @@ import {
   Output,
   ViewChild,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
 } from '@angular/core';
 import { IonModal } from '@ionic/angular/standalone';
@@ -49,7 +50,7 @@ import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.uti
   styleUrls: ['./item-acquired-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent],
 })
-export class ItemAcquiredModalComponent implements OnChanges {
+export class ItemAcquiredModalComponent implements OnChanges, OnDestroy {
   @ViewChild(IonModal) modal!: IonModal;
 
   @Input() isOpen: boolean = false;
@@ -59,22 +60,36 @@ export class ItemAcquiredModalComponent implements OnChanges {
   @Output() closed = new EventEmitter<void>();
   @Output() acknowledged = new EventEmitter<void>();
 
+  private scrollLocked = false;
+
   ngOnChanges(changes: SimpleChanges): void {
     const isOpenChange = changes['isOpen'];
     if (isOpenChange) {
       const { currentValue, firstChange } = isOpenChange;
       if (firstChange && !currentValue) return;
       if (currentValue) {
+        this.scrollLocked = true;
         blockBodyScroll();
       } else {
-        unblockBodyScroll();
+        this.releaseScrollLock();
       }
     }
   }
 
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
   onDismiss() {
-    unblockBodyScroll();
+    this.releaseScrollLock();
     this.closed.emit();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
+    }
   }
 
   /** Cierra el modal programáticamente y emite el evento `acknowledged`. */

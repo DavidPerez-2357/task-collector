@@ -6,6 +6,7 @@ import {
   Output,
   ViewChild,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
 } from '@angular/core';
 import { IonModal, IonIcon } from '@ionic/angular/standalone';
@@ -40,7 +41,7 @@ import { App } from '@capacitor/app';
   styleUrls: ['./settings-modal.component.scss'],
   imports: [IonModal, IonIcon, BoardComponent, ButtonComponent],
 })
-export class SettingsModalComponent implements OnChanges {
+export class SettingsModalComponent implements OnChanges, OnDestroy {
   private audioService = inject(AudioService);
 
   @ViewChild(IonModal) modal!: IonModal;
@@ -48,22 +49,36 @@ export class SettingsModalComponent implements OnChanges {
   @Input() isOpen: boolean = false;
   @Output() closed = new EventEmitter<void>();
 
+  private scrollLocked = false;
+
   ngOnChanges(changes: SimpleChanges): void {
     const isOpenChange = changes['isOpen'];
     if (isOpenChange) {
       const { currentValue, firstChange } = isOpenChange;
       if (firstChange && !currentValue) return;
       if (currentValue) {
+        this.scrollLocked = true;
         blockBodyScroll();
       } else {
-        unblockBodyScroll();
+        this.releaseScrollLock();
       }
     }
   }
 
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
   onDismiss() {
-    unblockBodyScroll();
+    this.releaseScrollLock();
     this.closed.emit();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
+    }
   }
 
   isMusicMuted() {

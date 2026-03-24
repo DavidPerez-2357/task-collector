@@ -5,6 +5,7 @@ import {
   Output,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   inject,
 } from '@angular/core';
@@ -55,7 +56,7 @@ import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.uti
   styleUrls: ['./create-task-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent, FormsModule],
 })
-export class CreateTaskModalComponent implements OnInit, OnChanges {
+export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isOpen: boolean = false;
   @Input() taskToEdit: TaskActive | null = null;
   @Input() editMode: 'global' | 'instance' = 'global';
@@ -66,6 +67,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   private createTaskService = inject(CreateTaskService);
   private editTaskService = inject(EditTaskService);
   private toast = inject(ToastService);
+
+  private scrollLocked = false;
 
   categories: Category[] = [];
   frequencies = [
@@ -139,9 +142,10 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       const { currentValue, firstChange } = isOpenChange;
       if (!(firstChange && !currentValue)) {
         if (currentValue) {
+          this.scrollLocked = true;
           blockBodyScroll();
         } else {
-          unblockBodyScroll();
+          this.releaseScrollLock();
         }
       }
     }
@@ -149,6 +153,17 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     const task = changes['taskToEdit']?.currentValue as TaskActive | null;
     if (task) {
       this.prefillForm(task);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
     }
   }
 
@@ -177,7 +192,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   onDismiss() {
-    unblockBodyScroll();
+    this.releaseScrollLock();
     this.resetForm();
     this.closed.emit();
   }
