@@ -2,6 +2,30 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AppColors } from '@core/types/colors.types';
 import { NgStyle } from '@angular/common';
 
+/**
+ * Componente DUMB — Botón personalizado con estilos del tema de la aplicación.
+ *
+ * Presenta un botón estilizado que adapta colores, relleno y borde según los tokens de color
+ * definidos en `AppColors`. No contiene lógica de negocio.
+ *
+ * @example
+ * ```html
+ * <app-button type="primary" [fill]="true" [border]="false" (handleClick)="doSomething()">
+ *   Aceptar
+ * </app-button>
+ * ```
+ *
+ * Inputs:
+ *   - `type`      — color del botón según `AppColors` (por defecto: 'primary').
+ *   - `fill`      — si es true, el fondo es sólido; si es false, es transparente con texto coloreado.
+ *   - `border`    — si es true, añade un borde del color del tipo.
+ *   - `disabled`  — deshabilita el botón visualmente (no previene clics del DOM; usar [disabled] en el padre).
+ *   - `btnClass`  — clase CSS extra que se aplica al botón nativo.
+ *
+ * Outputs:
+ *   - `handleClick` — emitido al hacer clic en el botón.
+ */
+
 @Component({
   selector: 'app-button',
   templateUrl: './button.component.html',

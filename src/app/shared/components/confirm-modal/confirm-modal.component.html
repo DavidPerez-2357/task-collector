@@ -7,7 +7,7 @@
           <p>{{ message }}</p>
         }
         <div class="modal-actions">
-          <app-button type="medium" [fill]="false" (handleClick)="closeModal()">{{
+          <app-button type="medium" [fill]="false" (handleClick)="close()">{{
             cancelLabel
           }}</app-button
           ><app-button [type]="confirmColor" (handleClick)="onConfirm()" btnClass="btn-modal">{{

@@ -1,3 +1,17 @@
+/**
+ * Componente DUMB — Cartel decorativo con título.
+ *
+ * Renderiza un texto de título sobre una imagen de cartel. Calcula automáticamente
+ * su propia altura usando `ResizeObserver` para adaptarse al contenido.
+ *
+ * @example
+ * ```html
+ * <app-title-sign title="Mi Colección" />
+ * ```
+ *
+ * Inputs:
+ *   - `title` — texto a mostrar en el cartel.
+ */
 import {
   AfterViewInit,
   Component,

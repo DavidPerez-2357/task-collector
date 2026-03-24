@@ -111,7 +111,7 @@
     confirmLabel="Quitar"
     cancelLabel="Cancelar"
     confirmColor="danger"
-    (dismissed)="confirmDeleteOpen = false"
+    (closed)="confirmDeleteOpen = false"
     (confirmed)="onDeleteConfirmed($event)"
   />
   <app-confirm-modal
@@ -127,7 +127,7 @@
     confirmLabel="Eliminar para siempre"
     cancelLabel="Más tarde"
     confirmColor="danger"
-    (dismissed)="confirmDeleteGlobalOpen = false"
+    (closed)="confirmDeleteGlobalOpen = false"
     (confirmed)="onDeleteGlobalConfirmed($event)"
   />
 </div>
