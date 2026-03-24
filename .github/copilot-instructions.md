@@ -26,6 +26,50 @@ npm run lint         # Run ESLint + Prettier checks
 npm run format       # Auto-format all files with Prettier
 ```
 
+## Code Quality Standards
+
+### Senior Developer Mindset
+
+When generating or reviewing code for this project, apply the standards of a senior developer:
+
+- **Clean code**: Keep functions and classes small, focused, and easy to understand. Favour readability over cleverness.
+- **Well-structured**: Follow the project's [layered architecture](#layered-architecture). Place every piece of code in the correct layer.
+- **Descriptive naming**: Use clear, self-documenting names for variables, functions, classes, and files. Avoid abbreviations unless widely understood (e.g., `id`, `url`, `db`).
+- **Comments**: Add comments only when they explain _why_ something is done, not _what_ it does. Complex logic, non-obvious decisions, or workarounds warrant a brief explanation.
+- **Framework conventions**: Follow Angular, Ionic, TypeScript, and RxJS idioms as they apply to the versions used in this project.
+
+### Version Awareness
+
+Always consult `package.json` and use features appropriate to the versions in use. Do not suggest patterns, APIs, or workarounds that are deprecated or superseded by the versions listed below.
+
+| Package        | Version | Key modern features to use                                                                                           |
+| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| Angular        | ^20     | Signals (`signal`, `computed`, `effect`), standalone components, `inject()`, built-in control flow (`@if`, `@for`)  |
+| TypeScript     | ~5.9    | Strict mode, template literal types, `satisfies` operator, `using` keyword for resource management                  |
+| RxJS           | ~7.8    | Pipeable operators, `takeUntilDestroyed`, avoid deprecated patterns (e.g., `toPromise()`)                           |
+| Ionic          | ^8      | Current component APIs; avoid deprecated Ionic 4/5 patterns                                                         |
+| Capacitor      | ^8      | Current plugin APIs; always handle the web fallback                                                                  |
+| ESLint         | ^9      | Using legacy `.eslintrc.json` config; ESLint 9 supports flat config but this project hasn’t migrated yet—Copilot should not suggest adding `eslint.config.*` by default |
+
+### Performance & Security
+
+Keep the following in mind when writing or reviewing code.
+
+#### Performance
+
+- **Avoid memory leaks**: Unsubscribe from Observables using `takeUntilDestroyed`, the `async` pipe, or explicit cleanup in `ngOnDestroy`. Release all resources when components are destroyed.
+- **Change detection**: Prefer Signals and `OnPush` change detection to minimise unnecessary re-renders.
+- **Lazy loading**: Keep feature routes and standalone components lazy-loaded via Angular routing (e.g., `loadChildren`, `loadComponent`). Avoid eagerly importing heavy dependencies.
+- **Efficient DB access**: Always go through `DatabaseService` public methods that are wrapped with its internal lock and web auto-persist; if you need batched writes, use a `DatabaseService` helper that safely wraps `executeSet` (rather than calling it directly) so locking and persistence guarantees are preserved; avoid redundant queries.
+- **Scalability**: Design services and repositories so that adding new data or features does not require rewriting existing logic.
+
+#### Security
+
+- **No secrets in source code**: Never commit API keys, tokens, credentials, or other sensitive values. Store them in git-ignored environment files and, on devices, use platform-secure storage (OS keychain/keystore or a secure storage plugin) for secrets. Use `@capacitor/preferences` only for non-secret configuration data.
+- **SQL injection prevention**: Always use parameterised queries (pass values as an array) in SQLite operations — never concatenate user input directly into SQL strings.
+- **Input validation**: Validate and sanitise all user-provided input before processing or persisting it.
+- **Dependency hygiene**: When adding or updating packages, verify there are no known vulnerabilities before committing.
+
 ## Project Structure
 
 ```
@@ -110,6 +154,21 @@ Follow this strict layering when adding code:
   - `@shared/*` → `src/app/shared/*`
   - `@environments/*` → `src/environments/*`
   - `@assets/*` → `src/assets/*`
+
+### Language
+
+- **Code is written in English**: all identifiers (variables, functions, classes, files, selectors, etc.) must use English.
+- **Comments are written in Spanish**: inline comments, block comments, and JSDoc must be in Spanish.
+
+```typescript
+// ✅ Correcto
+// Calcula el total de monedas ganadas en el ciclo actual
+const totalCoins = earnedCoins + bonusCoins;
+
+// ❌ Incorrecto — comentario en inglés
+// Calculate total coins earned in the current cycle
+const totalCoins = earnedCoins + bonusCoins;
+```
 
 ### Formatting
 
@@ -202,6 +261,26 @@ This project uses **[gitmoji](https://gitmoji.dev/)** for commit messages. Each 
 ```
 
 Keep messages **short and concise** — describe _what_ was done, not _how_.
+
+## Pull Request Titles
+
+Pull Request titles on GitHub follow the **same gitmoji convention** as commit messages: start with the relevant emoji, followed by a short imperative description in English.
+
+### Format
+
+```
+<gitmoji> <Short imperative description>
+```
+
+### Examples
+
+```
+⚡ Optimize image loading
+✨ Add shop item purchase flow
+🐛 Fix coin reset on weekly tasks
+♻️ Refactor task repository queries
+💄 Update tab bar icons and colors
+```
 
 ## Branch Naming
 

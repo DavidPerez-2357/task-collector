@@ -18,6 +18,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { ItemService } from '@features/inventory-tab/services/item.service';
 import { ToastService } from '@core/services/toast.service';
 import { AudioService } from '@core/services/audio.service';
+import { AsyncActionGuard } from '@core/utils/async-action-guard.util';
 
 interface EligibleCollection {
   id: number;
@@ -50,13 +51,10 @@ export class InventoryItemModalComponent implements OnChanges {
 
   step: ModalStep = 'detail';
   eligibleCollections: EligibleCollection[] = [];
-  loadingCollections = false;
-  depositing = false;
-  sellBtnIsDisabled = false;
 
-  // Serialize sell requests and avoid race conditions
-  private lastSellRequestId = 0;
-  private sellingInProgress = false;
+  readonly sellGuard = new AsyncActionGuard();
+  readonly depositGuard = new AsyncActionGuard();
+  readonly collectionsGuard = new AsyncActionGuard();
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['isOpen'] && !this.isOpen) {
@@ -93,74 +91,63 @@ export class InventoryItemModalComponent implements OnChanges {
 
   async openCollectionStep() {
     this.step = 'collections';
-    this.loadingCollections = true;
     this.eligibleCollections = [];
-    try {
-      this.eligibleCollections = await this.collectionService.getEligibleCollectionsForItem(
-        this.item.id,
-        this.item.isShiny,
-      );
-    } catch (e) {
-      await this.toast.error('Error cargando colecciones elegibles');
-    } finally {
-      this.loadingCollections = false;
-    }
+    await this.collectionsGuard.run(async () => {
+      try {
+        this.eligibleCollections = await this.collectionService.getEligibleCollectionsForItem(
+          this.item.id,
+          this.item.isShiny,
+        );
+      } catch (e) {
+        await this.toast.error('Error cargando colecciones elegibles');
+      }
+    });
   }
 
   async depositInto(col: EligibleCollection) {
-    if (this.depositing) return;
-    this.depositing = true;
-    try {
-      await this.collectionService.depositItemToCollection(
-        col.id,
-        this.item.id,
-        col.slotIsShiny,
-        this.item.isShiny,
-      );
+    await this.depositGuard.run(async () => {
+      try {
+        await this.collectionService.depositItemToCollection(
+          col.id,
+          this.item.id,
+          col.slotIsShiny,
+          this.item.isShiny,
+        );
 
-      this.item.quantity -= 1;
+        this.item.quantity -= 1;
 
-      await this.toast.success(`${this.item.name} añadido a la colección ${col.name}!`);
-      await this.audioService.playPutItemCollection();
+        await this.toast.success(`${this.item.name} añadido a la colección ${col.name}!`);
+        await this.audioService.playPutItemCollection();
 
-      const isCompleted = await this.collectionService.checkCompletion(col.id);
-      if (isCompleted) {
-        await this.audioService.playCompleteCollection();
-      }
-
-      if (this.item.quantity <= 0) {
-        // Tell parent to remove the item right away (update shelves) before running modal dismiss animation
-        try {
-          this.removeNow.emit(this.item);
-        } catch (err) {
-          console.warn('removeNow emit failed', err);
+        const isCompleted = await this.collectionService.checkCompletion(col.id);
+        if (isCompleted) {
+          await this.audioService.playCompleteCollection();
         }
-        // Close the modal using IonModal.dismiss() so Ionic runs the native animation.
-        await this.safeDismissModal();
-      } else {
-        await this.openCollectionStep();
+
+        if (this.item.quantity <= 0) {
+          // Tell parent to remove the item right away (update shelves) before running modal dismiss animation
+          try {
+            this.removeNow.emit(this.item);
+          } catch (err) {
+            console.warn('removeNow emit failed', err);
+          }
+          // Close the modal using IonModal.dismiss() so Ionic runs the native animation.
+          await this.safeDismissModal();
+        } else {
+          await this.openCollectionStep();
+        }
+      } catch (e) {
+        await this.toast.error('Error al añadir el objeto a la colección');
       }
-    } catch (e) {
-      await this.toast.error('Error al añadir el objeto a la colección');
-    } finally {
-      this.depositing = false;
-    }
+    });
   }
 
-  // Improved sellItem: serialize calls, ignore out-of-order responses, keep button disabled while in flight
   async sellItem() {
-    if (this.sellingInProgress) return;
+    await this.sellGuard.run(async () => {
+      try {
+        // TODO: Mostrar confirmación si es shiny
+        const updatedQuantity = await this.itemService.sellItem(this.item.id, this.item.isShiny);
 
-    // TODO: Mostrar confirmación si es shiny
-    this.sellingInProgress = true;
-    this.sellBtnIsDisabled = true;
-    const requestId = ++this.lastSellRequestId;
-
-    try {
-      const updatedQuantity = await this.itemService.sellItem(this.item.id, this.item.isShiny);
-
-      // Only apply the result if this is the latest request
-      if (requestId === this.lastSellRequestId) {
         await this.audioService.playSellItem();
         this.item.quantity = updatedQuantity;
 
@@ -174,16 +161,10 @@ export class InventoryItemModalComponent implements OnChanges {
           // Close modal so parent can clean up the shelf; let didDismiss -> onDismiss emit the event.
           await this.safeDismissModal();
         }
+      } catch (error: any) {
+        await this.toast.error('Error al vender el objeto');
       }
-    } catch (error: any) {
-      await this.toast.error('Error al vender el objeto');
-    } finally {
-      // Only reset flags if this is the latest request
-      if (requestId === this.lastSellRequestId) {
-        this.sellBtnIsDisabled = false;
-        this.sellingInProgress = false;
-      }
-    }
+    });
   }
 
   // Helper: dismiss modal via IonModal.dismiss(); if unavailable, emit dismissed after a small timeout

@@ -10,7 +10,7 @@
           type="success"
           [border]="true"
           btnClass="flex h-full center column rounded-sm text-lg gap-1"
-          [disabled]="isBusy"
+          [disabled]="guard.isBusy"
           (handleClick)="completeTask()"
         >
           <ion-icon name="checkmark-circle-outline" size="30"></ion-icon>
@@ -23,7 +23,7 @@
               type="primary"
               [border]="true"
               btnClass="action-btn flex center rounded-sm h-full"
-              [disabled]="isBusy"
+              [disabled]="guard.isBusy"
               (handleClick)="doToday()"
             >
               <ion-icon name="sunny-outline"></ion-icon>
@@ -34,7 +34,7 @@
               type="secondary"
               [border]="true"
               btnClass="action-btn flex center rounded-sm h-full"
-              [disabled]="isBusy || !canPostpone"
+              [disabled]="guard.isBusy || !canPostpone"
               (handleClick)="postponeTask()"
             >
               <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -46,7 +46,7 @@
             type="warning"
             [border]="true"
             btnClass="action-btn-small flex center rounded-sm h-full w-full"
-            [disabled]="isBusy"
+            [disabled]="guard.isBusy"
             (handleClick)="editInstance()"
             [title]="'Editar esta vez'"
           >
@@ -60,7 +60,7 @@
             type="warning"
             [border]="true"
             btnClass="action-btn-small flex center rounded-sm h-full w-full"
-            [disabled]="isBusy"
+            [disabled]="guard.isBusy"
             (handleClick)="editGlobal()"
             [title]="'Editar Tarea Global'"
           >
@@ -76,7 +76,7 @@
             type="danger"
             [border]="true"
             btnClass="action-btn-small flex center rounded-sm h-full w-full"
-            [disabled]="isBusy"
+            [disabled]="guard.isBusy"
             (handleClick)="confirmDeleteOpen = true"
             [title]="'Quitar de hoy'"
           >
@@ -87,7 +87,7 @@
             type="danger"
             [border]="true"
             btnClass="action-btn-small flex center rounded-sm h-full w-full"
-            [disabled]="isBusy"
+            [disabled]="guard.isBusy"
             (handleClick)="confirmDeleteGlobalOpen = true"
             [title]="'Eliminar globalmente'"
           >

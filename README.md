@@ -1,7 +1,6 @@
 ![Task collector-banner](./assets/github-banner.png)
 ![DevelETSII banner](./assets/develetsii-banner.png)
 
-
 ## Descripción
 
 **Task Collector** es una aplicación móvil y web gamificada de gestión de tareas. Al completar tareas, los usuarios obtienen **ítems** cuya rareza depende del esfuerzo y la recurrencia de la tarea. Estos ítems pueden añadirse a **colecciones** para completarlas o venderse por **gemas**. Con las gemas se pueden comprar nuevas colecciones, y al completar una colección con todos sus ítems el jugador gana la **insignia** correspondiente.
@@ -30,36 +29,36 @@ El proyecto busca resolver el problema de la falta de motivación a la hora de c
 
 ## Tecnologías utilizadas
 
-| Tecnología                          | Versión  | Uso                                          |
-| ----------------------------------- | -------- | -------------------------------------------- |
-| Angular                             | ^20.0.0  | Framework principal (standalone components)  |
-| Ionic Framework                     | ^8.0.0   | Componentes UI y navegación por tabs         |
-| Capacitor                           | 8.1.0    | Puente nativo para Android/iOS               |
-| TypeScript                          | ~5.9.0   | Lenguaje principal                           |
-| RxJS                                | ~7.8.0   | Programación reactiva                        |
-| @capacitor-community/sqlite         | ^7.0.1   | Persistencia local SQLite (nativa)           |
-| jeep-sqlite                         | ^2.8.0   | Persistencia SQLite en navegador web         |
-| sql.js                              | 1.11.0   | Motor SQLite compilado a WebAssembly         |
-| @capacitor-community/native-audio   | ^8.0.0   | Reproducción de audio nativo                 |
-| @capacitor/splash-screen            | ^8.0.1   | Pantalla de carga                            |
-| @capacitor/status-bar               | 8.0.1    | Control de barra de estado                   |
-| @capacitor/haptics                  | 8.0.0    | Retroalimentación háptica                    |
-| ESLint                              | ^9.16.0  | Linting de código                            |
-| Prettier                            | (vía ESLint) | Formateo de código                       |
-| Angular ESLint                      | ^20.0.0  | Reglas ESLint específicas de Angular         |
+| Tecnología                        | Versión      | Uso                                         |
+| --------------------------------- | ------------ | ------------------------------------------- |
+| Angular                           | ^20.0.0      | Framework principal (standalone components) |
+| Ionic Framework                   | ^8.0.0       | Componentes UI y navegación por tabs        |
+| Capacitor                         | 8.1.0        | Puente nativo para Android/iOS              |
+| TypeScript                        | ~5.9.0       | Lenguaje principal                          |
+| RxJS                              | ~7.8.0       | Programación reactiva                       |
+| @capacitor-community/sqlite       | ^7.0.1       | Persistencia local SQLite (nativa)          |
+| jeep-sqlite                       | ^2.8.0       | Persistencia SQLite en navegador web        |
+| sql.js                            | 1.11.0       | Motor SQLite compilado a WebAssembly        |
+| @capacitor-community/native-audio | ^8.0.0       | Reproducción de audio nativo                |
+| @capacitor/splash-screen          | ^8.0.1       | Pantalla de carga                           |
+| @capacitor/status-bar             | 8.0.1        | Control de barra de estado                  |
+| @capacitor/haptics                | 8.0.0        | Retroalimentación háptica                   |
+| ESLint                            | ^9.16.0      | Linting de código                           |
+| Prettier                          | (vía ESLint) | Formateo de código                          |
+| Angular ESLint                    | ^20.0.0      | Reglas ESLint específicas de Angular        |
 
 ---
 
 ## Requisitos previos
 
-| Herramienta        | Versión mínima recomendada | Notas                                  |
-| ------------------ | -------------------------- | -------------------------------------- |
-| Node.js            | 20.x LTS                   | Necesario para Angular CLI y npm       |
-| npm                | 9+                         | Gestor de paquetes                     |
-| Angular CLI        | 20.x                       | `npm install -g @angular/cli`          |
-| Ionic CLI          | 7+                         | `npm install -g @ionic/cli`            |
-| Android Studio     | Última estable             | Necesario para compilar para Android   |
-| Java JDK           | 17+                        | Requerido por Android Studio / Gradle  |
+| Herramienta    | Versión mínima recomendada | Notas                                 |
+| -------------- | -------------------------- | ------------------------------------- |
+| Node.js        | 20.x LTS                   | Necesario para Angular CLI y npm      |
+| npm            | 9+                         | Gestor de paquetes                    |
+| Angular CLI    | 20.x                       | `npm install -g @angular/cli`         |
+| Ionic CLI      | 7+                         | `npm install -g @ionic/cli`           |
+| Android Studio | Última estable             | Necesario para compilar para Android  |
+| Java JDK       | 17+                        | Requerido por Android Studio / Gradle |
 
 ---
 
@@ -134,29 +133,29 @@ Requiere macOS y Xcode instalado.
 
 ## Scripts disponibles
 
-| Script          | Comando             | Descripción                                                    |
-| --------------- | ------------------- | -------------------------------------------------------------- |
-| `start`         | `npm run start`     | Inicia el servidor de desarrollo Angular en localhost:4200     |
-| `build`         | `npm run build`     | Genera el build de producción en `www/`                        |
-| `watch`         | `npm run watch`     | Build en modo watch (desarrollo, reconstruye al cambiar)       |
-| `lint`          | `npm run lint`      | Ejecuta ESLint en todo el proyecto                             |
-| `format`        | `npm run format`    | Formatea todos los archivos con Prettier                       |
+| Script   | Comando          | Descripción                                                |
+| -------- | ---------------- | ---------------------------------------------------------- |
+| `start`  | `npm run start`  | Inicia el servidor de desarrollo Angular en localhost:4200 |
+| `build`  | `npm run build`  | Genera el build de producción en `www/`                    |
+| `watch`  | `npm run watch`  | Build en modo watch (desarrollo, reconstruye al cambiar)   |
+| `lint`   | `npm run lint`   | Ejecuta ESLint en todo el proyecto                         |
+| `format` | `npm run format` | Formatea todos los archivos con Prettier                   |
 
 ---
 
 ## Plugins de Capacitor
 
-| Plugin                                | Versión  | Propósito                                             |
-| ------------------------------------- | -------- | ----------------------------------------------------- |
-| `@capacitor/core`                     | 8.1.0    | Núcleo de Capacitor                                   |
-| `@capacitor/android`                  | 8.1.0    | Soporte de plataforma Android                         |
-| `@capacitor/app`                      | 8.0.1    | Eventos del ciclo de vida de la aplicación            |
-| `@capacitor/haptics`                  | 8.0.0    | Retroalimentación háptica / vibración                 |
-| `@capacitor/keyboard`                 | 8.0.0    | Control del teclado virtual                           |
-| `@capacitor/splash-screen`            | ^8.0.1   | Pantalla de splash al iniciar                         |
-| `@capacitor/status-bar`               | 8.0.1    | Personalización de la barra de estado                 |
-| `@capacitor-community/sqlite`         | ^7.0.1   | Base de datos SQLite local en Android/iOS             |
-| `@capacitor-community/native-audio`   | ^8.0.0   | Reproducción de audio nativo (efectos de sonido)      |
+| Plugin                              | Versión | Propósito                                        |
+| ----------------------------------- | ------- | ------------------------------------------------ |
+| `@capacitor/core`                   | 8.1.0   | Núcleo de Capacitor                              |
+| `@capacitor/android`                | 8.1.0   | Soporte de plataforma Android                    |
+| `@capacitor/app`                    | 8.0.1   | Eventos del ciclo de vida de la aplicación       |
+| `@capacitor/haptics`                | 8.0.0   | Retroalimentación háptica / vibración            |
+| `@capacitor/keyboard`               | 8.0.0   | Control del teclado virtual                      |
+| `@capacitor/splash-screen`          | ^8.0.1  | Pantalla de splash al iniciar                    |
+| `@capacitor/status-bar`             | 8.0.1   | Personalización de la barra de estado            |
+| `@capacitor-community/sqlite`       | ^7.0.1  | Base de datos SQLite local en Android/iOS        |
+| `@capacitor-community/native-audio` | ^8.0.0  | Reproducción de audio nativo (efectos de sonido) |
 
 ---
 
@@ -230,13 +229,13 @@ Models -> Repositories -> Services -> Features (Pages)
                                      Shared Components
 ```
 
-| Capa           | Ubicación              | Responsabilidad                               |
-| -------------- | ---------------------- | --------------------------------------------- |
-| Models         | `core/models/`         | Interfaces TypeScript puras, enums, constantes |
-| Repositories   | `core/repositories/`   | Consultas SQL vía `DatabaseService`           |
-| Services       | `core/services/`       | Lógica de negocio; inyectan repositorios      |
-| Features       | `features/`            | Componentes de página; inyectan servicios     |
-| Shared         | `shared/components/`   | Componentes UI reutilizables sin servicios    |
+| Capa         | Ubicación            | Responsabilidad                                |
+| ------------ | -------------------- | ---------------------------------------------- |
+| Models       | `core/models/`       | Interfaces TypeScript puras, enums, constantes |
+| Repositories | `core/repositories/` | Consultas SQL vía `DatabaseService`            |
+| Services     | `core/services/`     | Lógica de negocio; inyectan repositorios       |
+| Features     | `features/`          | Componentes de página; inyectan servicios      |
+| Shared       | `shared/components/` | Componentes UI reutilizables sin servicios     |
 
 ### Base de datos (SQLite)
 
@@ -258,11 +257,11 @@ Se utilizan componentes Ionic estándar (`IonTabs`, `IonModal`, `IonCard`, `IonB
 
 ## Calidad de código
 
-| Herramienta       | Configuración          | Uso                                              |
-| ----------------- | ---------------------- | ------------------------------------------------ |
-| **ESLint**        | `.eslintrc.json`       | Análisis estático del código TypeScript y HTML   |
-| **Prettier**      | (vía `eslint-config-prettier`) | Formateo automático de código            |
-| **Angular ESLint**| `@angular-eslint/*`    | Reglas específicas para Angular y plantillas     |
+| Herramienta        | Configuración                  | Uso                                            |
+| ------------------ | ------------------------------ | ---------------------------------------------- |
+| **ESLint**         | `.eslintrc.json`               | Análisis estático del código TypeScript y HTML |
+| **Prettier**       | (vía `eslint-config-prettier`) | Formateo automático de código                  |
+| **Angular ESLint** | `@angular-eslint/*`            | Reglas específicas para Angular y plantillas   |
 
 Ejecutar el linter:
 
@@ -282,15 +281,15 @@ npm run format
 
 Usa un prefijo que refleje el tipo de trabajo, seguido de un nombre conciso en kebab-case.
 
-| Prefijo       | Uso                                  |
-| ------------- | ------------------------------------ |
-| `feature/`    | Nueva funcionalidad                  |
-| `bugfix/`     | Corrección de errores                |
-| `hotfix/`     | Corrección urgente en producción     |
-| `refactor/`   | Refactorización de código            |
-| `docs/`       | Actualizaciones de documentación     |
-| `test/`       | Tests y mejoras de testing           |
-| `chore/`      | Mantenimiento y tareas generales     |
+| Prefijo     | Uso                              |
+| ----------- | -------------------------------- |
+| `feature/`  | Nueva funcionalidad              |
+| `bugfix/`   | Corrección de errores            |
+| `hotfix/`   | Corrección urgente en producción |
+| `refactor/` | Refactorización de código        |
+| `docs/`     | Actualizaciones de documentación |
+| `test/`     | Tests y mejoras de testing       |
+| `chore/`    | Mantenimiento y tareas generales |
 
 **Formato:** `<prefijo>/<nombre-conciso>`
 
@@ -312,32 +311,32 @@ Los mensajes de commit siguen el estilo **[gitmoji](https://gitmoji.dev/)**: un 
 
 **Formato:** `<gitmoji> <Descripción breve en imperativo>`
 
-| Emoji | Uso                                        |
-| ----- | ------------------------------------------ |
-| ✨    | Nueva funcionalidad                        |
-| 🐛    | Corrección de bug                          |
-| 🚑️    | Hotfix crítico                             |
-| ♻️    | Refactorización                            |
-| 🎨    | Mejora de estructura o formateo            |
-| 💄    | Cambios de UI o estilos                    |
-| 🗃️    | Cambios en base de datos                   |
-| 📝    | Documentación                              |
-| 🔧    | Configuración                              |
-| 📦️    | Build o paquetes                           |
-| ✏️    | Corrección de typos                        |
-| 🔥    | Eliminar código o archivos                 |
-| ⬆️    | Actualizar dependencias                    |
-| ⬇️    | Degradar dependencias                      |
-| ➕    | Añadir dependencia                         |
-| ➖    | Eliminar dependencia                       |
-| 🚚    | Mover o renombrar archivos                 |
-| 💥    | Cambios que rompen compatibilidad          |
-| 🥅    | Captura de errores                         |
-| 💫    | Animaciones y transiciones                 |
-| 🦺    | Validación                                 |
-| ✈️    | Soporte offline                            |
-| 🔒️    | Seguridad                                  |
-| 🧑‍💻    | Experiencia de desarrollador               |
+| Emoji | Uso                               |
+| ----- | --------------------------------- |
+| ✨    | Nueva funcionalidad               |
+| 🐛    | Corrección de bug                 |
+| 🚑️    | Hotfix crítico                    |
+| ♻️    | Refactorización                   |
+| 🎨    | Mejora de estructura o formateo   |
+| 💄    | Cambios de UI o estilos           |
+| 🗃️    | Cambios en base de datos          |
+| 📝    | Documentación                     |
+| 🔧    | Configuración                     |
+| 📦️    | Build o paquetes                  |
+| ✏️    | Corrección de typos               |
+| 🔥    | Eliminar código o archivos        |
+| ⬆️    | Actualizar dependencias           |
+| ⬇️    | Degradar dependencias             |
+| ➕    | Añadir dependencia                |
+| ➖    | Eliminar dependencia              |
+| 🚚    | Mover o renombrar archivos        |
+| 💥    | Cambios que rompen compatibilidad |
+| 🥅    | Captura de errores                |
+| 💫    | Animaciones y transiciones        |
+| 🦺    | Validación                        |
+| ✈️    | Soporte offline                   |
+| 🔒️    | Seguridad                         |
+| 🧑‍💻    | Experiencia de desarrollador      |
 
 **Ejemplos:**
 
@@ -374,10 +373,10 @@ Los mensajes de commit siguen el estilo **[gitmoji](https://gitmoji.dev/)**: un 
 
 ## Contribuidores
 
-| Contribuidor    | Perfil                                                    |
-| --------------- | --------------------------------------------------------- |
-| David Pérez     | [DavidPerez-2357](https://github.com/DavidPerez-2357)     |
-| Pepe Escalera   | [pescalerag](https://github.com/pescalerag)               |
+| Contribuidor  | Perfil                                                |
+| ------------- | ----------------------------------------------------- |
+| David Pérez   | [DavidPerez-2357](https://github.com/DavidPerez-2357) |
+| Pepe Escalera | [pescalerag](https://github.com/pescalerag)           |
 
 ---
 

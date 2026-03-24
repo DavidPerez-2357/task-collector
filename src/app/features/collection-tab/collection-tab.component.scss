@@ -1,22 +1,21 @@
 ion-content {
-  --background: var(--ion-color-dark-brown) url('/assets/backgrounds/collection-bg.png') repeat-y top center / 100% auto;
+  --background: var(--ion-color-dark-brown) url('/assets/backgrounds/collection-bg.png') repeat-y
+    top center / 100% auto;
 }
 
 ion-content::part(scroll) {
   padding-top: 0 !important;
 }
 
-
 .collection-wall {
   min-height: 100%;
 }
-
 
 .collections-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0 0 1.5rem; 
+  padding: 0 0 1.5rem;
 }
 
 .empty-state {
