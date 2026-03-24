@@ -54,15 +54,13 @@ export class CollectionTabComponent implements ViewWillEnter {
 
   private async reloadCollection(collectionId: number) {
     try {
-      await this.loadingService.runWithLoading(async () => {
-        const updated = await this.collectionService.getCollectionById(collectionId);
-        if (updated) {
-          const index = this.collections.findIndex((c) => c.id === collectionId);
-          if (index !== -1) {
-            this.collections[index] = updated;
-          }
+      const updated = await this.collectionService.getCollectionById(collectionId);
+      if (updated) {
+        const index = this.collections.findIndex((c) => c.id === collectionId);
+        if (index !== -1) {
+          this.collections[index] = updated;
         }
-      }, 'Actualizando colección...');
+      }
     } catch (error) {
       this.errorService.handle(error, 'Error actualizando la colección');
     }
