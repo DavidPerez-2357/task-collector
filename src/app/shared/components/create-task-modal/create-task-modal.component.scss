@@ -45,16 +45,16 @@ ion-modal {
           gap: 6px;
 
           &::after {
-            content: "🔒";
+            content: '🔒';
             font-size: 0.8rem;
             filter: grayscale(1) opacity(0.7);
           }
         }
       }
 
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
+      input[type='text'],
+      input[type='number'],
+      input[type='date'],
       select {
         background: rgba(0, 0, 0, 0.2);
         border: 2px solid rgba(0, 0, 0, 0.1);
@@ -91,12 +91,12 @@ ion-modal {
         }
       }
 
-      input[type="date"] {
+      input[type='date'] {
         width: 100%;
         box-sizing: border-box;
         color-scheme: dark; // Hace el calendario nativo oscuro
       }
-/* --- NUEVO: Estilos para las bolitas de los días --- */
+      /* --- NUEVO: Estilos para las bolitas de los días --- */
       .weekdays-selector {
         display: flex;
         gap: 6px;
@@ -145,7 +145,7 @@ ion-modal {
         align-items: center;
         gap: 8px;
         font-size: 1.1rem;
-        
+
         input {
           width: 70px;
           text-align: center;
