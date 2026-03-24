@@ -87,6 +87,8 @@
                   formControlName="dueDate"
                   (change)="onDueDateChange()"
                   class="date-input"
+                  [attr.min]="minDateString()"
+                  [attr.max]="maxDateString()"
                 />
               </div>
             } @else {

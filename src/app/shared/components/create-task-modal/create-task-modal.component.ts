@@ -10,6 +10,10 @@ import { CategoryService } from '@core/services/category.service';
 import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 import { ToastService } from '@core/services/toast.service';
+import { notInPast, notTooFarInFuture } from '@core/utils/date-validators.util';
+
+/** Número máximo de años en el futuro permitido para la fecha límite. */
+const MAX_YEARS_IN_FUTURE = 100;
 
 @Component({
   selector: 'app-create-task-modal',
@@ -40,6 +44,10 @@ export class CreateTaskModalComponent implements OnInit {
 
   // Flag para evitar desbloquear el scroll al iniciar el componente
   private openedOnce = false;
+
+  // Validator arrays predefinidos para reutilizar instancias entre ejecuciones del effect
+  private readonly createDateValidators = [notInPast(), notTooFarInFuture(MAX_YEARS_IN_FUTURE)];
+  private readonly editDateValidators = [notTooFarInFuture(MAX_YEARS_IN_FUTURE)];
 
   // Static options
   readonly frequencies = [
@@ -107,6 +115,16 @@ export class CreateTaskModalComponent implements OnInit {
     return !v.name?.trim() || v.categoryId === null;
   });
 
+  /** Fecha mínima seleccionable: hoy (sólo aplicable al crear, no al editar). */
+  minDateString = computed(() => (this.isEditMode() ? null : this.getTodayString()));
+
+  /** Fecha máxima seleccionable: hoy + MAX_YEARS_IN_FUTURE años. */
+  maxDateString = computed(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + MAX_YEARS_IN_FUTURE);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+
   constructor() {
     // React to taskToEdit input signal: prefill the form when a task is provided
     effect(() => {
@@ -139,6 +157,22 @@ export class CreateTaskModalComponent implements OnInit {
           ctrl?.enable({ emitEvent: false });
         }
       });
+    });
+
+    // Asigna los validators de fecha al control dueDate según el modo actual
+    effect(() => {
+      const dueDateCtrl = this.form.get('dueDate');
+      if (this.isWeekly()) {
+        // Las tareas semanales calculan la fecha automáticamente: sin validación de fecha
+        dueDateCtrl?.clearValidators();
+      } else if (this.isEditMode()) {
+        // Al editar, solo se prohíben fechas demasiado lejanas (no se restringe el pasado)
+        dueDateCtrl?.setValidators(this.editDateValidators);
+      } else {
+        // Al crear, se prohíben fechas en el pasado y demasiado lejanas
+        dueDateCtrl?.setValidators(this.createDateValidators);
+      }
+      dueDateCtrl?.updateValueAndValidity({ emitEvent: false });
     });
   }
 
@@ -254,6 +288,21 @@ export class CreateTaskModalComponent implements OnInit {
     if (isWeekly && this.selectedWeekdays().length === 0) {
       await this.showWarning('Selecciona al menos un día de la semana.');
       return false;
+    }
+
+    // Validate the due date (only applicable when not weekly)
+    if (!isWeekly) {
+      const dueDateErrors = this.form.get('dueDate')?.errors;
+      if (dueDateErrors?.['pastDate']) {
+        await this.showWarning('La fecha límite no puede ser anterior a hoy.');
+        return false;
+      }
+      if (dueDateErrors?.['tooFarInFuture']) {
+        await this.showWarning(
+          `La fecha límite no puede ser más de ${MAX_YEARS_IN_FUTURE} años en el futuro.`,
+        );
+        return false;
+      }
     }
 
     return true;
