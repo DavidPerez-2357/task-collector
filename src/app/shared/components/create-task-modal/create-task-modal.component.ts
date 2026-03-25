@@ -3,6 +3,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  ViewChild,
   OnInit,
   OnChanges,
   OnDestroy,
@@ -57,6 +58,8 @@ import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.uti
   imports: [IonModal, BoardComponent, ButtonComponent, FormsModule],
 })
 export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
+  @ViewChild(IonModal) modal!: IonModal;
+
   @Input() isOpen: boolean = false;
   @Input() taskToEdit: TaskActive | null = null;
   @Input() editMode: 'global' | 'instance' = 'global';
@@ -197,6 +200,11 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
     this.closed.emit();
   }
 
+  /** Cierra el modal programáticamente. */
+  close() {
+    this.modal.dismiss();
+  }
+
   async onSubmit() {
     if (!(await this.validateForm())) return;
 
@@ -281,8 +289,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private completeSubmission(): void {
-    this.resetForm();
-    this.closed.emit();
+    this.close();
   }
 
   private async handleError(error: any): Promise<void> {

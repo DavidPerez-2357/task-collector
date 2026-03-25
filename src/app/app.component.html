@@ -8,6 +8,5 @@
     [isOpen]="errorOpen$ | async"
     [message]="(error$ | async) ?? ''"
     (closed)="clearError()"
-    (acknowledged)="clearError()"
   ></app-error-modal>
 </ion-app>
