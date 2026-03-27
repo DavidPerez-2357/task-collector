@@ -1,34 +1,27 @@
 import { Routes } from '@angular/router';
-import { TabsPage } from './tabs.page';
 
 export const routes: Routes = [
   {
     path: 'tabs',
-    component: TabsPage,
+    loadComponent: () => import('./tabs.page').then((m) => m.TabsPage),
     children: [
       {
         path: 'home',
-        loadComponent: () =>
-          import('@features/home-tab/home-tab.component').then((m) => m.HomeTabComponent),
+        loadChildren: () => import('@features/home-tab/home-tab.routes').then((m) => m.routes),
       },
       {
         path: 'collection',
-        loadComponent: () =>
-          import('@features/collection-tab/collection-tab.component').then(
-            (m) => m.CollectionTabComponent,
-          ),
+        loadChildren: () =>
+          import('@features/collection-tab/collection-tab.routes').then((m) => m.routes),
       },
       {
         path: 'inventory',
-        loadComponent: () =>
-          import('@features/inventory-tab/inventory-tab.component').then(
-            (m) => m.InventoryTabComponent,
-          ),
+        loadChildren: () =>
+          import('@features/inventory-tab/inventory-tab.routes').then((m) => m.routes),
       },
       {
         path: 'shop',
-        loadComponent: () =>
-          import('@app/features/shop-tab/shop-tab.component').then((m) => m.ShopTabComponent),
+        loadChildren: () => import('@features/shop-tab/shop-tab.routes').then((m) => m.routes),
       },
       {
         path: '',
