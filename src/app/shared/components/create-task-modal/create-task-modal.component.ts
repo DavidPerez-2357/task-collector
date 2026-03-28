@@ -509,17 +509,4 @@ export class CreateTaskModalComponent implements OnInit, OnDestroy {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  private toggleBodyScroll(block: boolean): void {
-    if (block) {
-      document.body.style.overflow = 'hidden';
-      document.body.addEventListener('touchmove', this.preventTouchMove, { passive: false });
-    } else {
-      document.body.style.overflow = '';
-      document.body.removeEventListener('touchmove', this.preventTouchMove);
-    }
-  }
-
-  private preventTouchMove(e: TouchEvent): void {
-    e.preventDefault();
-  }
 }
