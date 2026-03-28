@@ -3,8 +3,10 @@ import {
   EventEmitter,
   Input,
   Output,
+  ViewChild,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   inject,
 } from '@angular/core';
@@ -18,24 +20,58 @@ import { CategoryService } from '@core/services/category.service';
 import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 import { ToastService } from '@core/services/toast.service';
+import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.util';
 
+/**
+ * Componente SMART — Modal para crear o editar una tarea.
+ *
+ * Gestiona el formulario de creación/edición de tareas. Inyecta servicios de dominio
+ * (`CategoryService`, `CreateTaskService`, `EditTaskService`, `ToastService`) para
+ * persistir los cambios.
+ *
+ * @example
+ * ```html
+ * <!-- Crear tarea -->
+ * <app-create-task-modal [isOpen]="isOpen" (closed)="isOpen = false" />
+ *
+ * <!-- Editar tarea -->
+ * <app-create-task-modal
+ *   [isOpen]="isOpen"
+ *   [taskToEdit]="task"
+ *   editMode="global"
+ *   (closed)="onClosed()"
+ * />
+ * ```
+ *
+ * Inputs:
+ *   - `isOpen`      — controla la visibilidad del modal.
+ *   - `taskToEdit`  — tarea a editar; si es null, el modal crea una nueva tarea.
+ *   - `editMode`    — modo de edición: 'global' (modifica la tarea base) o 'instance' (solo esta ocurrencia).
+ *
+ * Outputs:
+ *   - `closed` — emitido cuando el modal se cierra (por cancelación o tras guardar con éxito).
+ */
 @Component({
   selector: 'app-create-task-modal',
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent, FormsModule],
 })
-export class CreateTaskModalComponent implements OnInit, OnChanges {
+export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
+  @ViewChild(IonModal) modal!: IonModal;
+
   @Input() isOpen: boolean = false;
   @Input() taskToEdit: TaskActive | null = null;
   @Input() editMode: 'global' | 'instance' = 'global';
-  @Output() dismissed = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
   readonly TaskFrequency = TaskFrequency;
 
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
   private editTaskService = inject(EditTaskService);
   private toast = inject(ToastService);
+
+  private scrollLocked = false;
 
   categories: Category[] = [];
   frequencies = [
@@ -108,13 +144,29 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     if (isOpenChange) {
       const { currentValue, firstChange } = isOpenChange;
       if (!(firstChange && !currentValue)) {
-        this.toggleBodyScroll(currentValue);
+        if (currentValue) {
+          this.scrollLocked = true;
+          blockBodyScroll();
+        } else {
+          this.releaseScrollLock();
+        }
       }
     }
 
     const task = changes['taskToEdit']?.currentValue as TaskActive | null;
     if (task) {
       this.prefillForm(task);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
     }
   }
 
@@ -143,9 +195,14 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   onDismiss() {
-    this.toggleBodyScroll(false);
+    this.releaseScrollLock();
     this.resetForm();
-    this.dismissed.emit();
+    this.closed.emit();
+  }
+
+  /** Cierra el modal programáticamente. */
+  close() {
+    this.modal.dismiss();
   }
 
   async onSubmit() {
@@ -232,8 +289,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   private completeSubmission(): void {
-    this.resetForm();
-    this.dismissed.emit();
+    this.close();
   }
 
   private async handleError(error: any): Promise<void> {
@@ -273,19 +329,5 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
-  }
-
-  private toggleBodyScroll(block: boolean) {
-    if (block) {
-      document.body.style.overflow = 'hidden';
-      document.body.addEventListener('touchmove', this.preventTouchMove, { passive: false });
-    } else {
-      document.body.style.overflow = '';
-      document.body.removeEventListener('touchmove', this.preventTouchMove);
-    }
-  }
-
-  private preventTouchMove(e: TouchEvent) {
-    e.preventDefault();
   }
 }

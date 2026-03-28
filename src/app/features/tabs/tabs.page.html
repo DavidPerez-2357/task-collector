@@ -43,7 +43,7 @@
   [isOpen]="isCreateModalOpen"
   [taskToEdit]="taskToEdit"
   [editMode]="editMode"
-  (dismissed)="onModalDismissed()"
+  (closed)="onModalDismissed()"
 >
 </app-create-task-modal>
-<app-settings-modal [isOpen]="isConfigOpen" (dismissed)="isConfigOpen = false" />
+<app-settings-modal [isOpen]="isConfigOpen" (closed)="isConfigOpen = false" />

@@ -62,7 +62,7 @@
     [isOpen]="isItemAcquiredModalOpen"
     [item]="acquiredItem"
     [amount]="acquiredAmount"
-    (dismissed)="isItemAcquiredModalOpen = false"
+    (closed)="isItemAcquiredModalOpen = false"
     (acknowledged)="onAcquiredAcknowledged()"
   />
 </ion-content>
