@@ -6,40 +6,79 @@ import {
   Output,
   ViewChild,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
 } from '@angular/core';
 import { IonModal, IonIcon } from '@ionic/angular/standalone';
 import { BoardComponent } from '@shared/components/board/board.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { AudioService } from '@core/services/audio.service';
+import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.util';
 import { App } from '@capacitor/app';
 
+/**
+ * Componente SMART — Modal de ajustes de la aplicación.
+ *
+ * Controla opciones de audio y cierre de la app a través de `AudioService`.
+ *
+ * @example
+ * ```html
+ * <app-settings-modal [isOpen]="isOpen" (closed)="isOpen = false" />
+ * ```
+ *
+ * Inputs:
+ *   - `isOpen` — controla la visibilidad del modal.
+ *
+ * Outputs:
+ *   - `closed` — emitido cuando el modal se cierra (cualquier motivo).
+ *
+ * Métodos públicos:
+ *   - `close()` — cierra el modal programáticamente.
+ */
 @Component({
   selector: 'app-settings-modal',
   templateUrl: './settings-modal.component.html',
   styleUrls: ['./settings-modal.component.scss'],
   imports: [IonModal, IonIcon, BoardComponent, ButtonComponent],
 })
-export class SettingsModalComponent implements OnChanges {
+export class SettingsModalComponent implements OnChanges, OnDestroy {
   private audioService = inject(AudioService);
 
   @ViewChild(IonModal) modal!: IonModal;
 
   @Input() isOpen: boolean = false;
-  @Output() dismissed = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
+  private scrollLocked = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     const isOpenChange = changes['isOpen'];
     if (isOpenChange) {
       const { currentValue, firstChange } = isOpenChange;
       if (firstChange && !currentValue) return;
-      this.toggleBodyScroll(currentValue);
+      if (currentValue) {
+        this.scrollLocked = true;
+        blockBodyScroll();
+      } else {
+        this.releaseScrollLock();
+      }
     }
   }
 
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
   onDismiss() {
-    this.toggleBodyScroll(false);
-    this.dismissed.emit();
+    this.releaseScrollLock();
+    this.closed.emit();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
+    }
   }
 
   isMusicMuted() {
@@ -62,21 +101,8 @@ export class SettingsModalComponent implements OnChanges {
     await App.exitApp();
   }
 
-  closeModal() {
+  /** Cierra el modal programáticamente. */
+  close() {
     this.modal.dismiss();
-  }
-
-  private toggleBodyScroll(block: boolean) {
-    if (block) {
-      document.body.style.overflow = 'hidden';
-      document.body.addEventListener('touchmove', this.preventTouchMove, { passive: false });
-    } else {
-      document.body.style.overflow = '';
-      document.body.removeEventListener('touchmove', this.preventTouchMove);
-    }
-  }
-
-  private preventTouchMove(e: TouchEvent) {
-    e.preventDefault();
   }
 }

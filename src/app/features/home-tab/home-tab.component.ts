@@ -72,8 +72,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
         this.todayTasks = today;
         this.otherTasks = others;
       } catch (e) {
-        console.error('Error cargando tareas:', e);
-        this.errorService.show('Error cargando tareas');
+        this.errorService.handle(e, 'Error cargando tareas');
       }
     }, 'Cargando tareas...');
   }
@@ -134,8 +133,7 @@ export class HomeTabComponent implements ViewWillEnter, ViewWillLeave {
 
       this.showItemAcquired(item, 1);
     } catch (e) {
-      console.error('Error al otorgar item por completar tarea:', e);
-      this.errorService.show('Error al otorgar item por completar tarea');
+      this.errorService.handle(e, 'Error al otorgar item por completar tarea');
     }
   }
 }

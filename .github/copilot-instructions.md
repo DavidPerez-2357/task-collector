@@ -42,14 +42,14 @@ When generating or reviewing code for this project, apply the standards of a sen
 
 Always consult `package.json` and use features appropriate to the versions in use. Do not suggest patterns, APIs, or workarounds that are deprecated or superseded by the versions listed below.
 
-| Package        | Version | Key modern features to use                                                                                           |
-| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| Angular        | ^20     | Signals (`signal`, `computed`, `effect`), standalone components, `inject()`, built-in control flow (`@if`, `@for`)  |
-| TypeScript     | ~5.9    | Strict mode, template literal types, `satisfies` operator, `using` keyword for resource management                  |
-| RxJS           | ~7.8    | Pipeable operators, `takeUntilDestroyed`, avoid deprecated patterns (e.g., `toPromise()`)                           |
-| Ionic          | ^8      | Current component APIs; avoid deprecated Ionic 4/5 patterns                                                         |
-| Capacitor      | ^8      | Current plugin APIs; always handle the web fallback                                                                  |
-| ESLint         | ^9      | Using legacy `.eslintrc.json` config; ESLint 9 supports flat config but this project hasn’t migrated yet—Copilot should not suggest adding `eslint.config.*` by default |
+| Package    | Version | Key modern features to use                                                                                                                                              |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Angular    | ^20     | Signals (`signal`, `computed`, `effect`), standalone components, `inject()`, built-in control flow (`@if`, `@for`)                                                      |
+| TypeScript | ~5.9    | Strict mode, template literal types, `satisfies` operator, `using` keyword for resource management                                                                      |
+| RxJS       | ~7.8    | Pipeable operators, `takeUntilDestroyed`, avoid deprecated patterns (e.g., `toPromise()`)                                                                               |
+| Ionic      | ^8      | Current component APIs; avoid deprecated Ionic 4/5 patterns                                                                                                             |
+| Capacitor  | ^8      | Current plugin APIs; always handle the web fallback                                                                                                                     |
+| ESLint     | ^9      | Using legacy `.eslintrc.json` config; ESLint 9 supports flat config but this project hasn’t migrated yet—Copilot should not suggest adding `eslint.config.*` by default |
 
 ### Performance & Security
 

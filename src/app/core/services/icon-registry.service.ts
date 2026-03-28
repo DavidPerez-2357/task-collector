@@ -19,6 +19,7 @@ import {
   starOutline,
   closeCircleOutline,
   earth,
+  warningOutline,
 } from 'ionicons/icons';
 
 /**
@@ -52,6 +53,7 @@ export class IconRegistryService {
       'repeat-outline': repeatOutline,
       'star-outline': starOutline,
       'close-circle-outline': closeCircleOutline,
+      'warning-outline': warningOutline,
       earth,
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input, output, signal, ViewChild, OnDestroy, SimpleChanges } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonModal } from '@ionic/angular/standalone';
@@ -12,28 +12,62 @@ import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 import { ToastService } from '@core/services/toast.service';
 import { notInPast, notTooFarInFuture } from '@core/utils/date-validators.util';
+import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.util';
 
 /** Número máximo de años en el futuro permitido para la fecha límite. */
 const MAX_YEARS_IN_FUTURE = 100;
 
+
+/**
+ * Componente SMART — Modal para crear o editar una tarea.
+ *
+ * Gestiona el formulario de creación/edición de tareas. Inyecta servicios de dominio
+ * (`CategoryService`, `CreateTaskService`, `EditTaskService`, `ToastService`) para
+ * persistir los cambios.
+ *
+ * @example
+ * ```html
+ * <!-- Crear tarea -->
+ * <app-create-task-modal [isOpen]="isOpen" (closed)="isOpen = false" />
+ *
+ * <!-- Editar tarea -->
+ * <app-create-task-modal
+ *   [isOpen]="isOpen"
+ *   [taskToEdit]="task"
+ *   editMode="global"
+ *   (closed)="onClosed()"
+ * />
+ * ```
+ *
+ * Inputs:
+ *   - `isOpen`      — controla la visibilidad del modal.
+ *   - `taskToEdit`  — tarea a editar; si es null, el modal crea una nueva tarea.
+ *   - `editMode`    — modo de edición: 'global' (modifica la tarea base) o 'instance' (solo esta ocurrencia).
+ *
+ * Outputs:
+ *   - `closed` — emitido cuando el modal se cierra (por cancelación o tras guardar con éxito).
+ */
 @Component({
   selector: 'app-create-task-modal',
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss'],
   imports: [IonModal, BoardComponent, ButtonComponent, ReactiveFormsModule],
 })
-export class CreateTaskModalComponent implements OnInit {
+export class CreateTaskModalComponent implements OnInit, OnDestroy {
+  @ViewChild(IonModal) modal!: IonModal;
+
   // Signal-based inputs
   isOpen = input<boolean>(false);
   taskToEdit = input<TaskActive | null>(null);
   editMode = input<'global' | 'instance'>('global');
-  dismissed = output<void>();
+  closed = output<void>();
 
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
   private editTaskService = inject(EditTaskService);
   private toast = inject(ToastService);
+  private scrollLocked = false;
 
   // Reactive state signals
   categories = signal<Category[]>([]);
@@ -160,7 +194,12 @@ export class CreateTaskModalComponent implements OnInit {
         this.openedOnce = true;
         if (!open) return;
       }
-      this.toggleBodyScroll(open);
+      if (open) {
+        this.scrollLocked = true;
+        blockBodyScroll();
+      } else {
+        this.releaseScrollLock();
+      }
     });
 
     // React to editMode signal: disable/enable form controls for instance-only editing
@@ -203,6 +242,17 @@ export class CreateTaskModalComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.releaseScrollLock();
+  }
+
+  private releaseScrollLock(): void {
+    if (this.scrollLocked) {
+      this.scrollLocked = false;
+      unblockBodyScroll();
+    }
+  }
+
   private prefillForm(task: TaskActive): void {
     this.form.patchValue({
       name: task.name,
@@ -229,9 +279,14 @@ export class CreateTaskModalComponent implements OnInit {
   }
 
   onDismiss(): void {
-    this.toggleBodyScroll(false);
+    this.releaseScrollLock();
     this.resetForm();
-    this.dismissed.emit();
+    this.closed.emit();
+  }
+
+  /** Cierra el modal programáticamente. */
+  close() {
+    this.modal.dismiss();
   }
 
   async onSubmit(): Promise<void> {
@@ -417,7 +472,7 @@ export class CreateTaskModalComponent implements OnInit {
 
   private completeSubmission(): void {
     this.resetForm();
-    this.dismissed.emit();
+    this.close();
   }
 
   private async handleError(error: unknown): Promise<void> {
