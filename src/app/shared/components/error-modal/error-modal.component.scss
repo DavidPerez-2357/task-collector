@@ -15,8 +15,20 @@ ion-modal::part(content) {
   text-align: center;
   color: var(--ion-color-dark);
 
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .error-icon {
+    font-size: 1.5rem;
+    color: var(--ion-color-danger);
+  }
+
   h2 {
-    margin-top: 0;
+    margin: 0;
     font-size: 1.5rem;
     color: var(--ion-color-danger);
   }

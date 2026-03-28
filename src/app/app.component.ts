@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   loading$ = this.loadingService.loading$;
   message$ = this.loadingService.message$;
   error$ = this.errorService.error$;
-  errorOpen$ = this.errorService.error$.pipe(map((m) => !!m));
+  errorOpen$ = this.errorService.error$.pipe(map((e) => !!e));
 
   clearError() {
     this.errorService.clear();
@@ -37,6 +37,8 @@ export class AppComponent implements OnInit {
     try {
       await this.databaseService.init();
       await this.audioService.init();
+    } catch (e) {
+      this.errorService.handle(e, 'Error al inicializar la aplicación.');
     } finally {
       if (Capacitor.isNativePlatform()) {
         await StatusBar.hide();
