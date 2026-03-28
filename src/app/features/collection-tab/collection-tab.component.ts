@@ -38,25 +38,21 @@ export class CollectionTabComponent implements ViewWillEnter {
     if (this.content) {
       await this.content.scrollToTop(0);
     }
-    this.loadingService.show('Cargando colecciones...');
     try {
-      await this.loadCollections();
-    } finally {
-      this.loadingService.hide();
+      await this.loadingService.runWithLoading(
+        () => this.loadCollections(),
+        'Cargando colecciones...',
+      );
+    } catch (e) {
+      this.errorService.handle(e, 'Error cargando colecciones');
     }
   }
 
   private async loadCollections() {
-    try {
-      this.collections = await this.collectionService.getOwnedCollections();
-    } catch (error) {
-      console.error('Error loading collections:', error);
-      this.errorService.show('Error cargando colecciones');
-    }
+    this.collections = await this.collectionService.getOwnedCollections();
   }
 
   private async reloadCollection(collectionId: number) {
-    this.loadingService.show('Actualizando colección...');
     try {
       const updated = await this.collectionService.getCollectionById(collectionId);
       if (updated) {
@@ -66,10 +62,7 @@ export class CollectionTabComponent implements ViewWillEnter {
         }
       }
     } catch (error) {
-      console.error('Error reloading collection:', error);
-      this.errorService.show('Error actualizando la colección');
-    } finally {
-      this.loadingService.hide();
+      this.errorService.handle(error, 'Error actualizando la colección');
     }
   }
 
@@ -84,9 +77,7 @@ export class CollectionTabComponent implements ViewWillEnter {
         this.collections[index] = updated;
       }
     } catch (error) {
-      console.error('Error updating collection in place:', error);
-      // Mostrar error pero sin usar loading global
-      this.errorService.show('Error actualizando la colección');
+      this.errorService.handle(error, 'Error actualizando la colección');
     }
   }
 
@@ -134,8 +125,7 @@ export class CollectionTabComponent implements ViewWillEnter {
       // Actualizar solo la colección modificada sin mostrar el loading global
       await this.updateCollectionInPlace(collectionId);
     } catch (error) {
-      console.error('Error depositing item directly:', error);
-      this.errorService.show('Error al añadir el objeto a la colección');
+      this.errorService.handle(error, 'Error al añadir el objeto a la colección');
     }
   }
 
