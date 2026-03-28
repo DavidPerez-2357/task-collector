@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, input, output, signal, ViewChild, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input, output, signal, ViewChild, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonModal } from '@ionic/angular/standalone';
