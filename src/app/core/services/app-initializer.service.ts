@@ -24,8 +24,7 @@ export class AppInitializerService {
         await this.databaseService.init();
         await this.audioService.init();
       } catch (e) {
-        console.error('Error al inicializar la aplicación:', e);
-        this.errorService.show('Error al inicializar la aplicación');
+        this.errorService.handle(e, 'Error al inicializar la aplicación');
         throw e;
       }
     }, 'Iniciando base de datos...');
