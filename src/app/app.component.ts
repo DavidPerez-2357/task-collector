@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   loading$ = this.loadingService.loading$;
   message$ = this.loadingService.message$;
   error$ = this.errorService.error$;
-  errorOpen$ = this.errorService.error$.pipe(map((m) => !!m));
+  errorOpen$ = this.errorService.error$.pipe(map((e) => !!e));
 
   clearError() {
     this.errorService.clear();

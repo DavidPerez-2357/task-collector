@@ -6,7 +6,7 @@
   ></app-loading-overlay>
   <app-error-modal
     [isOpen]="errorOpen$ | async"
-    [message]="(error$ | async) ?? ''"
+    [error]="error$ | async"
     (acknowledged)="clearError()"
   ></app-error-modal>
 </ion-app>
