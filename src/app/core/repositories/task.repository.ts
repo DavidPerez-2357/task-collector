@@ -185,13 +185,20 @@ export class TaskRepository {
 
   /**
    * Actualiza solo una instancia específica de la tarea (fecha límite).
+   * Se actualizan tanto start_date como end_date para mantener la ventana coherente:
+   * start_date = inicio del día, end_date = fin del día (23:59:59.999), igual que en createTask.
    */
   async updateTaskInstance(activeTaskId: number, dueDate?: string): Promise<void> {
     const end = parseDueDateToEndOfDay(dueDate);
 
     return await this.databaseService.withConn(async (conn) => {
       if (end !== null) {
-        await conn.run(`UPDATE task_active SET end_date = ? WHERE id = ?`, [end, activeTaskId]);
+        const start = getStartOfDayMs(end);
+        await conn.run(`UPDATE task_active SET start_date = ?, end_date = ? WHERE id = ?`, [
+          start,
+          end,
+          activeTaskId,
+        ]);
       }
     });
   }

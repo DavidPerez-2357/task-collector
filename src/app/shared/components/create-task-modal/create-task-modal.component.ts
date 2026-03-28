@@ -1,17 +1,8 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-  OnInit,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  inject,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, computed, effect, inject, input, output, signal, ViewChild, OnDestroy } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonModal } from '@ionic/angular/standalone';
+import { map } from 'rxjs';
 import { BoardComponent } from '../board/board.component';
 import { ButtonComponent } from '../button/button.component';
 import { TaskActive, TaskEffort, TaskFrequency } from '@core/models/task.model';
@@ -20,7 +11,12 @@ import { CategoryService } from '@core/services/category.service';
 import { CreateTaskService } from '@core/services/create-task.service';
 import { EditTaskService } from '@core/services/edit-task.service';
 import { ToastService } from '@core/services/toast.service';
+import { notInPast, notTooFarInFuture } from '@core/utils/date-validators.util';
 import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.util';
+
+/** Número máximo de años en el futuro permitido para la fecha límite. */
+const MAX_YEARS_IN_FUTURE = 100;
+
 
 /**
  * Componente SMART — Modal para crear o editar una tarea.
@@ -55,55 +51,54 @@ import { blockBodyScroll, unblockBodyScroll } from '@core/utils/modal-scroll.uti
   selector: 'app-create-task-modal',
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss'],
-  imports: [IonModal, BoardComponent, ButtonComponent, FormsModule],
+  imports: [IonModal, BoardComponent, ButtonComponent, ReactiveFormsModule],
 })
-export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
+export class CreateTaskModalComponent implements OnInit, OnDestroy {
   @ViewChild(IonModal) modal!: IonModal;
 
-  @Input() isOpen: boolean = false;
-  @Input() taskToEdit: TaskActive | null = null;
-  @Input() editMode: 'global' | 'instance' = 'global';
-  @Output() closed = new EventEmitter<void>();
-  readonly TaskFrequency = TaskFrequency;
+  // Signal-based inputs
+  isOpen = input<boolean>(false);
+  taskToEdit = input<TaskActive | null>(null);
+  editMode = input<'global' | 'instance'>('global');
+  closed = output<void>();
 
+  private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private createTaskService = inject(CreateTaskService);
   private editTaskService = inject(EditTaskService);
   private toast = inject(ToastService);
-
   private scrollLocked = false;
 
-  categories: Category[] = [];
-  frequencies = [
+  // Reactive state signals
+  categories = signal<Category[]>([]);
+  isSubmitting = signal(false);
+  /** Días de la semana seleccionados para tareas semanales. */
+  selectedWeekdays = signal<number[]>([]);
+  /** True solo si el usuario tocó el campo de fecha manualmente en esta sesión de edición. */
+  dueDateExplicitlyChanged = signal(false);
+
+  // Flag para evitar desbloquear el scroll al iniciar el componente
+  private openedOnce = false;
+
+  // Validator arrays predefinidos para reutilizar instancias entre ejecuciones del effect
+  private readonly createDateValidators = [notInPast(), notTooFarInFuture(MAX_YEARS_IN_FUTURE)];
+  private readonly editDateValidators = [notTooFarInFuture(MAX_YEARS_IN_FUTURE)];
+
+  // Static options
+  readonly frequencies = [
     { value: TaskFrequency.No_repeat, label: 'Una sola vez' },
     { value: TaskFrequency.Daily, label: 'Diaria' },
     { value: TaskFrequency.Weekly, label: 'Semanal' },
     { value: TaskFrequency.Monthly, label: 'Mensual' },
   ];
-  efforts = [
+  readonly efforts = [
     { value: TaskEffort.Very_low, label: 'Muy Bajo' },
     { value: TaskEffort.Low, label: 'Bajo' },
     { value: TaskEffort.Medium, label: 'Medio' },
     { value: TaskEffort.High, label: 'Alto' },
     { value: TaskEffort.Very_high, label: 'Muy Alto' },
   ];
-
-  taskName: string = '';
-  selectedCategoryId: number | null = null;
-  taskFrequency: TaskFrequency = TaskFrequency.Daily;
-  taskInterval: number = 1;
-  taskEffort: TaskEffort = TaskEffort.Medium;
-  taskDueDate: string = this.getTodayString();
-  /** True solo si el usuario tocó el campo de fecha manualmente en esta sesión de edición. */
-  dueDateExplicitlyChanged: boolean = false;
-  isSubmitting: boolean = false;
-
-  get isEditMode(): boolean {
-    return this.taskToEdit !== null;
-  }
-
-  // --- NUEVAS VARIABLES PARA TAREAS SEMANALES ---
-  weekdaysList = [
+  readonly weekdaysList = [
     { value: 1, label: 'L' },
     { value: 2, label: 'M' },
     { value: 3, label: 'X' },
@@ -112,50 +107,138 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
     { value: 6, label: 'S' },
     { value: 0, label: 'D' }, // El 0 es Domingo en JS
   ];
-  selectedWeekdays: number[] = [];
 
-  get isWeekly(): boolean {
-    return Number(this.taskFrequency) === TaskFrequency.Weekly;
-  }
+  // Reactive form
+  form = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(40)]],
+    categoryId: [null as number | null, Validators.required],
+    frequency: [TaskFrequency.Daily as TaskFrequency],
+    interval: [1, [Validators.required, Validators.min(1), Validators.max(365)]],
+    effort: [TaskEffort.Medium as TaskEffort],
+    dueDate: [this.getTodayString()],
+  });
 
-  get isOneTime(): boolean {
-    return Number(this.taskFrequency) === TaskFrequency.No_repeat;
-  }
+  // Bridge form.valueChanges observable → signal for computed derivations.
+  // Se usa getRawValue() para incluir también los controles deshabilitados (frequency, etc.),
+  // evitando que computed como isWeekly() o intervalLabel() queden inconsistentes en modo instancia.
+  private formValue = toSignal(this.form.valueChanges.pipe(map(() => this.form.getRawValue())), {
+    initialValue: this.form.getRawValue(),
+  });
 
-  toggleWeekday(day: number) {
-    const index = this.selectedWeekdays.indexOf(day);
-    if (index > -1) {
-      this.selectedWeekdays.splice(index, 1); // Lo quita si ya estaba
-    } else {
-      this.selectedWeekdays.push(day); // Lo añade
+  // Computed signals derived from inputs and form state
+  isEditMode = computed(() => this.taskToEdit() !== null);
+
+  isWeekly = computed(() => Number(this.formValue().frequency) === TaskFrequency.Weekly);
+
+  isOneTime = computed(() => Number(this.formValue().frequency) === TaskFrequency.No_repeat);
+
+  intervalLabel = computed(() => {
+    const interval = this.formValue().interval ?? 1;
+    switch (Number(this.formValue().frequency)) {
+      case TaskFrequency.Daily:
+        return interval === 1 ? 'día' : 'días';
+      case TaskFrequency.Weekly:
+        return interval === 1 ? 'semana' : 'semanas';
+      case TaskFrequency.Monthly:
+        return interval === 1 ? 'mes' : 'meses';
+      default:
+        return '';
     }
-  }
+  });
 
-  async ngOnInit() {
-    this.categories = await this.categoryService.getAllCategories();
-    // Solo ponemos el valor por defecto si no estamos editando y aún no hay selección
-    if (!this.isEditMode && this.categories.length > 0 && this.selectedCategoryId === null) {
-      this.selectedCategoryId = this.categories[0]?.id ?? null;
+  isSubmitDisabled = computed(() => {
+    if (this.isSubmitting()) return true;
+
+    const v = this.formValue();
+
+    // En modo edición de instancia solo se edita la fecha límite; validamos ese control
+    if (this.isEditMode() && this.editMode() === 'instance') {
+      const dueDateControl = this.form.get('dueDate');
+      const hasDueDateValue = !!v.dueDate;
+      const hasDueDateErrors = !!dueDateControl && dueDateControl.invalid;
+      return !hasDueDateValue || hasDueDateErrors;
     }
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const isOpenChange = changes['isOpen'];
-    if (isOpenChange) {
-      const { currentValue, firstChange } = isOpenChange;
-      if (!(firstChange && !currentValue)) {
-        if (currentValue) {
-          this.scrollLocked = true;
-          blockBodyScroll();
-        } else {
-          this.releaseScrollLock();
-        }
+    // En creación/edición normal validamos nombre, categoría y el estado general del formulario
+    const hasMissingBasicData = !v.name?.trim() || v.categoryId === null;
+    return hasMissingBasicData || this.form.invalid;
+  });
+
+  /** Fecha mínima seleccionable: hoy (sólo aplicable al crear, no al editar). */
+  minDateString = computed(() => (this.isEditMode() ? null : this.getTodayString()));
+
+  /** Fecha máxima seleccionable: hoy + MAX_YEARS_IN_FUTURE años. */
+  maxDateString = computed(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + MAX_YEARS_IN_FUTURE);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+
+  constructor() {
+    // React to taskToEdit input signal: prefill the form when a task is provided
+    effect(() => {
+      const task = this.taskToEdit();
+      if (task) {
+        this.prefillForm(task);
       }
-    }
+    });
 
-    const task = changes['taskToEdit']?.currentValue as TaskActive | null;
-    if (task) {
-      this.prefillForm(task);
+    // React to isOpen input signal: lock/unlock body scroll
+    effect(() => {
+      const open = this.isOpen();
+      // Skip the initial false emission so we don't unlock body scroll if other modals set it
+      if (!this.openedOnce) {
+        this.openedOnce = true;
+        if (!open) return;
+      }
+      if (open) {
+        this.scrollLocked = true;
+        blockBodyScroll();
+      } else {
+        this.releaseScrollLock();
+      }
+    });
+
+    // React to editMode signal: disable/enable form controls for instance-only editing
+    effect(() => {
+      const instanceOnly = this.isEditMode() && this.editMode() === 'instance';
+      const globalControls = ['name', 'categoryId', 'frequency', 'interval', 'effort'];
+      globalControls.forEach((name) => {
+        const ctrl = this.form.get(name);
+        if (instanceOnly) {
+          ctrl?.disable({ emitEvent: false });
+        } else {
+          ctrl?.enable({ emitEvent: false });
+        }
+      });
+    });
+
+    // Asigna los validators de fecha al control dueDate según el modo actual
+    effect(() => {
+      const dueDateCtrl = this.form.get('dueDate');
+      if (this.isWeekly()) {
+        // Las tareas semanales calculan la fecha automáticamente: sin validación de fecha
+        dueDateCtrl?.clearValidators();
+      } else if (this.isEditMode()) {
+        // Al editar, solo se prohíben fechas demasiado lejanas (no se restringe el pasado)
+        dueDateCtrl?.setValidators(this.editDateValidators);
+      } else {
+        // Al crear, se prohíben fechas en el pasado y demasiado lejanas
+        dueDateCtrl?.setValidators(this.createDateValidators);
+      }
+      dueDateCtrl?.updateValueAndValidity({ emitEvent: false });
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    const cats = await this.categoryService.getAllCategories();
+    this.categories.set(cats);
+    // Solo ponemos el valor por defecto si no estamos editando y aún no hay selección
+    if (!this.isEditMode() && cats.length > 0) {
+      this.form.patchValue({ categoryId: cats[0]!.id });
     }
   }
 
@@ -171,30 +254,31 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private prefillForm(task: TaskActive): void {
-    this.taskName = task.name;
-    this.taskFrequency = task.frequency;
-    this.taskInterval = task.interval;
-    this.taskEffort = task.effort;
-    this.selectedCategoryId = task.category?.id ?? null;
-    this.taskDueDate = this.timestampToDateString(task.endDate);
-    this.selectedWeekdays = task.weekdays ? [...task.weekdays] : [];
+    this.form.patchValue({
+      name: task.name,
+      frequency: task.frequency,
+      interval: task.interval,
+      effort: task.effort,
+      categoryId: task.category?.id ?? null,
+      dueDate: this.timestampToDateString(task.endDate),
+    });
+    this.selectedWeekdays.set(task.weekdays ? [...task.weekdays] : []);
     // Resetear: el usuario aún no ha cambiado la fecha en esta apertura del modal
-    this.dueDateExplicitlyChanged = false;
+    this.dueDateExplicitlyChanged.set(false);
   }
 
   onDueDateChange(): void {
-    this.dueDateExplicitlyChanged = true;
+    this.dueDateExplicitlyChanged.set(true);
   }
 
-  private timestampToDateString(ts: number): string {
-    const d = new Date(ts);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+  toggleWeekday(day: number): void {
+    this.selectedWeekdays.update((days) => {
+      const index = days.indexOf(day);
+      return index > -1 ? days.filter((d) => d !== day) : [...days, day];
+    });
   }
 
-  onDismiss() {
+  onDismiss(): void {
     this.releaseScrollLock();
     this.resetForm();
     this.closed.emit();
@@ -205,16 +289,30 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
     this.modal.dismiss();
   }
 
-  async onSubmit() {
+  async onSubmit(): Promise<void> {
+    // Primero validamos formulario acorde al modo (instance vs global/create)
     if (!(await this.validateForm())) return;
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     try {
-      const selectedCategory = this.categories.find(
-        (c) => c.id === Number(this.selectedCategoryId),
-      )!;
+      // Si estamos editando solo la instancia, no necesitamos resolver la categoría
+      if (this.isEditMode() && this.editMode() === 'instance') {
+        await this.updateInstance();
+        this.completeSubmission();
+        return;
+      }
 
-      if (this.isEditMode && this.taskToEdit) {
+      // Para crear o editar globalmente necesitamos la categoría seleccionada
+      const categoryId = Number(this.form.getRawValue().categoryId);
+      const selectedCategory = this.categories().find((c) => c.id === categoryId);
+      if (!selectedCategory) {
+        await this.toast.error(
+          'Categoría no encontrada. Por favor, selecciona una categoría válida.',
+        );
+        return;
+      }
+
+      if (this.isEditMode() && this.taskToEdit()) {
         await this.handleEditMode(selectedCategory);
       } else {
         await this.handleCreateMode(selectedCategory);
@@ -222,42 +320,114 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
 
       this.completeSubmission();
     } catch (error) {
-      this.handleError(error);
+      await this.handleError(error);
     } finally {
-      this.isSubmitting = false;
+      this.isSubmitting.set(false);
     }
   }
 
-  private async validateForm(): Promise<boolean> {
-    if (!this.taskName.trim() || this.selectedCategoryId === null) return false;
+  private async showWarning(message: string): Promise<void> {
+    await this.toast.show({
+      message,
+      color: 'warning',
+    });
+  }
 
-    if (this.isWeekly && this.selectedWeekdays.length === 0) {
-      await this.toast.show({
-        message: 'Selecciona al menos un día de la semana.',
-        color: 'warning',
-      });
+  private async validateForm(): Promise<boolean> {
+    const isInstanceEdit = this.isEditMode() && this.editMode() === 'instance';
+
+    const v = this.form.getRawValue();
+    const frequency = Number(v.frequency);
+    const isWeekly = frequency === TaskFrequency.Weekly;
+
+    // Instance-only edits: validate dueDate and weekday selection
+    if (isInstanceEdit) {
+      if (!isWeekly) {
+        const dueDateControl = this.form.get('dueDate');
+        if (!dueDateControl?.value) {
+          await this.showWarning('Selecciona una fecha límite.');
+          return false;
+        }
+        const dueDateErrors = dueDateControl.errors;
+        if (dueDateErrors?.['invalidDate']) {
+          await this.showWarning('La fecha límite no es válida.');
+          return false;
+        }
+        if (dueDateErrors?.['tooFarInFuture']) {
+          await this.showWarning(
+            `La fecha límite no puede ser más de ${MAX_YEARS_IN_FUTURE} años en el futuro.`,
+          );
+          return false;
+        }
+      }
+
+      if (isWeekly && this.selectedWeekdays().length === 0) {
+        await this.showWarning('Selecciona al menos un día de la semana.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Create / global-edit: name and category are required
+    const namePresent = !!v.name?.trim();
+    const categoryPresent = v.categoryId !== null && v.categoryId !== undefined;
+    if (!namePresent || !categoryPresent) {
+      await this.showWarning('Rellena el nombre y selecciona una categoría.');
       return false;
     }
+
+    // For weekly frequency, ensure at least one weekday selected
+    if (isWeekly && this.selectedWeekdays().length === 0) {
+      await this.showWarning('Selecciona al menos un día de la semana.');
+      return false;
+    }
+
+    // Validate the due date (only applicable when not weekly)
+    if (!isWeekly) {
+      const dueDateControl = this.form.get('dueDate');
+      if (!dueDateControl?.value) {
+        await this.showWarning('Selecciona una fecha límite.');
+        return false;
+      }
+      const dueDateErrors = dueDateControl.errors;
+      if (dueDateErrors?.['invalidDate']) {
+        await this.showWarning('La fecha límite no es válida.');
+        return false;
+      }
+      if (dueDateErrors?.['pastDate']) {
+        await this.showWarning('La fecha límite no puede ser anterior a hoy.');
+        return false;
+      }
+      if (dueDateErrors?.['tooFarInFuture']) {
+        await this.showWarning(
+          `La fecha límite no puede ser más de ${MAX_YEARS_IN_FUTURE} años en el futuro.`,
+        );
+        return false;
+      }
+    }
+
     return true;
   }
 
   private async handleCreateMode(category: Category): Promise<void> {
+    const v = this.form.getRawValue();
     await this.createTaskService.createTask({
-      name: this.taskName,
+      name: v.name!,
       category,
-      frequency: Number(this.taskFrequency),
-      interval: Number(this.taskInterval),
-      effort: Number(this.taskEffort),
-      dueDate: !this.isWeekly ? this.taskDueDate : undefined,
-      weekdays: this.isWeekly ? this.selectedWeekdays : [],
+      frequency: Number(v.frequency),
+      interval: Number(v.interval),
+      effort: Number(v.effort),
+      dueDate: !this.isWeekly() ? v.dueDate! : undefined,
+      weekdays: this.isWeekly() ? this.selectedWeekdays() : [],
     });
     await this.toast.success('¡Tarea creada con éxito!');
   }
 
   private async handleEditMode(category: Category): Promise<void> {
-    if (!this.taskToEdit) return;
+    if (!this.taskToEdit()) return;
 
-    if (this.editMode === 'instance') {
+    if (this.editMode() === 'instance') {
       await this.updateInstance();
     } else {
       await this.updateGlobal(category);
@@ -265,62 +435,62 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private async updateInstance(): Promise<void> {
-    if (!this.taskToEdit) return;
-    await this.editTaskService.updateTaskInstance(this.taskToEdit.taskActiveId, this.taskDueDate);
+    const task = this.taskToEdit();
+    if (!task) return;
+    await this.editTaskService.updateTaskInstance(
+      task.taskActiveId,
+      this.form.getRawValue().dueDate!,
+    );
     await this.toast.success('¡Instancia actualizada!');
   }
 
   private async updateGlobal(category: Category): Promise<void> {
-    if (!this.taskToEdit) return;
+    const task = this.taskToEdit();
+    if (!task) return;
 
+    const v = this.form.getRawValue();
+    // Si la frecuencia cambió de semanal a no-semanal, la instancia activa necesita una fecha
+    // concreta aunque el usuario no haya tocado el campo de fecha explícitamente.
+    const frequencyChangedFromWeekly =
+      Number(task.frequency) === TaskFrequency.Weekly && !this.isWeekly();
     const dueDateForEdit =
-      !this.isWeekly && this.dueDateExplicitlyChanged ? this.taskDueDate : undefined;
+      !this.isWeekly() && (this.dueDateExplicitlyChanged() || frequencyChangedFromWeekly)
+        ? v.dueDate!
+        : undefined;
 
-    await this.editTaskService.updateTask(this.taskToEdit.id, this.taskToEdit.taskActiveId, {
-      name: this.taskName,
+    await this.editTaskService.updateTask(task.id, task.taskActiveId, {
+      name: v.name!,
       category,
-      frequency: Number(this.taskFrequency),
-      interval: Number(this.taskInterval),
-      effort: Number(this.taskEffort),
+      frequency: Number(v.frequency),
+      interval: Number(v.interval),
+      effort: Number(v.effort),
       dueDate: dueDateForEdit,
-      weekdays: this.isWeekly ? this.selectedWeekdays : [],
+      weekdays: this.isWeekly() ? this.selectedWeekdays() : [],
     });
     await this.toast.success('¡Tarea global actualizada!');
   }
 
   private completeSubmission(): void {
+    this.resetForm();
     this.close();
   }
 
-  private async handleError(error: any): Promise<void> {
+  private async handleError(error: unknown): Promise<void> {
     console.error('Error guardando tarea', error);
     await this.toast.error('Error al guardar la tarea.');
   }
 
-  getIntervalLabel(): string {
-    switch (Number(this.taskFrequency)) {
-      case TaskFrequency.Daily:
-        return this.taskInterval === 1 ? 'día' : 'días';
-      case TaskFrequency.Weekly:
-        return this.taskInterval === 1 ? 'semana' : 'semanas';
-      case TaskFrequency.Monthly:
-        return this.taskInterval === 1 ? 'mes' : 'meses';
-      default:
-        return '';
-    }
-  }
-
-  private resetForm() {
-    this.taskName = '';
-    this.taskFrequency = TaskFrequency.Daily;
-    this.taskInterval = 1;
-    this.taskEffort = TaskEffort.Medium;
-    this.taskDueDate = this.getTodayString();
-    this.selectedWeekdays = [];
-    this.dueDateExplicitlyChanged = false;
-    if (this.categories.length > 0) {
-      this.selectedCategoryId = this.categories[0]?.id ?? null;
-    }
+  private resetForm(): void {
+    this.form.reset({
+      name: '',
+      categoryId: this.categories()[0]?.id ?? null,
+      frequency: TaskFrequency.Daily,
+      interval: 1,
+      effort: TaskEffort.Medium,
+      dueDate: this.getTodayString(),
+    });
+    this.selectedWeekdays.set([]);
+    this.dueDateExplicitlyChanged.set(false);
   }
 
   private getTodayString(): string {
@@ -330,4 +500,13 @@ export class CreateTaskModalComponent implements OnInit, OnChanges, OnDestroy {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   }
+
+  private timestampToDateString(ts: number): string {
+    const d = new Date(ts);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
 }
