@@ -214,12 +214,29 @@ Todos los componentes son **standalone** (no usan NgModules). La inyección de d
 
 ### Routing
 
-Las rutas están **lazy-loaded**. La ruta raíz carga `tabs.routes.ts`, que define las rutas hijas para cada pestaña:
+Todas las rutas están **lazy-loaded**. Cada feature define su propio subgrafo de navegación en un archivo `*.routes.ts` dentro de su carpeta. La ruta raíz delega en `tabs.routes.ts`, que a su vez usa `loadChildren` para cargar cada feature de forma independiente.
 
-- `/home` → `HomeTabComponent`
-- `/collection` → `CollectionTabComponent`
-- `/inventory` → `InventoryTabComponent`
-- `/shop` → `ShopTabComponent`
+**Jerarquía de rutas:**
+
+```
+app.routes.ts
+└── ''  →  loadChildren: tabs/tabs.routes.ts
+    └── /tabs  (TabsPage — shell con barra de navegación)
+        ├── /tabs/home        →  loadChildren: home-tab/home-tab.routes.ts
+        ├── /tabs/collection  →  loadChildren: collection-tab/collection-tab.routes.ts
+        ├── /tabs/inventory   →  loadChildren: inventory-tab/inventory-tab.routes.ts
+        ├── /tabs/shop        →  loadChildren: shop-tab/shop-tab.routes.ts
+        └── /tabs             →  redirectTo: /tabs/home
+```
+
+| Ruta               | Feature        | Archivo de rutas                                   |
+| ------------------ | -------------- | -------------------------------------------------- |
+| `/tabs/home`       | Home Tab       | `features/home-tab/home-tab.routes.ts`             |
+| `/tabs/collection` | Collection Tab | `features/collection-tab/collection-tab.routes.ts` |
+| `/tabs/inventory`  | Inventory Tab  | `features/inventory-tab/inventory-tab.routes.ts`   |
+| `/tabs/shop`       | Shop Tab       | `features/shop-tab/shop-tab.routes.ts`             |
+
+La URL raíz (`/`) hace `redirectTo` a `/tabs/home` directamente.
 
 ### Capas de la arquitectura
 
